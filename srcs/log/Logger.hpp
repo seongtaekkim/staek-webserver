@@ -18,11 +18,20 @@
 #define ERROR 1
 
 
-/*
-ref
-time format : https://modoocode.com/122
-ANSI color code : https://wiki.ubuntu-kr.org/index.php/ANSI_%EC%BB%AC%EB%9F%AC_%EC%BD%94%EB%93%9C
-*/
+/**
+ * @brief level별로 log를 출력한다.
+ * @details 시간 + 인자를 출력한다.
+ * 			color : 시간(파란색)
+ * 					인자(로그레벨 색상)
+ * 					ERROR(red)
+ * 					WARN()
+ * 					INFO()
+ * 					DEBUG()
+ * @ref time format : https://modoocode.com/122
+ *		ANSI color code : https://wiki.ubuntu-kr.org/index.php/ANSI_%EC%BB%AC%EB%9F%AC_%EC%BD%94%EB%93%9C
+ * @author seongtki
+ * @date 2023.03.21
+ */
 class Logger {
 private:
 	time_t				_time;
@@ -31,11 +40,11 @@ private:
 	char 				time_buf[40];
 	std::string			m_tag;
 
+	Logger(void);
 	Logger(const Logger* l);
 	Logger& operator=(const Logger& l);
 	void log(const std::string& color, std::string msg);
 public: 
-	Logger(void);
 	Logger(const std::string &tag);
 	~Logger(void);
 
