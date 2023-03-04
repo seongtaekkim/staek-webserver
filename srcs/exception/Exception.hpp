@@ -16,7 +16,7 @@ class Exception : public std::exception {
 
  public:
   Exception(void);
-  Exception(const std::string& errorMessage);
+  Exception(const std::string& message);
   Exception(const Exception& t);
   Exception& operator=(const Exception& t);
   virtual ~Exception(void) throw();
