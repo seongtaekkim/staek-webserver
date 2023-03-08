@@ -11,7 +11,7 @@ Exception& Exception::operator=(const Exception& other) {
 	return (*this);
 }
 
-const std::string
+const std::string&
 Exception::message() const {
 	return (this->_message);
 }

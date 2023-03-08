@@ -13,7 +13,6 @@
 class Exception : public std::exception {
  private:
   std::string _message;
-
  public:
   Exception(void);
   Exception(const std::string& message);
@@ -21,7 +20,7 @@ class Exception : public std::exception {
   Exception& operator=(const Exception& t);
   virtual ~Exception(void) throw();
 
-  const std::string message(void) const;
+  const std::string& message(void) const;
   virtual const char* what(void) const throw();
 };
 
