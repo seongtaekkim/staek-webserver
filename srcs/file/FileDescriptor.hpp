@@ -3,35 +3,44 @@
 
 #include <stddef.h>
 #include <sys/types.h>
+#include <iostream>
+#include <sys/fcntl.h>
+#include <sys/errno.h>
+#include <sys/unistd.h>
+#include <unistd.h>
+#include "../exception/IllegalStateException.hpp"
+#include "../exception/IOException.hpp"
 
+/**
+ * @brief
+ * @details
+ * @author seongtki
+ * @date 2023.03.22
+ */
 class FileDescriptor {
 protected:
 	int		_fd;
-	bool	_verified :1;
-	bool	_closed :1;
+	bool	_valid = true;
+	bool	_isClosed = true;
 
 private:
 	FileDescriptor(void);
 	FileDescriptor(const FileDescriptor &other);
-
-	FileDescriptor&
-	operator=(const FileDescriptor &other);
+	FileDescriptor& operator=(const FileDescriptor &other);
 public:
 	FileDescriptor(int fd);
 	virtual ~FileDescriptor();
 	ssize_t read(void *buf, size_t nbyte);
 	ssize_t write(const void *buf, size_t nbyte);
 	off_t	lseek(off_t offset, int whence);
-	off_t	seekToEnd();
 	void	close();
-	void	nonBlocking();
-	int		raw() const;
+	void	setNonBlock();
+	int		getFd() const;
 	bool	isClosed() const;
-	void	ensureNotClosed(void) const;
+	void	validateNotClosed(void) const;
 
 public:
 	static FileDescriptor* wrapping(int fd);
-
 };
 
 #endif
