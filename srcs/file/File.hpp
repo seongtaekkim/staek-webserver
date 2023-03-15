@@ -7,17 +7,22 @@
 // #define EXTENSION_DELEMETER '.'
 // #define DIRECT_DELEMETER '/'
 
+/**
+ * @brief file 객체 관리
+ * @details file 생성,삭제,열기,찾기,파일위치 기능을 제공한다.
+ * @author seongtki
+ * @date 2023.03.23
+ */
 class File {
 private:
-	int			_fd;
 	std::string _name;
 	std::string _extention;
 	std::string _path;
-public:
 	File(void);
-	//File(int fd);
+public:
+	File(const std::string path);
 	File(const File &other);
-	virtual ~File(void);
+	virtual ~File(void) throw();
 	File& operator=(const File &other);
 
 	bool exists() const;
@@ -25,15 +30,13 @@ public:
 	bool isDirectory() const;
 	bool isExecutable() const;
 	bool createFile() const;
-	FileDescriptor*
-	open(int flags, mode_t mode = 0) const;
+	FileDescriptor* open(int flags, mode_t mode = 0) const;
 	void remove(void) const;
 	size_t length() const;
 	std::string name() const;
+	inline const std::string& path() const { return (_path); }
 	File absolutePath() const;
 	File parent() const;
-	inline const std::string&
-	path() const { return (_path); }
 };
 
 #endif 
