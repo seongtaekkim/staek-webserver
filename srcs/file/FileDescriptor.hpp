@@ -12,8 +12,8 @@
 #include "../exception/IOException.hpp"
 
 /**
- * @brief
- * @details
+ * @brief file descriptor 관리
+ * @details 소켓통신, io 통신에 사용할 file descriptor 관리객체.
  * @author seongtki
  * @date 2023.03.22
  */
@@ -38,9 +38,6 @@ public:
 	int		getFd() const;
 	bool	isClosed() const;
 	void	validateNotClosed(void) const;
-
-public:
-	static FileDescriptor* wrapping(int fd);
 };
 
 #endif
