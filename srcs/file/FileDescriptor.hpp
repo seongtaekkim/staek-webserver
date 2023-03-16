@@ -11,7 +11,10 @@
 #include "../exception/IllegalStateException.hpp"
 #include "../exception/IOException.hpp"
 
+
+// 객체 생성할 때 nonblock 설정해주도록 고려해보자
 /**
+ * 
  * @brief file descriptor 관리
  * @details 소켓통신, io 통신에 사용할 file descriptor 관리객체.
  * @author seongtki
@@ -20,8 +23,8 @@
 class FileDescriptor {
 protected:
 	int		_fd;
-	bool	_valid = true;
-	bool	_isClosed = true;
+	bool	_valid;
+	bool	_isClosed;
 
 private:
 	FileDescriptor(void);

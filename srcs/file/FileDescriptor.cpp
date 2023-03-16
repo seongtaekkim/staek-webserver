@@ -1,6 +1,6 @@
 #include "FileDescriptor.hpp"
 
-FileDescriptor::FileDescriptor(int fd) : _fd(fd) {}
+FileDescriptor::FileDescriptor(int fd) : _fd(fd), _valid(false), _isClosed(false) {}
 
 FileDescriptor::~FileDescriptor() {}
 
