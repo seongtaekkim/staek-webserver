@@ -2,6 +2,7 @@
 #define FILE_HPP
 
 #include <iostream>
+#include <sys/stat.h>
 #include "FileDescriptor.hpp"
 
 // #define EXTENSION_DELEMETER '.'
@@ -37,6 +38,7 @@ public:
 	inline const std::string& path() const { return (_path); }
 	File absolutePath() const;
 	File parent() const;
+	struct stat getStat(void);
 };
 
 #endif 

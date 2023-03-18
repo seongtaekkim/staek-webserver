@@ -1,5 +1,4 @@
 #include "File.hpp"
-#include <sys/stat.h>
 #include "../exception/IOException.hpp"
 
 File::File(const std::string path) : _path(path) {}
@@ -34,7 +33,17 @@ bool File::exists() const {
 }
 
 bool File::isFile() const {}
-bool File::isDirectory() const {}
+bool File::isDirectory() const {
+	//     const char* path = "dir"; // 경로
+    // if (stat(path, &statbuf) != -1) {
+    //     if (S_ISDIR(statbuf.st_mode)) { // 디렉토리인지 확인
+    //         cout<<"Path exist!! ==> "<<path<<endl;
+    //     }
+    // } else {
+    //     cout<<"No path ==> "<<path<<endl;
+    // }
+}
+
 bool File::isExecutable() const {}
 bool File::createFile() const {}
 FileDescriptor* File::open(int flags, mode_t mode = 0) const {}
@@ -43,3 +52,11 @@ size_t File::length() const {}
 std::string File::name() const {}
 File File::absolutePath() const {}
 File File::parent() const {}
+
+struct stat File::getStat(void) {
+	struct stat _stat;
+	if (::stat(this->_path.c_str(), &_stat) < 0) {
+		throw IOException("don't have the file", errno);
+	}
+	return (_stat);
+}
