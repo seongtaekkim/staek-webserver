@@ -12,7 +12,7 @@
 | RFC3986 | uri 표준                                       |
 | RFC5322 | 인터넷메일 https://codedragon.tistory.com/5177 |
 | RFC2045 | MIME                                           |
-| RFC7231 | HTTP MIME 차이                                 |
+| RFC7231 | HTTP MIME 차이1                                |
 |         |                                                |
 |         |                                                |
 
@@ -36,7 +36,8 @@
 | downstream    |                                                              |
 | inbound       | 원서버 방향                                                  |
 | outbound      | 사용자에이전트 방향                                          |
-| ABNF          | AugmentedBackus_NaurForm(ABNF)표기법                         |
+| ABNF          | AugmentedBackus_NaurForm(ABNF)표기법<br />https://deepblue28.tistory.com/entry/BNF-EBNF-ABNF<br />https://yccyou.tistory.com/entry/RFC-5234-Augmented-BNF-for-Syntax-Specifications-ABNF |
+|               |                                                              |
 |               |                                                              |
 |               |                                                              |
 |               |                                                              |
