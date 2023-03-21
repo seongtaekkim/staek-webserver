@@ -1,9 +1,10 @@
+#ifndef LOGFACTORY_HPP
+#define LOGFACTORY_HPP
+
 
 #include "Logger.hpp"
 #include <map>
 #include <string>
-
-
 
 /**
  * @brief log 컨테이너를 관리하는 객체이다.
@@ -23,3 +24,5 @@ public:
 	static Logger& get(const std::string &tag);
 	static void destroy(void);
 };
+
+#endif
