@@ -1,5 +1,5 @@
-#ifndef ILLIGALARGUMENTEXCEPTION_HPP
-#define ILLIGALARGUMENTEXCEPTION_HPP
+#ifndef ILLEGALARGUMENTEXCEPTION_HPP
+#define ILLEGALARGUMENTEXCEPTION_HPP
 
 #include "RuntimeException.hpp"
 
@@ -9,14 +9,14 @@
  * @author seongtki
  * @date 2023.03.23
  */
-class IlligalArgumentException : public RuntimeException {
+class IllegalArgumentException : public RuntimeException {
 public:
-	IlligalArgumentException(void);
-	IlligalArgumentException(const std::string message);
-	IlligalArgumentException(const IlligalArgumentException& other);
-	IlligalArgumentException&
-	operator=(const IlligalArgumentException& other);
-	virtual ~IlligalArgumentException(void) throw();
+	IllegalArgumentException(void);
+	IllegalArgumentException(const std::string message);
+	IllegalArgumentException(const IllegalArgumentException& other);
+	IllegalArgumentException&
+	operator=(const IllegalArgumentException& other);
+	virtual ~IllegalArgumentException(void) throw();
 };
 
 #endif
