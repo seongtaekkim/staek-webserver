@@ -2,7 +2,22 @@
 
 HTTPStatus::HTTPStatus() {}
 
-HTTPStatus::HTTPStatus(int code, std::string codeNm) : _code(code), _codeNm(codeNm) {}
+HTTPStatus::HTTPStatus(const HTTPStatus& other) {
+	if (this != &other) {
+		this->_code = other._code;
+		this->_codeNm = other._codeNm;
+	}
+}
+
+HTTPStatus& HTTPStatus::operator=(const HTTPStatus& other) {
+	if (this != &other) {
+		this->_code = other._code;
+		this->_codeNm = other._codeNm;
+	}
+	return (*this);
+}
+
+HTTPStatus::~HTTPStatus(void) {}
 
 HTTPStatus::StateMap HTTPStatus::STATE = init();
 

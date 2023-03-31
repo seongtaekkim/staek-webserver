@@ -7,86 +7,90 @@
 // https://stackoverflow.com/questions/13464325/static-map-initialization
 class HTTPStatus {
 public:
-	typedef std::map<int, std::string> StateMap; 
+	// typedef std::map<int, std::string> StateMap; 
+	typedef std::map<int, std::pair<int, std::string> > StateMap; 
+	typedef std::pair<int, std::string>					StateType; 
 
 private:
 	std::string	_codeNm;
 	int			_code;
-	HTTPStatus(const HTTPStatus& other);
 	static StateMap init() {
 		StateMap state;
-		state[HTTPStatus::CONTINUE] = "Continue";
-		state[HTTPStatus::SWITCHING_PROTOCOLS] = "Switching Protocols";
-		state[HTTPStatus::PROCESSING] = "Processing";
-		state[HTTPStatus::CHECKPOINT] = "Checkpoint";
-		state[HTTPStatus::OK] = "OK";
-		state[HTTPStatus::CREATED] = "Created";
-		state[HTTPStatus::ACCEPTED] = "Accepted";
-		state[HTTPStatus::NON_AUTHORITATIVE_INFORMATION] = "Non-Authoritative Information";
-		state[HTTPStatus::NO_CONTENT] = "No Content";
-		state[HTTPStatus::RESET_CONTENT] = "Reset Content";
-		state[HTTPStatus::PARTIAL_CONTENT] = "Partial Content";
-		state[HTTPStatus::MULTI_STATUS] = "Multi-Status";
-		state[HTTPStatus::ALREADY_REPORTED] = "Already Reported";
-		state[HTTPStatus::IM_USED] = "IM Used";
-		state[HTTPStatus::MULTIPLE_CHOICES] = "Multiple Choices";
-		state[HTTPStatus::MOVED_PERMANENTLY] = "Moved Permanently";
-		state[HTTPStatus::FOUND] = "Found";
-		state[HTTPStatus::MOVED_TEMPORARILY] = "Moved Temporarily";
-		state[HTTPStatus::SEE_OTHER] = "See Other";
-		state[HTTPStatus::NOT_MODIFIED] = "Not Modified";
-		state[HTTPStatus::USE_PROXY] = "Use Proxy";
-		state[HTTPStatus::TEMPORARY_REDIRECT] = "Temporary Redirect";
-		state[HTTPStatus::PERMANENT_REDIRECT] = "Permanent Redirect";
-		state[HTTPStatus::BAD_REQUEST] = "Bad Request";
-		state[HTTPStatus::UNAUTHORIZED] = "Unauthorized";
-		state[HTTPStatus::PAYMENT_REQUIRED] = "Payment Required";
-		state[HTTPStatus::FORBIDDEN] = "Forbidden";
-		state[HTTPStatus::NOT_FOUND] = "Not Found";
-		state[HTTPStatus::METHOD_NOT_ALLOWED] = "Method Not Allowed";
-		state[HTTPStatus::NOT_ACCEPTABLE] = "Not Acceptable";
-		state[HTTPStatus::PROXY_AUTHENTICATION_REQUIRED] = "Proxy Authentication Required";
-		state[HTTPStatus::REQUEST_TIMEOUT] = "Request Timeout";
-		state[HTTPStatus::CONFLICT] = "Conflict";
-		state[HTTPStatus::GONE] = "Gone";
-		state[HTTPStatus::LENGTH_REQUIRED] = "Length Required";
-		state[HTTPStatus::PRECONDITION_FAILED] = "Precondition Failed";
-		state[HTTPStatus::PAYLOAD_TOO_LARGE] = "Payload Too Large";
-		state[HTTPStatus::REQUEST_ENTITY_TOO_LARGE] = "Request Entity Too Large";
-		state[HTTPStatus::URI_TOO_LONG] = "URI Too Long";
-		state[HTTPStatus::REQUEST_URI_TOO_LONG] = "Request-URI Too Long";
-		state[HTTPStatus::UNSUPPORTED_MEDIA_TYPE] = "Unsupported Media Type";
-		state[HTTPStatus::REQUESTED_RANGE_NOT_SATISFIABLE] = "Requested range not satisfiable";
-		state[HTTPStatus::EXPECTATION_FAILED] = "Expectation Failed";
-		state[HTTPStatus::I_AM_A_TEAPOT] = "I'm a teapot";
-		state[HTTPStatus::INSUFFICIENT_SPACE_ON_RESOURCE] = "Insufficient Space On Resource";
-		state[HTTPStatus::METHOD_FAILURE] = "Method Failure";
-		state[HTTPStatus::DESTINATION_LOCKED] = "Destination Locked";
-		state[HTTPStatus::UNPROCESSABLE_ENTITY] = "Unprocessable Entity";
-		state[HTTPStatus::LOCKED] = "Locked";
-		state[HTTPStatus::FAILED_DEPENDENCY] = "Failed Dependency";
-		state[HTTPStatus::TOO_EARLY] = "Too Early";
-		state[HTTPStatus::UPGRADE_REQUIRED] = "Upgrade Required";
-		state[HTTPStatus::PRECONDITION_REQUIRED] = "Precondition Required";
-		state[HTTPStatus::TOO_MANY_REQUESTS] = "Too Many Requests";
-		state[HTTPStatus::REQUEST_HEADER_FIELDS_TOO_LARGE] = "Request Header Fields Too Large";
-		state[HTTPStatus::UNAVAILABLE_FOR_LEGAL_REASONS] = "Unavailable For Legal Reasons";
-		state[HTTPStatus::INTERNAL_SERVER_ERROR] = "Internal Server Error";
-		state[HTTPStatus::NOT_IMPLEMENTED] = "Not Implemented";
-		state[HTTPStatus::BAD_GATEWAY] = "Bad Gateway";
-		state[HTTPStatus::SERVICE_UNAVAILABLE] = "Service Unavailable";
-		state[HTTPStatus::GATEWAY_TIMEOUT] = "Gateway Timeout";
-		state[HTTPStatus::HTTP_VERSION_NOT_SUPPORTED] = "HTTP Version not supported";
-		state[HTTPStatus::VARIANT_ALSO_NEGOTIATES] = "Variant Also Negotiates";
-		state[HTTPStatus::INSUFFICIENT_STORAGE] = "Insufficient Storage";
-		state[HTTPStatus::LOOP_DETECTED] = "Loop Detected";
-		state[HTTPStatus::BANDWIDTH_LIMIT_EXCEEDED] = "Bandwidth Limit Exceeded";
-		state[HTTPStatus::NOT_EXTENDED] = "Not Extended";
+		state[HTTPStatus::CONTINUE].first =  HTTPStatus::CONTINUE;
+		state[HTTPStatus::CONTINUE].second =  "Continue";
+		// state[HTTPStatus::SWITCHING_PROTOCOLS] = {HTTPStatus::SWITCHING_PROTOCOLS,"Switching Protocols"};
+		// state[HTTPStatus::PROCESSING] = "Processing";
+		// state[HTTPStatus::CHECKPOINT] = "Checkpoint";
+		// state[HTTPStatus::OK] = "OK";
+		// state[HTTPStatus::CREATED] = "Created";
+		// state[HTTPStatus::ACCEPTED] = "Accepted";
+		// state[HTTPStatus::NON_AUTHORITATIVE_INFORMATION] = "Non-Authoritative Information";
+		// state[HTTPStatus::NO_CONTENT] = "No Content";
+		// state[HTTPStatus::RESET_CONTENT] = "Reset Content";
+		// state[HTTPStatus::PARTIAL_CONTENT] = "Partial Content";
+		// state[HTTPStatus::MULTI_STATUS] = "Multi-Status";
+		// state[HTTPStatus::ALREADY_REPORTED] = "Already Reported";
+		// state[HTTPStatus::IM_USED] = "IM Used";
+		// state[HTTPStatus::MULTIPLE_CHOICES] = "Multiple Choices";
+		// state[HTTPStatus::MOVED_PERMANENTLY] = "Moved Permanently";
+		// state[HTTPStatus::FOUND] = "Found";
+		// state[HTTPStatus::MOVED_TEMPORARILY] = "Moved Temporarily";
+		// state[HTTPStatus::SEE_OTHER] = "See Other";
+		// state[HTTPStatus::NOT_MODIFIED] = "Not Modified";
+		// state[HTTPStatus::USE_PROXY] = "Use Proxy";
+		// state[HTTPStatus::TEMPORARY_REDIRECT] = "Temporary Redirect";
+		// state[HTTPStatus::PERMANENT_REDIRECT] = "Permanent Redirect";
+		// state[HTTPStatus::BAD_REQUEST] = "Bad Request";
+		// state[HTTPStatus::UNAUTHORIZED] = "Unauthorized";
+		// state[HTTPStatus::PAYMENT_REQUIRED] = "Payment Required";
+		// state[HTTPStatus::FORBIDDEN] = "Forbidden";
+		// state[HTTPStatus::NOT_FOUND] = "Not Found";
+		// state[HTTPStatus::METHOD_NOT_ALLOWED] = "Method Not Allowed";
+		// state[HTTPStatus::NOT_ACCEPTABLE] = "Not Acceptable";
+		// state[HTTPStatus::PROXY_AUTHENTICATION_REQUIRED] = "Proxy Authentication Required";
+		// state[HTTPStatus::REQUEST_TIMEOUT] = "Request Timeout";
+		// state[HTTPStatus::CONFLICT] = "Conflict";
+		// state[HTTPStatus::GONE] = "Gone";
+		// state[HTTPStatus::LENGTH_REQUIRED] = "Length Required";
+		// state[HTTPStatus::PRECONDITION_FAILED] = "Precondition Failed";
+		// state[HTTPStatus::PAYLOAD_TOO_LARGE] = "Payload Too Large";
+		// state[HTTPStatus::REQUEST_ENTITY_TOO_LARGE] = "Request Entity Too Large";
+		// state[HTTPStatus::URI_TOO_LONG] = "URI Too Long";
+		// state[HTTPStatus::REQUEST_URI_TOO_LONG] = "Request-URI Too Long";
+		// state[HTTPStatus::UNSUPPORTED_MEDIA_TYPE] = "Unsupported Media Type";
+		// state[HTTPStatus::REQUESTED_RANGE_NOT_SATISFIABLE] = "Requested range not satisfiable";
+		// state[HTTPStatus::EXPECTATION_FAILED] = "Expectation Failed";
+		// state[HTTPStatus::I_AM_A_TEAPOT] = "I'm a teapot";
+		// state[HTTPStatus::INSUFFICIENT_SPACE_ON_RESOURCE] = "Insufficient Space On Resource";
+		// state[HTTPStatus::METHOD_FAILURE] = "Method Failure";
+		// state[HTTPStatus::DESTINATION_LOCKED] = "Destination Locked";
+		// state[HTTPStatus::UNPROCESSABLE_ENTITY] = "Unprocessable Entity";
+		// state[HTTPStatus::LOCKED] = "Locked";
+		// state[HTTPStatus::FAILED_DEPENDENCY] = "Failed Dependency";
+		// state[HTTPStatus::TOO_EARLY] = "Too Early";
+		// state[HTTPStatus::UPGRADE_REQUIRED] = "Upgrade Required";
+		// state[HTTPStatus::PRECONDITION_REQUIRED] = "Precondition Required";
+		// state[HTTPStatus::TOO_MANY_REQUESTS] = "Too Many Requests";
+		// state[HTTPStatus::REQUEST_HEADER_FIELDS_TOO_LARGE] = "Request Header Fields Too Large";
+		// state[HTTPStatus::UNAVAILABLE_FOR_LEGAL_REASONS] = "Unavailable For Legal Reasons";
+		// state[HTTPStatus::INTERNAL_SERVER_ERROR] = "Internal Server Error";
+		// state[HTTPStatus::NOT_IMPLEMENTED] = "Not Implemented";
+		// state[HTTPStatus::BAD_GATEWAY] = "Bad Gateway";
+		// state[HTTPStatus::SERVICE_UNAVAILABLE] = "Service Unavailable";
+		// state[HTTPStatus::GATEWAY_TIMEOUT] = "Gateway Timeout";
+		// state[HTTPStatus::HTTP_VERSION_NOT_SUPPORTED] = "HTTP Version not supported";
+		// state[HTTPStatus::VARIANT_ALSO_NEGOTIATES] = "Variant Also Negotiates";
+		// state[HTTPStatus::INSUFFICIENT_STORAGE] = "Insufficient Storage";
+		// state[HTTPStatus::LOOP_DETECTED] = "Loop Detected";
+		// state[HTTPStatus::BANDWIDTH_LIMIT_EXCEEDED] = "Bandwidth Limit Exceeded";
+		// state[HTTPStatus::NOT_EXTENDED] = "Not Extended";
 		return (state);
 	}
 public:
 	HTTPStatus(void);
-	HTTPStatus(int code, std::string codeNm);
+	HTTPStatus(const HTTPStatus& other);
+	HTTPStatus& operator=(const HTTPStatus& other);
+	~HTTPStatus(void);
 	static StateMap STATE;
 	int code(void) const;
 	std::string codeNm(void) const;
@@ -160,9 +164,9 @@ public:
 		NOT_EXTENDED						=510,
 	};
 
-	std::string& operator[](const int& k) {
-		return (HTTPStatus::STATE[k]);
-	}
+	// std::pair<int, std::string>& operator[](const int& k) {
+	// 	return (HTTPStatus::STATE[k]);
+	// }
 };
 
 #endif
