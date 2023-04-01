@@ -11,6 +11,7 @@ public:
 	static const int			MAJOR;
 	static const int			MINOR;
 	static std::string 			VERSION();
+	static const char*			DATEFORMAT;
 };
 
 #endif
