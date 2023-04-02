@@ -3,10 +3,13 @@
 
 #include <iostream>
 #include <sys/stat.h>
+#include <dirent.h>
+#include <list>
 #include "FileDescriptor.hpp"
 
-// #define EXTENSION_DELEMETER '.'
-// #define DIRECT_DELEMETER '/'
+
+#define EXTENSION '.'
+#define SLASH '/'
 
 /**
  * @brief file 객체 관리
@@ -16,8 +19,6 @@
  */
 class File {
 private:
-	std::string _name;
-	std::string _extention;
 	std::string _path;
 	File(void);
 public:
@@ -28,17 +29,18 @@ public:
 
 	bool exists() const;
 	bool isFile() const;
-	bool isDirectory() const;
+	bool isDir() const;
 	bool isExecutable() const;
-	bool createFile() const;
-	FileDescriptor* open(int flags, mode_t mode = 0) const;
+	bool create(void);
+	FileDescriptor* open(int flags, mode_t mode) const;
 	void remove(void) const;
-	size_t length() const;
-	std::string name() const;
-	inline const std::string& path() const { return (_path); }
-	File absolutePath() const;
-	File parent() const;
-	struct stat getStat(void);
+	off_t size(void) const;
+	std::string name();
+	const std::string& path(void) const;
+	std::list<File> list(void) const;
+	struct stat stat(void) const;
+	std::string getExtension();
+	std::string::size_type indexOfSeparator(void);
+	std::string::size_type indexOfExtension(void);
 };
-
-#endif 
+#endif
