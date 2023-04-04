@@ -1,6 +1,10 @@
 #ifndef IMETHOD_HPP
 #define IMETHOD_HPP
 
+#include "../../server/Client.hpp"
+#include "../../request/Request.hpp"
+#include "../Response.hpp"
+
 class IMethod {
 protected:
 	bool _hasBody;
@@ -10,7 +14,7 @@ public:
 	IMethod(const IMethod& other);
 	IMethod& operator=(const IMethod& other);
 	virtual ~IMethod(void);
-	virtual void doMethod(void) = 0;
+	virtual void doMethod(Request &req, Response &res, Client &cli) = 0;
 	virtual void setHasBody(bool hasbody) = 0;
 	virtual bool getHasBody(void) = 0;
 };

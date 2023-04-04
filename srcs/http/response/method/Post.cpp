@@ -4,7 +4,7 @@ Post::Post(void) {}
 
 Post::~Post(void) {}
 
-void Post::doMethod(void) {
+void Post::doMethod(Request &req, Response &res, Client &cli) {
 }
 
 void Post::setHasBody(bool hasbody) {

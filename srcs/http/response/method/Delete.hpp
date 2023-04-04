@@ -14,7 +14,7 @@ public:
         static Delete instance;
         return (&instance);
     }
-	virtual void doMethod(void);
+	virtual void doMethod(Request &req, Response &res, Client &cli);
 	virtual void setHasBody(bool hasbody);
 	virtual bool getHasBody();
 };
