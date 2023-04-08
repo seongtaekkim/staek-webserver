@@ -2,7 +2,10 @@
 
 FileDescriptor::FileDescriptor(int fd) : _fd(fd), _valid(false), _isClosed(false) {}
 
-FileDescriptor::~FileDescriptor() {}
+FileDescriptor::~FileDescriptor() {
+	if (!this->_isClosed && this->_valid)
+		::close(this->_fd);
+}
 
 ssize_t FileDescriptor::read(void *buf, size_t nbyte) {
 	this->validateNotClosed();
