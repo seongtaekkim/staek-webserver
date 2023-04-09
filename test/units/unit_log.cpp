@@ -1,14 +1,20 @@
 #include "../../srcs/log/LogFactory.hpp"
 #include "../test_unit.hpp"
 
-Logger log = LogFactory::get("test");
+Logger logger = LogFactory::get("test");
 
 CASE("log", "loglevel")
-{
-	
-	// ASSERT(log.isErrorEnabled() == ERROR);
+{	
+	ASSERT(logger.isErrorEnabled() == ERROR);
 	return (0);
 }
+
+CASE("log", "loglevel2")
+{
+	ASSERT(logger.isErrorEnabled() == ERROR);
+	return (0);
+}
+
 
 
 // #include "test.hpp"
