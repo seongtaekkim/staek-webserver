@@ -1,12 +1,10 @@
 #include "Config.hpp"
 
-void test(std::string str) {
-	std::cout << "test" << std::endl;
-}
+class RootBlock;
 
 Config::Config(void) {
 	std::cout << "constructor config" << std::endl;
-	std::string r = Reader::from("../../config/default_webserv.conf").read();
+	std::string r = Reader::from(CONFIG_FILE).read();
 	// std::cout << r << std::endl;
 	/*
 	root 내용
@@ -35,7 +33,8 @@ Config::Config(void) {
 	있다면 함수실행
 	server블록을 읽었다면 
 	*/
-	RootBlock root;
+
+	RootBlock *rootBlock = new RootBlock();
 	// std::map<std::string, void(*)(std::string)> _map;
 	// _map["worker_connections"] = test;
 	// _map["waf"]("weaf");
@@ -54,7 +53,7 @@ Config::Config(void) {
 		ret = dest.find_first_of(SEMICOLON, firstWord);
 		if (ret == std::string::npos) break;
 		std::string value =  dest.substr(firstWord, ret - firstWord);
-		root.check(key, value);
+		rootBlock->check(key, value);
 		ret++;
 	}
 	ret = 0;
@@ -66,9 +65,10 @@ Config::Config(void) {
 		if (firstWord == std::string::npos) break;
 		ret = dest.find_first_of(ISSPACE, firstWord);
 		if (ret == std::string::npos) break;
+	
 		// 여러개일 수 있지만 우선 한개
 		if (dest.substr(firstWord, ret - firstWord).compare("server") == 0) {
-			std::list<ServerBlock*> list =  root.ServerBlockList();
+			// std::list<ServerBlock*> list =  root.ServerBlockList();
 			ServerBlock *serverBlock = new ServerBlock();
 			ret = dest.find_first_of("{", ret);
 			if (ret == std::string::npos) break;
@@ -76,13 +76,49 @@ Config::Config(void) {
 			if (firstWord == std::string::npos) break;
 			ret++;
 			while (true) {
-				//std::cout << dest << std::endl;
+				// if (dest.at(ret) == '}') break;
+
 				firstWord = dest.find_first_not_of(ISSPACE, ret);
 				if (firstWord == std::string::npos) break;
 				ret = dest.find_first_of(ISSPACE, firstWord);
 				if (ret == std::string::npos) break;
 				std::string key =  dest.substr(firstWord, ret - firstWord);
-				
+				// std::cout << "===========server key : " << key << std::endl;
+				if (dest.substr(firstWord, ret - firstWord).compare("location") == 0) {
+					// std::cout << "location start : " << std::endl;
+					// std::list<LocationBlock*> list =  serverBlock->LocationBlockList();
+					LocationBlock *locationBlock = new LocationBlock();
+					firstWord = dest.find_first_not_of(ISSPACE, ret);
+					if (firstWord == std::string::npos) break;
+					ret = dest.find_first_of(ISSPACE, firstWord);
+					if (ret == std::string::npos) break;
+					locationBlock->check("path", dest.substr(firstWord, ret - firstWord));
+					ret = dest.find_first_of("{", ret);
+					if (ret == std::string::npos) break;
+					firstWord = dest.find_first_of("}", ret);
+					if (firstWord == std::string::npos) break;
+					ret++;
+					
+					while (true) {
+						firstWord = dest.find_first_not_of(ISSPACE, ret);
+						if (dest.at(firstWord) == '}') { ret = firstWord; ret++; break;}
+						if (firstWord == std::string::npos) break;
+						ret = dest.find_first_of(ISSPACE, firstWord);
+						if (ret == std::string::npos) break;
+						std::string key =  dest.substr(firstWord, ret - firstWord);
+						
+						firstWord = dest.find_first_not_of(ISSPACE, ret);
+						if (firstWord == std::string::npos) break;
+						ret = dest.find_first_of(SEMICOLON, firstWord);
+						if (ret == std::string::npos) break;
+						std::string value = dest.substr(firstWord, ret - firstWord);
+						locationBlock->check(key, value);
+						ret++;
+					}
+					serverBlock->appendLocationBlock(locationBlock);
+					continue;
+				}
+
 				firstWord = dest.find_first_not_of(ISSPACE, ret);
 				if (firstWord == std::string::npos) break;
 				ret = dest.find_first_of(SEMICOLON, firstWord);
@@ -92,20 +128,12 @@ Config::Config(void) {
 				ret++;
 			}
 			std::cout << serverBlock->getListen() << std::endl;
-			root.appendServerBlock(serverBlock);
+			rootBlock->appendServerBlock(serverBlock);
 		}
 	}
-		std::cout << "result : " << root.getWorkerCnt() << std::endl;
-		std::cout << "connection : " << root.getMaxConnection() << std::endl;
-		std::cout << "listen : " << root.ServerBlockList().front()->getListen() << std::endl;
-		std::cout << "servername : " << root.ServerBlockList().front()->getServerName() << std::endl;
-		std::cout << "root : " << root.ServerBlockList().front()->getRoot() << std::endl;
-		std::cout << "cgi : " << root.ServerBlockList().front()->getCgi().first << " " << root.ServerBlockList().front()->getCgi().second<< std::endl;
 
-
-	std::string tmp = "../../config/mime.types";
+	std::string tmp = rootBlock->getInclude();
 	Mime *mime = new Mime(tmp);
-	RootBlock *rootBlock = new RootBlock();
 	this->_file = CONFIG_FILE;
 	this->_mime = mime;
 	this->_root = rootBlock;
@@ -113,8 +141,13 @@ Config::Config(void) {
 
 Config::~Config(void) {
 	ReleaseResource::pointer<Mime>(this->_mime);
+	// server, loaction block release
 }
 
 const Mime* Config::mime(void) {
 	return (this->_mime);
+}
+
+RootBlock* Config::rootBlock(void) {
+	return (this->_root);
 }

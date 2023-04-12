@@ -1,10 +1,10 @@
 #ifndef SERVERBLOCK
 #define SERVERBLOCK
 
-// #include "LocationBlock.hpp"
 #include <list>
 #include <string>
 #include <iostream>
+#include "LocationBlock.hpp"
 #include "../Reader.hpp"
 
 class ServerBlock {
@@ -13,6 +13,7 @@ private:
 	std::string 						_serverName;
 	std::string							_root;
 	std::pair<std::string, std::string>	_cgi;
+	std::list<LocationBlock*>			_locationBlockList;
 	// std::pair<std::string, std::string>	_errorPage;
 public:
 	ServerBlock(void);
@@ -30,6 +31,9 @@ public:
 	std::string getRoot(void);
 	void setCgi(std::string str);
 	std::pair<std::string, std::string> getCgi(void);
+
+	void appendLocationBlock(LocationBlock* locationBlock);
+	std::list<LocationBlock*> LocationBlockList(void);
 };
 
 #endif

@@ -16,7 +16,6 @@ ServerBlock::~ServerBlock(void) {
 }
 
 void ServerBlock::setListen(std::string str) {
-	std::cout <<" setlisten in " << std::endl;
 	this->_listen = (int)::strtol(str.c_str(), NULL, 10);
 }
 
@@ -24,31 +23,43 @@ int ServerBlock::getListen(void) {
 	return (this->_listen);
 }
 
+void ServerBlock::setServerName(std::string str) {
+	this->_serverName = str;
+}
 
-	void ServerBlock::setServerName(std::string str) {
-		this->_serverName = str;
-	}
+std::string ServerBlock::getServerName(void) {
+	return (this->_serverName);
+}
 
-	std::string ServerBlock::getServerName(void) {
-		return (this->_serverName);
-	}
-	void ServerBlock::setRoot(std::string str) {
-		this->_root = str;
-	}
-	std::string ServerBlock::getRoot(void) {
-		return (this->_root);
-	}
-	void ServerBlock::setCgi(std::string str) {
-		int ret= 0 ;
-		int firstWord = 0;
-	
-		ret = str.find_first_of(ISSPACE, firstWord);
-		this->_cgi.first = str.substr(firstWord, ret - firstWord);
- 		this->_cgi.second = str.substr(ret);
-	}
-	std::pair<std::string, std::string> ServerBlock::getCgi(void) {
-		return (this->_cgi);
-	}
+void ServerBlock::setRoot(std::string str) {
+	this->_root = str;
+}
+
+std::string ServerBlock::getRoot(void) {
+	return (this->_root);
+}
+
+void ServerBlock::setCgi(std::string str) {
+	int ret= 0 ;
+	int firstWord = 0;
+
+	ret = str.find_first_of(ISSPACE, firstWord);
+	this->_cgi.first = str.substr(firstWord, ret - firstWord);
+	this->_cgi.second = str.substr(ret);
+}
+
+std::pair<std::string, std::string> ServerBlock::getCgi(void) {
+	return (this->_cgi);
+}
+
+void ServerBlock::appendLocationBlock(LocationBlock* locationBlock) {
+	this->_locationBlockList.push_back(locationBlock);
+
+}
+
+std::list<LocationBlock*> ServerBlock::LocationBlockList(void) {
+	return (this->_locationBlockList);
+}
 
 #include <map>
 void ServerBlock::check(std::string key, std::string value) {

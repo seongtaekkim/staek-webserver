@@ -24,6 +24,14 @@ int RootBlock::getWorkerCnt(void) const {
 	return (this->_workerCnt);
 }
 
+void RootBlock::setInclude(std::string str) {
+	this->_include = str;
+}
+
+std::string RootBlock::getInclude(void) const {
+	return (this->_include);
+}
+
 #include <map>
 void RootBlock::check(std::string key, std::string value) {
 
@@ -36,6 +44,7 @@ void RootBlock::check(std::string key, std::string value) {
 
 	_map["worker_connections"] = &RootBlock::setMaxConnection;
 	_map["worker_processes"] = &RootBlock::setWorkerCnt;
+	_map["include"] = &RootBlock::setInclude;
 
 		_pos = _map.find(key);
 		if (_pos != _map.end()) {

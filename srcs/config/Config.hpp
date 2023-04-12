@@ -12,12 +12,13 @@
 
 // config file로 바꿀것임
 // #define CONFIG_FILE "config/mime.types"
-#define CONFIG_FILE "config/default_webserv.conf"
+// #define CONFIG_FILE "default_webserv.conf"
+#define CONFIG_FILE "../test_webserv.conf"
 
 class Config : public Singleton<Config> {
 private:
 	std::string			_file;
-	const RootBlock*	_root;
+	RootBlock*			_root;
 	const Mime*			_mime;
 
 	Config(const Config& other);
@@ -26,6 +27,7 @@ public:
 	Config(void);
 	virtual ~Config(void);
 	const Mime* mime(void);
+	RootBlock* rootBlock(void);
 };
 
 #endif
