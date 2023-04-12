@@ -13,36 +13,32 @@ Mime::Mime(const std::string file) {
 	ret = dest.find("types", pos);
 	pos = ret;
 	pos += 5;
-	std::cout << pos << std::endl;
 	ret = dest.find("{", pos);
 	pos = ret;
 	pos += 1;
-	std::cout << pos << std::endl;
 	    
-	std::string isspace = "\t\n\v\f\r ";
-	std::string coron = ";"; //semicolon
 	std::size_t endline = 0;
 	std::string type ;
 	std::list<std::string> extensions;
 	std::size_t firstWord = 0;
 
 	while (true) {
-		endline = dest.find_first_of(coron, pos);
+		endline = dest.find_first_of(SEMICOLON, pos);
 		if (endline == std::string::npos)
 			break ;
 
 		// type search
-		firstWord = dest.find_first_not_of(isspace, pos);
+		firstWord = dest.find_first_not_of(ISSPACE, pos);
 		if (firstWord == std::string::npos) break;
-		ret = dest.find_first_of(isspace, firstWord);
+		ret = dest.find_first_of(ISSPACE, firstWord);
 		if (ret == std::string::npos) break;
 		type = dest.substr(firstWord, ret - firstWord);
 
 		// extension search
 		while (true) {
-			firstWord = dest.find_first_not_of(isspace, ret);
+			firstWord = dest.find_first_not_of(ISSPACE, ret);
 			if (firstWord == std::string::npos) break;
-			ret = dest.find_first_of(isspace, firstWord);
+			ret = dest.find_first_of(ISSPACE, firstWord);
 			if (ret == std::string::npos) break;
 			if (dest.c_str()[ret - 1] == ';') {
 				extensions.push_back(dest.substr(firstWord, ret - firstWord - 1));
