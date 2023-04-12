@@ -1,0 +1,123 @@
+
+types {
+    text/html                             html htm shtml;
+    text/css                              css;
+    text/xml                              xml;
+    image/gif                             gif;
+    image/jpeg                            jpeg jpg;
+    application/javascript                js;
+    application/atom+xml                  atom;
+    application/rss+xml                   rss;
+    text/mathml                           mml;
+    text/plain                            txt;
+    text/vnd.sun.j2me.app-descriptor      jad;
+    text/vnd.wap.wml                      wml;
+    text/x-component                      htc;
+    image/png                             png;
+    image/tiff                            tif tiff;
+    image/vnd.wap.wbmp                    wbmp;
+    image/x-icon                          ico;
+    image/x-jng                           jng;
+    image/x-ms-bmp                        bmp;
+    image/svg+xml                         svg svgz;
+    image/webp                            webp;
+    application/font-woff                 woff;
+    application/java-archive              jar war ear;
+    application/json                      json;
+    application/mac-binhex40              hqx;
+    application/msword                    doc;
+    application/pdf                       pdf;
+    application/postscript                ps eps ai;
+    application/rtf                       rtf;
+    application/vnd.apple.mpegurl         m3u8;
+    application/vnd.ms-excel              xls;
+    application/vnd.ms-fontobject         eot;
+    application/vnd.ms-powerpoint         ppt;
+    application/vnd.wap.wmlc              wmlc;
+    application/vnd.google-earth.kml+xml  kml;
+    application/vnd.google-earth.kmz      kmz;
+    application/x-7z-compressed           7z;
+    application/x-cocoa                   cco;
+    application/x-java-archive-diff       jardiff;
+    application/x-java-jnlp-file          jnlp;
+    application/x-makeself                run;
+    application/x-perl                    pl pm;
+    application/x-pilot                   prc pdb;
+    application/x-rar-compressed          rar;
+    application/x-redhat-package-manager  rpm;
+    application/x-sea                     sea;
+    application/x-shockwave-flash         swf;
+    application/x-stuffit                 sit;
+    application/x-tcl                     tcl tk;
+    application/x-x509-ca-cert            der pem crt;
+    application/x-xpinstall               xpi;
+    application/xhtml+xml                 xhtml;
+    application/xspf+xml                  xspf;
+    application/zip                       zip;
+    application/octet-stream              bin exe dll;
+    application/octet-stream              deb;
+    application/octet-stream              dmg;
+    application/octet-stream              iso img;
+    application/octet-stream              msi msp msm;
+    application/vnd.openxmlformats-officedocument.wordprocessingml.document    docx;
+    application/vnd.openxmlformats-officedocument.spreadsheetml.sheet          xlsx;
+    application/vnd.openxmlformats-officedocument.presentationml.presentation  pptx;
+    audio/midi                            mid midi kar;
+    audio/mpeg                            mp3;
+    audio/ogg                             ogg;
+    audio/x-m4a                           m4a;
+    audio/x-realaudio                     ra;
+    video/3gpp                            3gpp 3gp;
+    video/mp2t                            ts;
+    video/mp4                             mp4;
+    video/mpeg                            mpeg mpg;
+    video/quicktime                       mov;
+    video/webm                            webm;
+    video/x-flv                           flv;
+    video/x-m4v                           m4v;
+    video/x-mng                           mng;
+    video/x-ms-asf                        asx asf;
+    video/x-ms-wmv                        wmv;
+    video/x-msvideo                       avi;
+}
+
+// 1. how does nginx determine mime type with given files from request?
+// Nginx determines the MIME type of a file based on its file extension. Nginx has a built-in MIME types file that maps file extensions to MIME types.
+// When Nginx receives a request for a file, it checks the file's extension and looks up the corresponding MIME type in the MIME types file.
+// If the file extension is not in the MIME types file, Nginx falls back to using the default MIME type of application/octet-stream. 
+// This MIME type is used for binary files that do not have a specific MIME type associated with them.
+// In addition to the built-in MIME types file, Nginx allows administrators to specify their own MIME types file using the types directive. 
+// This allows administrators to override the built-in MIME types or add their own custom MIME types.
+// It's worth noting that in some cases, the file extension may not accurately reflect the contents of the file. In these cases, the MIME type may also be incorrect. 
+// It's the responsibility of the server administrator to ensure that the MIME types file is accurate and up-to-date.
+
+// 2. but what happens if the file extension and the data inside of the files are different? like images.png but there is an text inside of images.png?
+// In general, Nginx determines the MIME type of a file based on its file extension. However, if the file extension is incorrect or if the file's contents do not match its extension, Nginx may incorrectly identify the MIME type.
+// For example, if a file named "images.png" contains text instead of an image, Nginx may still identify it as a PNG image based on its file extension. In this case, if the client requests the file as an image and tries to display it, they will see a broken image.
+// To avoid this issue, it's important to ensure that the file extension matches the actual file type, and to configure Nginx to use additional methods for determining the MIME type, such as file magic or content sniffing. This can be done using the types and default_type directives in Nginx configuration files.
+
+// 3. 이미지 업로드를 가능하게 하려면 multipart도 해야할 듯?
+// 1) FTP or SFTP, to transfer the image file to the server 2) use an HTTP PUT request, which allows uploading a file directly to a specific URL.
+// 3) form-data is a common and widely used method for uploading files, including images.
+
+// 4. the types directive in Nginx configuration file takes precedence over the mime.types file.
+// This means that if a MIME type is defined in both the types directive and the mime.types file, the value in the types directive will be used by Nginx.
+
+// 5. does nginx use file type sniffing?
+// Yes, nginx can use file type sniffing to determine the MIME type of a file. 
+// Nginx can be configured to use the mime.types file, which contains mappings between file extensions and MIME types, 
+// as well as to perform file type sniffing based on the content of the file. 
+// By default, nginx will first try to determine the MIME type based on the file extension, and if that fails, 
+// it will perform file type sniffing to try to determine the actual MIME type. 
+// This behavior can be configured using the types and default_type directives in the nginx configuration file.
+
+// Content sniffing, also known as media type sniffing or MIME sniffing, is the practice of inspecting the content of a byte stream to attempt to deduce the file format of the data within it.
+// One way to incorporate file type metadata, often associated with Unix and its derivatives, is to store a "magic number" inside the file itself.
+// GIF images, for instance, always begin with the ASCII representation of either GIF87a or GIF89a, depending upon the standard to which they adhere.
+
+// 6. the mime type of file is determined when the response is made?
+// No, the MIME type of a file is determined when the file is accessed or requested.
+// When a request is made for a file, the server (in this case, Nginx) checks the file extension and/or file type to determine the appropriate MIME type to include in the response headers.
+// The MIME type is then sent in the response headers to the client, indicating how the file should be handled (e.g. as text, image, audio, video, etc.).
+// Nginx can use a variety of methods to determine the MIME type of a file, including file extension mapping, file type sniffing, and user-defined MIME type mappings. 
+// The specific method used may depend on the configuration of Nginx and the file being requested.
