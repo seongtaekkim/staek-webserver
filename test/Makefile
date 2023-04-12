@@ -7,7 +7,7 @@ SRCS 		=  ../srcs/log/LogFactory.cpp ../srcs/log/Logger.cpp \
 			   test_main.cpp case/TestCase.cpp \
 			   units/unit_libft_is.cpp \
 			   units/unit_log.cpp \
-			   units/unit_request.cpp \
+			   units/unit_config.cpp \
 			   ../srcs/http/parse/Parser.cpp \
 			   ../srcs/http/request/Request.cpp \
 			   ../srcs/http/request/RequestString.cpp \
@@ -15,7 +15,8 @@ SRCS 		=  ../srcs/log/LogFactory.cpp ../srcs/log/Logger.cpp \
 			   ../srcs/http/request/RequestHeaders.cpp \
 			   ../srcs/exception/IllegalStateException.cpp \
 			   ../srcs/exception/RuntimeException.cpp \
-			   ../srcs/exception/Exception.cpp 
+			   ../srcs/exception/Exception.cpp ../srcs/exception/IOException.cpp \
+			   ../srcs/config/Config.cpp ../srcs/config/Mime.cpp ../srcs/config/Reader.cpp ../srcs/config/block/RootBlock.cpp ../srcs/config/block/LocationBlock.cpp ../srcs/config/block/ServerBlock.cpp
 
 OBJS 		= $(SRCS:.cpp=.o)
 .c.o :
