@@ -1,0 +1,112 @@
+@startuml
+'uml reference
+'https://plantuml.com/ko/class-diagram
+'https://www.nextree.co.kr/p6753/
+'!theme cerulean
+
+
+''''''''''''''
+''''''''''''''
+'relatioin
+''''''''''''''
+''''''''''''''
+
+interface IMethod {
+	doMethod()
+}
+
+class Method <<Code>>
+IMethod <--righto Method
+
+class Delete
+class Get
+class Post
+
+IMaker <---righto "<<queue>>" ResponseMaker
+IMaker <|.. MethodMaker
+IMaker <|.. CGIMaker
+interface IMaker {
+	make()
+}
+
+class MethodMaker {
+	make()
+}
+class ResponseMaker {
+	Request:_req
+	Response : _res
+	Client : _client
+	queue<IMaker*> : _maker
+	executeMaker()
+}
+
+
+IMethod <|.. Get
+IMethod <|.. Post
+IMethod <|.. Delete
+
+KqueueManage o--left> RWCallback
+
+FileDescriptor <|-- Socket
+
+Storage <|- SocketStorage
+
+RWCallback <|.. Server
+RWCallback <|...left Client
+'KqueueManage 
+
+Resonse o--right> HTTPStatus
+
+SocketStorage <--o Client
+
+class Client {
+	recv(FileDescriptor& fd)
+	send(FileDescriptor& fd)
+}
+
+class Response {
+	-body : string
+	+HTTPStatus
+}
+
+class Request
+class Server
+class Socket {
+	server_fd : int
+	reuse()
+	bind()
+	listen()
+	accept()
+	recv()
+	send()
+}
+
+'class Webserv
+'class Time
+'class File
+'class SHTTP
+interface RWCallback {
+	recv()
+	send()
+}
+class FileDescriptor {
+	-fd : int
+}
+class HTTPStatus <<Code>>
+class Storage
+class SocketStorage
+class StatusLine
+class KqueueManage
+
+class CGIMaker {
+	make()
+}
+
+''''''''''''''
+''''''''''''''
+'define
+''''''''''''''
+''''''''''''''
+
+
+@enduml
