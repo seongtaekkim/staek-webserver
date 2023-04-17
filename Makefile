@@ -8,7 +8,7 @@ SRCS 		= srcs/main.cpp srcs/log/LogFactory.cpp srcs/log/Logger.cpp \
 				srcs/file/FileDescriptor.cpp srcs/file/File.cpp \
 				srcs/config/block/RootBlock.cpp srcs/config/block/ServerBlock.cpp srcs/config/block/LocationBlock.cpp srcs/config/Config.cpp srcs/config/Mime.cpp srcs/config/Reader.cpp \
 				srcs/http/server/Server.cpp srcs/http/server/Socket.cpp \
-				srcs/http/server/Client.cpp srcs/http/server/RWCallback.cpp srcs/http/Webserv.cpp srcs/http/SHTTP.cpp \
+				srcs/http/server/Client.cpp srcs/http/server/RWCallback.cpp srcs/http/Webserv.cpp srcs/http/SHTTP.cpp srcs/http/URL.cpp \
 				srcs/http/response/HTTPState.cpp srcs/http/response/Response.cpp srcs/http/response/StatusLine.cpp \
 				srcs/http/response/make/IMaker.cpp srcs/http/response/make/MethodMaker.cpp srcs/http/response/make/ResponseMaker.cpp \
 				srcs/http/response/method/IMethod.cpp srcs/http/response/method/Method.cpp srcs/http/response/method/Get.cpp srcs/http/response/method/Post.cpp srcs/http/response/method/Delete.cpp \
