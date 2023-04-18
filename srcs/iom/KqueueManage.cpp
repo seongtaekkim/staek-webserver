@@ -51,20 +51,28 @@ KqueueManage::KqueueManage(void) {
 
 KqueueManage::~KqueueManage(void) {}
 
-// struct kevent64_s {
-// 	uint64_t        ident;          /* identifier for this event */
-// 	int16_t         filter;         /* filter for event */
-// 	uint16_t        flags;          /* general flags */
-// 	uint32_t        fflags;         /* filter-specific flags */
-// 	int64_t         data;           /* filter-specific data */
-// 	uint64_t        udata;          /* opaque user data identifier */
-// 	uint64_t        ext[2];         /* filter-specific extensions */
-// };
+
 void KqueueManage::setEvent(uintptr_t ident, int16_t filter, uint16_t flags, uint32_t fflags, intptr_t data, void *udata) {
  	struct kevent temp_event;
 	EV_SET(&temp_event, ident, filter, flags, fflags, data, udata);
-	std::cout << "setevent : " << temp_event.ident << std::endl;
+	// std::cout << "setevent : " << temp_event.ident << " size :  " << this->_changeVec.size() << std::endl;
 	this->_changeVec.push_back(temp_event);
+}
+
+void KqueueManage::delEvent(int fd) {
+	std::vector<struct kevent>::iterator bit = this->_changeVec.begin();
+	for (std::vector<struct kevent>::iterator i = bit ; i !=  this->_changeVec.end() ; ++i) {
+		if ((*i).ident == fd) {
+			EV_SET(&(*i), fd, EVFILT_READ, EV_DELETE | EV_ENABLE , 0, 0, NULL);
+			EV_SET(&(*i), fd, EVFILT_WRITE, EV_DELETE | EV_ENABLE, 0, 0, NULL);
+			this->_changeVec.erase(i);
+			 --i;
+		}
+	}
+	::close(fd);
+	std::cout << "disconnected" << std::endl;
+	//	KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
+
 }
 
 void KqueueManage::kevent() {
@@ -92,7 +100,8 @@ void KqueueManage::create(FileDescriptor& fd, RWCallback& callback, int opt) {
 
 	//addToSets(fd.raw(), operations);
 
-	this->_callbackMap[raw] = &callback;
+	//this->_callbackMap[raw] = &callback;
+
 	//this->_callbackMap[raw]->recv()
 	// m_fileDescriptors[raw] = &fd;
 	

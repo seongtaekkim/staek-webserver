@@ -2,7 +2,6 @@
 #define SOCKET_HPP
 
 #include "../../file/FileDescriptor.hpp"
-#include "Listen.hpp"
 
 #include <sys/types.h>
 #include <sys/event.h>
@@ -13,25 +12,29 @@
 #include <fcntl.h>
 
 // #define DEFAULT_PORT = 8080
-// #define DEFAULT_BACKLOG = 1024s
+// #define DEFAULT_BACKLOG = 1024
 /*
 port, backlog 받아와서 처리해야 함
 */
 
 class Socket : public FileDescriptor {
+public:
+	static const int DEFAULT_BACKLOG = 100;
 private:
 	int _server_fd;
+	static const bool _s_isReuse;
 	Socket(void);
 	Socket(const Socket& other);
 	Socket& operator=(const Socket& other);
 public:
 	Socket(int fd);
 	virtual ~Socket() throw();
+	void reuse(void);
 	void bind(void);
 	void listen();
-	void accept();
-	void recv();
-	void send();
+	Socket* accept();
+	ssize_t recv(void *buffer, size_t length, int flags = 0);
+	ssize_t send(const void *buffer, size_t length, int flags = 0);
 
 public:
 	static Socket* create(void);

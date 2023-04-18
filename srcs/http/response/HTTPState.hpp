@@ -7,7 +7,6 @@
 // https://stackoverflow.com/questions/13464325/static-map-initialization
 class HTTPStatus {
 public:
-	// typedef std::map<int, std::string> StateMap; 
 	typedef std::map<int, std::pair<int, std::string> > StateMap; 
 	typedef std::pair<int, std::string>					StateType; 
 
@@ -16,20 +15,32 @@ private:
 	int			_code;
 	static StateMap init() {
 		StateMap state;
-		state[HTTPStatus::CONTINUE].first =  HTTPStatus::CONTINUE;
-		state[HTTPStatus::CONTINUE].second =  "Continue";
-		// state[HTTPStatus::SWITCHING_PROTOCOLS] = {HTTPStatus::SWITCHING_PROTOCOLS,"Switching Protocols"};
-		// state[HTTPStatus::PROCESSING] = "Processing";
-		// state[HTTPStatus::CHECKPOINT] = "Checkpoint";
-		// state[HTTPStatus::OK] = "OK";
-		// state[HTTPStatus::CREATED] = "Created";
-		// state[HTTPStatus::ACCEPTED] = "Accepted";
-		// state[HTTPStatus::NON_AUTHORITATIVE_INFORMATION] = "Non-Authoritative Information";
-		// state[HTTPStatus::NO_CONTENT] = "No Content";
-		// state[HTTPStatus::RESET_CONTENT] = "Reset Content";
-		// state[HTTPStatus::PARTIAL_CONTENT] = "Partial Content";
-		// state[HTTPStatus::MULTI_STATUS] = "Multi-Status";
-		// state[HTTPStatus::ALREADY_REPORTED] = "Already Reported";
+		state[HTTPStatus::CONTINUE].first				= HTTPStatus::CONTINUE;
+		state[HTTPStatus::CONTINUE].second				= "Continue";
+		state[HTTPStatus::SWITCHING_PROTOCOLS].first	= HTTPStatus::SWITCHING_PROTOCOLS;
+		state[HTTPStatus::SWITCHING_PROTOCOLS].second	= "Switching Protocols";
+		state[HTTPStatus::PROCESSING].first = HTTPStatus::PROCESSING;
+		state[HTTPStatus::PROCESSING].second = "Processing";
+		state[HTTPStatus::CHECKPOINT].first = HTTPStatus::CHECKPOINT;
+		state[HTTPStatus::CHECKPOINT].second = "Checkpoint";
+		state[HTTPStatus::OK].first = HTTPStatus::OK;
+		state[HTTPStatus::OK].second = "OK";
+		state[HTTPStatus::CREATED].first = HTTPStatus::CREATED;
+		state[HTTPStatus::CREATED].second = "Created";
+		state[HTTPStatus::ACCEPTED].first = HTTPStatus::ACCEPTED;
+		state[HTTPStatus::ACCEPTED].second = "Accepted";
+		state[HTTPStatus::NON_AUTHORITATIVE_INFORMATION].first = HTTPStatus::NON_AUTHORITATIVE_INFORMATION;
+		state[HTTPStatus::NON_AUTHORITATIVE_INFORMATION].second = "Non-Authoritative Information";
+		state[HTTPStatus::NO_CONTENT].first = HTTPStatus::NO_CONTENT;
+		state[HTTPStatus::NO_CONTENT].second = "No Content";
+		state[HTTPStatus::RESET_CONTENT].first = HTTPStatus::RESET_CONTENT;
+		state[HTTPStatus::RESET_CONTENT].second = "Reset Content";
+		state[HTTPStatus::PARTIAL_CONTENT].first = HTTPStatus::PARTIAL_CONTENT;
+		state[HTTPStatus::PARTIAL_CONTENT].second = "Partial Content";
+		state[HTTPStatus::MULTI_STATUS].first = HTTPStatus::MULTI_STATUS;
+		state[HTTPStatus::MULTI_STATUS].second = "Multi-Status";
+		state[HTTPStatus::ALREADY_REPORTED].first = HTTPStatus::ALREADY_REPORTED;
+		state[HTTPStatus::ALREADY_REPORTED].second = "Already Reported";
 		// state[HTTPStatus::IM_USED] = "IM Used";
 		// state[HTTPStatus::MULTIPLE_CHOICES] = "Multiple Choices";
 		// state[HTTPStatus::MOVED_PERMANENTLY] = "Moved Permanently";
@@ -73,7 +84,8 @@ private:
 		// state[HTTPStatus::TOO_MANY_REQUESTS] = "Too Many Requests";
 		// state[HTTPStatus::REQUEST_HEADER_FIELDS_TOO_LARGE] = "Request Header Fields Too Large";
 		// state[HTTPStatus::UNAVAILABLE_FOR_LEGAL_REASONS] = "Unavailable For Legal Reasons";
-		// state[HTTPStatus::INTERNAL_SERVER_ERROR] = "Internal Server Error";
+		state[HTTPStatus::INTERNAL_SERVER_ERROR].first = HTTPStatus::INTERNAL_SERVER_ERROR;
+		state[HTTPStatus::INTERNAL_SERVER_ERROR].second = "Internal Server Error";
 		// state[HTTPStatus::NOT_IMPLEMENTED] = "Not Implemented";
 		// state[HTTPStatus::BAD_GATEWAY] = "Bad Gateway";
 		// state[HTTPStatus::SERVICE_UNAVAILABLE] = "Service Unavailable";

@@ -1,11 +1,14 @@
 #include "Socket.hpp"
+#include "../../exception/IOException.hpp"
+
+const bool Socket::_s_isReuse = true;
 
 Socket::Socket(int fd) : FileDescriptor(fd) {}
 
 Socket* Socket::create(void) {
 	int fd = ::socket(AF_INET, SOCK_STREAM, 0);
 	if (fd == -1)
-		throw IOException("socket create : ", errno);
+		throw IOException("socket create error : ", errno);
 	return (new Socket(fd));
 }
 
@@ -25,15 +28,53 @@ void Socket::bind(void) {
 
 void Socket::listen(void) {
 	this->validateNotClosed();
-    if (::listen(this->getFd(), 5) == -1)
+    if (::listen(this->getFd(), DEFAULT_BACKLOG) == -1)
         throw IOException("listen() error", errno);
 }
 
-void Socket::accept() {
+// 클라이언트 소켓 생성
+Socket* Socket::accept() {
+	this->validateNotClosed();
+	struct sockaddr_storage addr;
+	socklen_t len = sizeof(addr);
 
+	int fd = ::accept(this->getFd(), (struct sockaddr*)&addr, &len);
+	if (fd == -1)
+		throw IOException("accept", errno);
+
+    ///fcntl(client_socket, F_SETFL, O_NONBLOCK);
+	return (new Socket(fd));
+}
+
+ssize_t Socket::recv(void *buffer, std::size_t length, int flags) {
+	std::cout << "socket:recv : " << this->getFd() << std::endl;
+	this->validateNotClosed();
+	ssize_t ret;
+	if ((ret = ::recv(this->getFd(), buffer, length, flags)) == -1)
+		throw IOException("recv error! : ", errno);
+	return (ret);
 }
 
 
-void Socket::recv() {}
+ssize_t Socket::send(const void *buffer, size_t length, int flags) {
+	this->validateNotClosed();
+	ssize_t ret;
+	// std::cout << "socket send : " << static_cast<const char *>(buffer) << std::endl;
+	
+	std::string s = std::string(static_cast<const char*>(buffer));
 
-void Socket::send() {}
+	// std::string tmps = sample();
+	// const char* tmp = tmps.c_str();
+	// if ((ret = ::send(this->getFd(), tmp, tmps.size(), flags)) == -1)
+	if ((ret = ::send(this->getFd(), buffer, s.size(), flags)) == -1)
+		throw IOException("send error : ", errno);
+	// std::cout << "send ret : " << ret << std::endl;
+	return (ret);
+}
+
+//https://www.joinc.co.kr/w/Site/Network_Programing/AdvancedComm/SocketOption
+void Socket::reuse() {
+	this->validateNotClosed();
+	if (::setsockopt(this->_fd, SOL_SOCKET, SO_REUSEADDR, &Socket::_s_isReuse, sizeof(int)) == -1)
+		throw IOException("setsockopt error : ", errno);
+}

@@ -12,8 +12,8 @@
 
 // config file로 바꿀것임
 // #define CONFIG_FILE "config/mime.types"
-// #define CONFIG_FILE "default_webserv.conf"
-#define CONFIG_FILE "../test_webserv.conf"
+#define CONFIG_FILE "default_webserv.conf"
+// #define CONFIG_FILE "../test_webserv.conf"
 
 class Config : public Singleton<Config> {
 private:

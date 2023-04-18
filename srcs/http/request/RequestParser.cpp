@@ -46,7 +46,7 @@ RequestLine	RequestParser::parseRequestLine(std::string __requestLineString)
 	RequestLine					requestLine;
 	std::vector<std::string>	sp_splited;
 
-	sp_splited = RequestParser::split(__requestLineString, SP);
+	sp_splited = RequestParser::split(__requestLineString, SHTTP::SP);
 	requestLine._method = setMethod(sp_splited[0]);
 	// 구문 분석할 URI보다 긴 요청 대상을 수신한 서버는 414(URI Too Long) 상태 코드로 응답해야 합니다.
 	requestLine._uri = sp_splited[1];
@@ -60,7 +60,7 @@ RequestHeaders		RequestParser::parseHeaders(std::string __headersString)
 	std::vector<std::string>	crlf_splited;
 
 	// 같은 헤더가 여러 개일 수도 있음
-	crlf_splited = RequestParser::split(__headersString, CRLF);
+	crlf_splited = RequestParser::split(__headersString, SHTTP::CRLF);
 	for (size_t i = 0; i < crlf_splited.size(); i++)
 	{
 		std::string		fieldName;
@@ -73,13 +73,13 @@ RequestHeaders		RequestParser::parseHeaders(std::string __headersString)
 		if (index == std::string::npos)
 			throw IllegalStateException("HTTP Request header field colon error.");
 		fieldName = crlf_splited[i].substr(0, index);
-		if (fieldName.find(SP) != std::string::npos)
+		if (fieldName.find(SHTTP::SP) != std::string::npos)
 			throw IllegalStateException("HTTP Request headers field name SP error."); // 400(Bad Request)
 		// OWS => SP만 인지 확인하기
 		fieldValue = crlf_splited[i].substr(index + 1, crlf_splited[i].size());
-		if (fieldValue[0] == SP || fieldValue[0] == HTAB)
+		if (fieldValue[0] == SHTTP::SP || fieldValue[0] == HTAB)
 			fieldValue.erase(0, 1);
-		if (fieldValue[fieldValue.size() - 1] == SP || fieldValue[fieldValue.size() - 1] == HTAB)
+		if (fieldValue[fieldValue.size() - 1] == SHTTP::SP || fieldValue[fieldValue.size() - 1] == HTAB)
 			fieldValue.erase(fieldValue.size() - 1, 1);
 		// field-content 검증 필요
 		// 3. key가 있으면 value에 push_back(), 없으면 key, value를 insert()
@@ -97,7 +97,7 @@ std::string		RequestParser::parseBody(std::string __bodyString)
 	std::vector<std::string>	crlf_splited;
 	int							i = 0;
 
-	crlf_splited = RequestParser::split(__bodyString, CRLF);
+	crlf_splited = RequestParser::split(__bodyString, SHTTP::CRLF);
 	while (crlf_splited[i] != "0")
 	{
 		result.append(crlf_splited[i + 1]);

@@ -50,9 +50,9 @@ size_t	RequestString::getRequestLineString(std::string __reqString)
 	size_t						index;
 	std::vector<std::string>	sp_splited;
 
-	index = __reqString.find(CRLF) + 2;
+	index = __reqString.find(SHTTP::CRLF) + 2;
 	_requestLine = __reqString.substr(0, index);
-	sp_splited = RequestParser::split(_requestLine, SP);
+	sp_splited = RequestParser::split(_requestLine, SHTTP::SP);
 	if (sp_splited.size() != 3)
 		throw IllegalStateException("HTTP Request start line SP error.");
 	return (index);
@@ -64,11 +64,11 @@ size_t	RequestString::getHeadersString(std::string __reqString, size_t __request
 
 	do
 	{
-		index = __reqString.find(CRLF, index) + 2;
+		index = __reqString.find(SHTTP::CRLF, index) + 2;
 		if (index == std::string::npos + 2 || index == __reqString.size())
 			throw IllegalStateException("HTTP Request headers CRLF error.");
 	}
-	while (__reqString.compare(index, 2, CRLF) != 0);
+	while (__reqString.compare(index, 2, SHTTP::CRLF) != 0);
 	_headers = __reqString.substr(__requestLineIndex, index - __requestLineIndex);
 	return (index);
 }

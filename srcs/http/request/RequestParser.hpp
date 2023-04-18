@@ -1,11 +1,13 @@
 #ifndef REQUESTPARSER_HPP
 #define REQUESTPARSER_HPP
+
 #include <string>
 #include <cstdlib>
 #include "RequestLine.hpp"
 #include "RequestHeaders.hpp"
 #include "../parse/Parser.hpp"
 #include "../../exception/IllegalStateException.hpp"
+#include "../SHTTP.hpp"
 
 class RequestHeaders;
 

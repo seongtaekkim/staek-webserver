@@ -65,7 +65,7 @@ str.append(sampleListing(f));
 // str.append("test");
 // str.append("</body>");
 // str.append("</html>");
-std::cout << str << std::endl;
+// std::cout << str << std::endl;
 
 // std::cout << "str size : " << str.length() << std::endl;
 return str;

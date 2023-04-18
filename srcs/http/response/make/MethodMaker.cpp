@@ -23,7 +23,24 @@ void MethodMaker::make(Client& client, Request& req, Response& res, ResponseMake
 		IMethod* method = Method::METHOD[Method::GET];
 		method->doMethod(req, res, client);
 		std::cout << "<MethodMaker::make> in do method !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-		
+		// Method::METHOD[Method::GET].
+		// const HTTPMethod *methodPtr = HTTPMethod::find(client.parser().method());
+		// if (methodPtr)
+		// {
+		// 	const HTTPMethod &method = *methodPtr;
+		// 	request.method(method);
+
+		// 	if (method.hasBody())
+		// 		client.parser().maxBodySize(maxBodySizeFor(request.serverBlock(), request.locationBlock()));
+
+		// 	if (isAcceptable(request.serverBlock(), request.locationBlock(), method))
+		// 		return (next());
+		// }
+		// response.headers().allow(request.allowedMethods());
+		// response.status(*HTTPStatus::METHOD_NOT_ALLOWED);
+		// response.end();
+
+
 		// maker.nextMaker();
 	} catch (Exception &exception) {
 		// Failed to do method

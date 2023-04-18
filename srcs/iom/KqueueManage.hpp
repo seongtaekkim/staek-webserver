@@ -15,6 +15,16 @@
 #include <string>
 #include "../http/server/RWCallback.hpp"
 
+// struct kevent64_s {
+// 	uint64_t        ident;          /* identifier for this event */
+// 	int16_t         filter;         /* filter for event */
+// 	uint16_t        flags;          /* general flags */
+// 	uint32_t        fflags;         /* filter-specific flags */
+// 	int64_t         data;           /* filter-specific data */
+// 	uint64_t        udata;          /* opaque user data identifier */
+// 	uint64_t        ext[2];         /* filter-specific extensions */
+// };
+
 /**
  * @brief kqueue 객체 관리
  * @details 싱글톤으로 관리된다.
@@ -41,6 +51,7 @@ public:
 	~KqueueManage(void);
 	KqueueManage(void);
 	void setEvent(uintptr_t ident, int16_t filter, uint16_t flags, uint32_t fflags, intptr_t data, void *udata);
+	void delEvent(int fd);
 	void kevent(void);
 	int eventCount(void) const;
 	void create(FileDescriptor& fd, RWCallback& callback, int opt);

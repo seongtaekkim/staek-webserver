@@ -4,9 +4,7 @@
 #include <string>
 #include "../../exception/IllegalStateException.hpp"
 #include "RequestParser.hpp"
-
-#define SP		' '
-#define CRLF	"\r\n"
+#include "../SHTTP.hpp"
 
 /**
  * @brief 파싱되지 않은 HTTP 요청 메시지 string을 저장
