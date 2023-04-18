@@ -35,27 +35,6 @@ void disconnect_client(int client_fd, map<int, string>& clients)
     clients.erase(client_fd);
 }
 
-
-// void *run_servers(void *arg) {
-//   Server *serv = reinterpret_cast<Worker *>(arg)->serv;
-//   int id = reinterpret_cast<Worker *>(arg)->id;
-//   serv->run(id);
-//   return ft::nil;
-// }
-
-// void launch(void) {
-  
-//   for (std::size_t i = 0 ; i < 5 ; i++) {
-//     _workers[i].id = i + 1;
-//     _workers[i].serv = new Server(serv);
-//     pthread_create(&_workers[i].t, ft::nil, run_servers, &_workers[i]);
-//     //usleep(500);
-//   }
-//   for (std::size_t i = 0 ; i < _parser->get_worker_count() ; i++) {
-//     pthread_join(_workers[i].t, ft::nil);
-//   }
-// }
-
 int main(int argc, char* argv[])
 {
     /* init server socket and listen */
@@ -106,8 +85,7 @@ int main(int argc, char* argv[])
         if (new_events == -1)
             exit_with_perror("kevent() error\n" + string(strerror(errno)));
 
-        change_list.clear(); // clear change_list for new changes
-
+        change_list.clear(); // clear change_list for new change
         for (int i = 0; i < new_events; ++i)
         {
             curr_event = &event_list[i];
