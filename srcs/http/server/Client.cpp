@@ -34,6 +34,29 @@ bool Client::recv(FileDescriptor &fd) {
 		delete this;
 		return (false);
 	}
+
+	std::cout << "request start ===============================" << std::endl;
+	Request test(this->_in.storage());
+
+	std::cout << "< Request Line >\n";
+	std::cout << test.method() << " " << test.uri() << " " << test.version() << std::endl;
+	std::cout << "< Headers > \n";
+	const auto& headers = test.headers();
+	for (auto it = headers.cbegin(); it != headers.cend(); ++it) {
+		std::cout << it->first << ": ";
+		const auto& values = it->second;
+		for (auto valueIt = values.cbegin(); valueIt != values.cend(); ++valueIt) {
+			std::cout << *valueIt;
+			if (valueIt != values.cend() - 1) {
+				std::cout << ", ";
+			}
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "< Body > \n";
+	std::cout << test.body() << std::endl;
+	std::cout << "request end ===============================" << std::endl;
+
 	std::cout << "receive=================================================================" << std::endl;
 	std::cout << this->_in.storage() << std::endl;
 	std::cout << "receive=================================================================" << std::endl;
@@ -58,7 +81,8 @@ bool Client::send(FileDescriptor& fd) {
 		//std::cout << "out ret : " << ret << std::endl;
  		// 시간 체크
 		// std::cout << this->_res.body() << std::endl;
-	_out.store(this->_res.body());
+	// _out.store(this->_res.body());
+	this->_res.store(_out);
 	std::cout << "send=================================================================" << std::endl;
 	std::cout << this->_out.storage() << std::endl;
 	std::cout << "send=================================================================" << std::endl;
@@ -105,15 +129,16 @@ bool Client::progressBody(void) {
 					this->_maker.executeMaker();
 					// this->_maker .doChainingOf(FilterChain::S_AFTER);
 					this->_currProgress = END;
-					return (true);
 				// }
 
 				// NIOSelector::instance().update(m_socket, NIOSelector::NONE);
 				// m_filterChain.doChainingOf(FilterChain::S_BETWEEN);
 				this->_currProgress = END;
+				this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+					return (true);
 				// }
 		} catch (Exception &exception) {
-			this->_res.setStatus(HTTPStatus::STATE[HTTPStatus::BAD_REQUEST]);
+			this->_res.status(HTTPStatus::STATE[HTTPStatus::BAD_REQUEST]);
 			this->_maker.executeMaker();
 			this->_currProgress = Client::END;
 		}

@@ -44,7 +44,7 @@ void MethodMaker::make(Client& client, Request& req, Response& res, ResponseMake
 		// maker.nextMaker();
 	} catch (Exception &exception) {
 		// Failed to do method
-		res.setStatus(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
+		res.status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
 		//maker.nextMaker();
 	}
 }

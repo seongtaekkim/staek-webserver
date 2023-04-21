@@ -30,7 +30,7 @@ accept 두번째 인자로 client의 ip, port 정보를 받을 수 있나 ?
 
 
 static bool gracefulShutdown = false;
-Logger log = LogFactory::get("main");
+Logger logger = LogFactory::get("main");
 
 void
 sighandler_term(int sig)
@@ -39,7 +39,7 @@ sighandler_term(int sig)
 	// {
 		gracefulShutdown = true;
 		::signal(sig, SIG_DFL);
-		log.error("Graceful shutdown asked... (do CTRL-C again to quit immediately)");
+		logger.error("Graceful shutdown asked... (do CTRL-C again to quit immediately)");
 		// httpOrchestrator->stop();
 	// }
 }
@@ -47,7 +47,7 @@ sighandler_term(int sig)
 int main(int argc, char* argv[]) {
 
 	if (argc != 2) {
-		log.error("please input argument only one ?인자를 꼭 넣어야하나 안넣고 걍할까 그게낫지않나");
+		logger.error("please input argument only one ?인자를 꼭 넣어야하나 안넣고 걍할까 그게낫지않나");
 	}
 	signal(SIGPIPE, SIG_IGN);
 
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
 		Config::instance();
 		Webserv::start();
 	} catch (IOException& e) {
-		log.error(e.message());
+		logger.error(e.message());
 	}
 
 	// server 객체생성

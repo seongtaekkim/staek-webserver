@@ -71,9 +71,26 @@ str.append(sampleListing(f));
 return str;
 }
 
+#include "../../../util/Storage.hpp"
 void Get::doMethod(Request &req, Response &res, Client &cli) {
 	std::string ret = sample();
-	res.store(ret);
+	Storage s;
+	s.store(ret);
+	res.store(s);
+
+	// if (targetFile.isDirectory()) {
+		// if (!request.listing())
+			// res.status(*HTTPStatus::NOT_FOUND);
+		// else
+		{
+			res.body(ret);
+			// res.headers().html();
+			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+		}
+
+	// }
+
+	res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
 }
 
 void Get::setHasBody(bool hasbody) {

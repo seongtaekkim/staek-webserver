@@ -1,6 +1,6 @@
 NAME 		= webserv
 CXX 		= c++
-#CXXFLAGS 	= -Wall -Wextra -Werror -std=c++98
+# CXXFLAGS 	= -Wall -Wextra -Werror -std=c++98
 RM 			= rm -f
 INCS 		= -I
 SRCS 		= srcs/main.cpp srcs/log/LogFactory.cpp srcs/log/Logger.cpp \
