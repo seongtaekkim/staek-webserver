@@ -47,7 +47,7 @@ std::string str;
 // str.append("\nAccept-Encoding: gzip, deflate, br");
 // str.append("\nConnection: keep-alive");
  
-str.append("\nHTTP/1.1 200 OK");
+// str.append("\nHTTP/1.1 200 OK");
 
 str.append("\nContent-Length: 1092");
 str.append("\nContent-Type: text/html");
@@ -76,16 +76,18 @@ void Get::doMethod(Request &req, Response &res, Client &cli) {
 	std::string ret = sample();
 	Storage s;
 	s.store(ret);
-	res.store(s);
 
 	// if (targetFile.isDirectory()) {
 		// if (!request.listing())
 			// res.status(*HTTPStatus::NOT_FOUND);
 		// else
 		{
-			res.body(ret);
+			std::cout << "get domethod" << std::endl;
+			// res.body(ret);
 			// res.headers().html();
 			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+			res.store(s);
+
 		}
 
 	// }

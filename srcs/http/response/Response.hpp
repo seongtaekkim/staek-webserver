@@ -26,6 +26,7 @@ public:
 	void body(std::string body);
 
 	void status(HTTPStatus::StateType& status);
+	HTTPStatus::StateType& status(void);
 	enum State { INIT, HEADER, BODY, END };
 	State _state;
 

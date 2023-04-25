@@ -16,28 +16,27 @@ bool Response::store(Storage& buffer) {
 	switch (_state) {
 		case INIT:
 			_state = HEADER;
-
-			// fall through
-
 		case HEADER:
 		{
-			buffer.store(StatusLine(_status).response());
-			buffer.store(SHTTP::CRLF);
-			// buffer.store(_header.format());
-			buffer.store(SHTTP::CRLF);
+			std::cout << "((((((((((((((((((((((((((((((((((" << _status.first << std::endl;
+			// std::cout << buffer.storage()<< std::endl;
+			std::cout << ")))))))))))))))))))))))))))))))" << std::endl;
+			this->_body += StatusLine(_status).response();
+			// this->_body += SHTTP::CRLF;
+			// this->_body += SHTTP::CRLF;
+			this->_body += buffer.storage();
+			// // buffer.store(_header.format());
 			// if (!m_body)
 				// return (true);
-			this->_body += buffer.storage();
+			// this->_body += buffer.storage();
 			_state = BODY;
-			std::cout << "((((((((((((((((((((((((((((((((((" << StatusLine(_status).response()<< std::endl;
-			std::cout << _status.first << _status.second << std::endl;
-			std::cout << ")))))))))))))))))))))))))))))))" << std::endl;
 
 			return (false);
 		}
 
 		case BODY:
 		{
+			std::cout << "resposne body !!!!!!!" << std::endl;
 			buffer.store(this->_body);
 				// m_state = S_FLUSH;
 
@@ -60,4 +59,8 @@ void Response::body(std::string body) {
 
 void Response::status(HTTPStatus::StateType& status) {
 	this->_status = status;
+}
+
+HTTPStatus::StateType& Response::status(void) {
+	return (this->_status);
 }

@@ -12,6 +12,7 @@
 #include "../response/HTTPState.hpp"
 #include "../response/make/ResponseMaker.hpp"
 #include "../../exception/Exception.hpp"
+#include "../../iom/KqueueManage.hpp"
 
 class Server;
 /**
@@ -58,6 +59,8 @@ public:
 	bool progress(void);
 	bool progressHead(void);
 	bool progressBody(void);
+
+	int state(void) const;
 };
 
 #endif

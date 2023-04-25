@@ -65,21 +65,22 @@ void KqueueManage::delEvent(int fd) {
 		if ((*i).ident == fd) {
 			EV_SET(&(*i), fd, EVFILT_READ, EV_DELETE | EV_ENABLE , 0, 0, NULL);
 			EV_SET(&(*i), fd, EVFILT_WRITE, EV_DELETE | EV_ENABLE, 0, 0, NULL);
+			std::cout << "delEvent : " << fd <<  std::endl;
+
 			this->_changeVec.erase(i);
 			 --i;
 		}
 	}
 	::close(fd);
-	std::cout << "disconnected" << std::endl;
-	//	KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-
+	std::cout << "disconnected : " << fd <<  std::endl;
 }
 
 void KqueueManage::kevent() {
 	this->_eventCount = ::kevent(this->_kqueueFd, &this->_changeVec[0]
-							, this->_changeVec.size() , this->_eventArr, 8, NULL);
+							, this->_changeVec.size() , this->_eventArr, 100, NULL);
 	if (this->_eventCount == -1)
 		throw IOException("kevent() error : ", errno);
+	std::cout << "kevent pending : " << this->_eventCount << std::endl;
 }
 
 int KqueueManage::eventCount(void) const {

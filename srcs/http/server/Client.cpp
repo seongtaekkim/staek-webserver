@@ -36,31 +36,33 @@ bool Client::recv(FileDescriptor &fd) {
 	}
 
 	std::cout << "request start ===============================" << std::endl;
+
 	Request test(this->_in.storage());
 
-	std::cout << "< Request Line >\n";
-	std::cout << test.method() << " " << test.uri() << " " << test.version() << std::endl;
-	std::cout << "< Headers > \n";
-	const auto& headers = test.headers();
-	for (auto it = headers.cbegin(); it != headers.cend(); ++it) {
-		std::cout << it->first << ": ";
-		const auto& values = it->second;
-		for (auto valueIt = values.cbegin(); valueIt != values.cend(); ++valueIt) {
-			std::cout << *valueIt;
-			if (valueIt != values.cend() - 1) {
-				std::cout << ", ";
-			}
-		}
-		std::cout << std::endl;
-	}
-	std::cout << "< Body > \n";
-	std::cout << test.body() << std::endl;
+	// std::cout << "< Request Line >	\n";
+	// std::cout << test.method() << " " << test.uri() << " " << test.version() << std::endl;
+	// std::cout << "< Headers > \n";
+	// const auto& headers = test.headers();
+	// for (auto it = headers.cbegin(); it != headers.cend(); ++it) {
+	// 	std::cout << it->first << ": ";
+	// 	const auto& values = it->second;
+	// 	for (auto valueIt = values.cbegin(); valueIt != values.cend(); ++valueIt) {
+	// 		std::cout << *valueIt;
+	// 		if (valueIt != values.cend() - 1) {
+	// 			std::cout << ", ";
+	// 		}
+	// 	}
+	// 	std::cout << std::endl;
+	// }
+	// std::cout << "< Body > \n";
+	// std::cout << test.body() << std::endl;
 	std::cout << "request end ===============================" << std::endl;
 
 	std::cout << "receive=================================================================" << std::endl;
-	std::cout << this->_in.storage() << std::endl;
-	std::cout << "receive=================================================================" << std::endl;
+	// std::cout << this->_in.storage() << std::endl;
+	std::cout << "receive end =================================================================" << std::endl;
 	this->progress();
+	std::cout << "progress end !!!!!!!" << std::endl;
 	return (true);
 }
 
@@ -82,10 +84,9 @@ bool Client::send(FileDescriptor& fd) {
  		// 시간 체크
 		// std::cout << this->_res.body() << std::endl;
 	// _out.store(this->_res.body());
+	std::cout << "send=================================================================" << std::endl;
 	this->_res.store(_out);
-	std::cout << "send=================================================================" << std::endl;
-	std::cout << this->_out.storage() << std::endl;
-	std::cout << "send=================================================================" << std::endl;
+	// std::cout << this->_out.storage() << std::endl;
 	std::cout << "send end ===============================================" << std::endl;
 	ret = this->_out.send();
 	if (ret == -1)
@@ -135,7 +136,8 @@ bool Client::progressBody(void) {
 				// m_filterChain.doChainingOf(FilterChain::S_BETWEEN);
 				this->_currProgress = END;
 				this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
-					return (true);
+				// KqueueManage::instance().setEvent(this->_socket.getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+				return (true);
 				// }
 		} catch (Exception &exception) {
 			this->_res.status(HTTPStatus::STATE[HTTPStatus::BAD_REQUEST]);
@@ -145,4 +147,9 @@ bool Client::progressBody(void) {
 	}
 
 	return (false);
+}
+
+
+int Client::state(void) const {
+	return (this->_currProgress);
 }

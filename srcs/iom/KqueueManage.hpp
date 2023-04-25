@@ -35,13 +35,13 @@ class KqueueManage : public Singleton<KqueueManage> {
 public:
 	typedef std::map<int ,RWCallback*> _CallbackMap;
 	enum { ACCEPT = 1, READ = 2, WRITE = 3 };
+    std::vector<struct kevent>	_changeVec; // kevent vector for changelist
 private:
 
 	int 						_kqueueFd;
 	struct kevent*				_currEv;
 	// std::map<int, std::string>	_clientMap; // map for client socket:data
-    std::vector<struct kevent>	_changeVec; // kevent vector for changelist
-    struct kevent				_eventArr[8]; // kevent array for eventlist
+    struct kevent				_eventArr[100]; // kevent array for eventlist
 	int							_eventCount;
 	_CallbackMap				_callbackMap;
 
