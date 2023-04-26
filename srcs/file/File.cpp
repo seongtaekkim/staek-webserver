@@ -5,6 +5,9 @@
 File::File(const std::string path) : _path(path) {}
 File::File(const File &other) 
 	: _path(other._path) {}
+File::File(const std::string &root, const std::string &resource) 
+	: _path(concatRootAndResource(root, resource)) {}
+
 File::~File(void) throw() {}
 File& File::operator=(const File &other) {
 	if (this != &other) {
@@ -152,4 +155,33 @@ std::string::size_type File::indexOfExtension() {
 		return (std::string::npos);
 	else 
 		return (extensionPos);
+}
+
+std::string File::currentDir(void) {
+	char *cwd = ::getcwd(NULL, 0);
+
+	if (!cwd)
+		throw IOException("getcwd", errno);
+
+	std::string ret = cwd;
+	free(cwd);
+
+	return (ret);
+}
+
+std::string File::concatRootAndResource(const std::string& root, const std::string& resource) {
+
+	bool bStart = false;
+	bool bEnd = false;
+	char slash = '/';
+
+	if (resource.c_str()[0] == slash)
+		bStart = true;
+	if (root.c_str()[root.length() - 1] == slash)
+		bEnd = true;
+	if (bEnd == true && bStart == true)
+		return (root + resource.substr(1));
+	if (bEnd ^ bStart)
+		return (root + resource);
+	return (root + slash + resource);
 }
