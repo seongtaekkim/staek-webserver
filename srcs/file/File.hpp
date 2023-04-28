@@ -43,8 +43,8 @@ public:
 	std::string getExtension();
 	std::string::size_type indexOfSeparator(void);
 	std::string::size_type indexOfExtension(void);
-	std::string currentDir(void);
 	std::string concatRootAndResource(const std::string& root, const std::string& resource);
+	static std::string currentDir(void);
 };
 
 #endif

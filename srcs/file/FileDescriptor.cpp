@@ -7,7 +7,7 @@ FileDescriptor::~FileDescriptor() {
 		::close(this->_fd);
 }
 
-ssize_t FileDescriptor::read(void *buf, size_t nbyte) {
+ssize_t FileDescriptor::read(void *buf, std::size_t nbyte) {
 	this->validateNotClosed();
 	ssize_t ret = ::read(this->_fd, buf, nbyte);
 	if (!this->_valid && ret != -1)
@@ -15,7 +15,7 @@ ssize_t FileDescriptor::read(void *buf, size_t nbyte) {
 	return (ret);
 }
 
-ssize_t FileDescriptor::write(const void *buf, size_t nbyte) {
+ssize_t FileDescriptor::write(const void *buf, std::size_t nbyte) {
 	this->validateNotClosed();
 	ssize_t ret = ::write(this->_fd , buf, nbyte);
 	if (!this->_valid && ret != -1)

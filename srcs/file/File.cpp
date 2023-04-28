@@ -157,18 +157,23 @@ std::string::size_type File::indexOfExtension() {
 		return (extensionPos);
 }
 
+// 현재 디렉토리 
 std::string File::currentDir(void) {
 	char *cwd = ::getcwd(NULL, 0);
 
 	if (!cwd)
 		throw IOException("getcwd", errno);
-
 	std::string ret = cwd;
 	free(cwd);
 
 	return (ret);
 }
 
+
+// root/ resource, root /resource
+// root resource
+// root/ /resource 
+// => root/resource 
 std::string File::concatRootAndResource(const std::string& root, const std::string& resource) {
 
 	bool bStart = false;
