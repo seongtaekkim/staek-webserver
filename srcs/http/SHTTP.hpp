@@ -12,6 +12,7 @@ public:
 	static const int			MINOR;
 	static std::string 			VERSION();
 	static const char*			DATEFORMAT;
+	static const int			DEFAULT_READSIZE;
 };
 
 #endif

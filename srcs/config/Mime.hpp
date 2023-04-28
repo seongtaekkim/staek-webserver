@@ -11,15 +11,18 @@
 // { type : extension1, extension2 .. }
 class Mime {
 public:
-	typedef std::map<std::string, std::list<std::string> > MimeType;
+	typedef std::map<std::string, std::list<std::string> >	MimeMapType;
+	typedef std::list<std::string>							MimeType;
 private:
-	MimeType _mimeMap;
+	MimeMapType _mimeMap;
+	MimeType _mime;
 public:
 	Mime(void);
 	Mime(const Mime& other);
 	Mime& operator=(const Mime& other);
 	Mime(const std::string file);
 	~Mime(void);
+	Mime::MimeMapType mimeMap(void) const;
 	Mime::MimeType mime(void) const;
 };
 

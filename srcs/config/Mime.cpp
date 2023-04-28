@@ -68,6 +68,10 @@ Mime& Mime::operator=(const Mime& other) {
 
 Mime::~Mime(void) {}
 
-Mime::MimeType Mime::mime(void) const {
+Mime::MimeMapType Mime::mimeMap(void) const {
 	return (this->_mimeMap);
+}
+
+Mime::MimeType Mime::mime(void) const {
+	return (this->_mime);
 }
