@@ -1,7 +1,9 @@
 #include "Storage.hpp"
 
 
-Storage::Storage(void) {}
+Storage::Storage(void) : _maxSize(std::string::npos) {}
+
+Storage::Storage(SizeType maxSize) : _maxSize(maxSize) {}
 
 Storage::Storage(const Storage& other) {}
 
@@ -16,14 +18,21 @@ void Storage::clear(void) {
 	this->_storage.clear();
 }
 
-// ?
+// maxsize - storage 
 std::size_t Storage::capacity(void) {
-	return (1);
+	if (this->_storage.size() >= this->_maxSize)
+		return (0);
+	return (this->_maxSize - this->_storage.size());
 }
 
 std::string& Storage::store(std::string str) {
 	this->_storage += str;
 	return (this->_storage);
+}
+
+Storage& Storage::store(Storage& store) {
+	this->_storage += store.storage();
+	return (*this);
 }
 
 std::string& Storage::store(const void* buf, std::size_t ret) {

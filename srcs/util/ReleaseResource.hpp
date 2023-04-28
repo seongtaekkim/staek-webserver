@@ -15,6 +15,12 @@ public:
 			delete ptr;
 		ptr = NULL;
 	}
+	template<typename T>
+	static void pointer(T *&ptr) {
+		if (ptr)
+			delete ptr;
+		ptr = NULL;
+	}
 };
 
 #endif
