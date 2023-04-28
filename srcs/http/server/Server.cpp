@@ -20,6 +20,7 @@ void Server::init(void) {
 	std::cout << "server socket : " << this->_socket->getFd() << std::endl;
 	KqueueManage::instance().setEvent(this->_socket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 	std::cout << " started " << std::endl;
+	KqueueManage::instance().create(*this->_socket, *this);
 }	
 
 Socket*
@@ -63,8 +64,8 @@ bool Server::recv(FileDescriptor &fd) {
 	Socket &serverSocket = static_cast<Socket&>(fd);
 	this->connect(&serverSocket);
 
-	// if (HTTPClient::INSTANCE_COUNT > Configuration::instance().rootBlock().maxActiveClient().orElse(RootBlock::DEFAULT_MAX_ACTIVE_CLIENT))
-		// HTTPClient::setUnavailable(httpClient);
+	// if (Client::INSTANCE_COUNT > Configuration::instance().rootBlock().maxActiveClient().orElse(RootBlock::DEFAULT_MAX_ACTIVE_CLIENT))
+		// Client::setUnavailable(httpClient);
 
 	return (false);
 }

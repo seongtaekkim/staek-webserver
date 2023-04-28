@@ -72,12 +72,13 @@ void KqueueManage::delEvent(int fd) {
 		}
 	}
 	::close(fd);
+	this->_callbackMap.erase(fd);
 	std::cout << "disconnected : " << fd <<  std::endl;
 }
 
 void KqueueManage::kevent() {
 	this->_eventCount = ::kevent(this->_kqueueFd, &this->_changeVec[0]
-							, this->_changeVec.size() , this->_eventArr, 100, NULL);
+							, this->_changeVec.size() , this->_eventArr, 300, NULL);
 	if (this->_eventCount == -1)
 		throw IOException("kevent() error : ", errno);
 	std::cout << "kevent pending : " << this->_eventCount << std::endl;
@@ -96,18 +97,16 @@ struct kevent* KqueueManage::eventArr() {
 	return (this->_eventArr);
 }
 
-void KqueueManage::create(FileDescriptor& fd, RWCallback& callback, int opt) {
+void KqueueManage::create(FileDescriptor& fd, RWCallback& callback) {
 	int raw = fd.getFd();
 
-	//addToSets(fd.raw(), operations);
-
-	//this->_callbackMap[raw] = &callback;
-
-	//this->_callbackMap[raw]->recv()
-	// m_fileDescriptors[raw] = &fd;
-	
+	std::cout << "KqueueManage::create : " << raw << std::endl;
+	this->_callbackMap[raw] = &callback;
+	this->_fdMap[raw] = &fd;
 }
 
-void KqueueManage::run() {
-
+bool KqueueManage::recv(int fd) {
+	std::cout << "rKqueueManage::recv : " << fd << std::endl;
+	bool b = this->_callbackMap[fd]->recv(*this->_fdMap[fd]);
+	return (b);
 }

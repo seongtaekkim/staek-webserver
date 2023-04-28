@@ -13,6 +13,7 @@
 #include "../response/make/ResponseMaker.hpp"
 #include "../../exception/Exception.hpp"
 #include "../../iom/KqueueManage.hpp"
+#include "../response/StatusLine.hpp"
 
 class Server;
 /**
@@ -60,7 +61,7 @@ public:
 	bool progressHead(void);
 	bool progressBody(void);
 
-	int state(void) const;
+	int state(void);
 };
 
 #endif

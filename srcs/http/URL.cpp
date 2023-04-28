@@ -1,17 +1,14 @@
 #include "URL.hpp"
 
 URL::URL() : _path(), _queryParameters(), _fragment() {
-	std::cout << "constructor" << std::endl;
 }
 
 URL::URL(const std::string &path, const std::map<std::string, std::string> queryParameters, const std::string fragment) :
 		_path(path), _queryParameters(queryParameters), _fragment(fragment) {
-	std::cout << "constructor with param" << std::endl;
 }
 
 URL::URL(const URL &other) :
 		_path(other._path), _queryParameters(other._queryParameters), _fragment(other._fragment) {
-	std::cout << "copy constructor" << std::endl;
 }
 
 URL::~URL() {}
@@ -67,8 +64,8 @@ URL::queryString(void) const {
 	return (out);
 }
 
-bool
-URL::filename(std::string &out) const {
+// 디렉토리 제외 파일이름 get
+bool URL::filename(std::string& out) const {
 	if (_path.empty())
 		return (false);
 
@@ -82,20 +79,17 @@ URL::filename(std::string &out) const {
 	return (true);
 }
 
-bool
-URL::extension(std::string &out) const
-{
+
+// extension get
+bool URL::extension(std::string& out) const {
 	std::string filename;
-	if (!URL::filename(filename))
+	if (!this->filename(filename))
 		return (false);
 
 	std::string::size_type lastDotPos = filename.rfind(".");
-
 	if (lastDotPos == std::string::npos)
 		return (false);
-
 	out = filename.substr(lastDotPos + 1);
-
 	return (true);
 }
 

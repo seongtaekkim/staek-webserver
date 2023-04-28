@@ -49,14 +49,15 @@ void Webserv::start(void) {
 						std::cout << "new:clientsocket : " <<  clientSocket->getFd() << " " << curr_event->ident << std::endl;
 						KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 						KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
-
 					} catch (IOException e) {}
                 }
                 else
                 {
 					std::cout << "webserv:read : " << curr_event->ident  << std::endl;
                     /* read data from client */
-					bool b = server.clients()[curr_event->ident]->recv(server.clients()[curr_event->ident]->socket());
+					// bool b = server.clients()[curr_event->ident]->recv(server.clients()[curr_event->ident]->socket());
+					// bool b = KqueueManage::instance().recv(server.clients()[curr_event->ident]->socket());
+					bool b = KqueueManage::instance().recv(curr_event->ident);
 					if (b == false) {
 						std::cout <<"read false =================================================================";
 						server.clients().erase(curr_event->ident);
@@ -71,10 +72,10 @@ void Webserv::start(void) {
             {
 				std::cout << "writefilter: " << curr_event->ident <<  std::endl;
 				if (server.clients()[curr_event->ident]->state() != server.clients()[curr_event->ident]->END) {
-					server.clients().erase(curr_event->ident);
-					KqueueManage::instance().delEvent(curr_event->ident);
+					// server.clients().erase(curr_event->ident);
+					// KqueueManage::instance().delEvent(curr_event->ident);
 					continue;
-				}
+				}std::cout << "writefilter2: " << curr_event->ident <<  std::endl;
 				bool b = server.clients()[curr_event->ident]->send(server.clients()[curr_event->ident]->socket());
 				if (b == false) {
 					std::cout << "write fail " << std::endl;
@@ -83,7 +84,7 @@ void Webserv::start(void) {
 				} else {
 					std::cout << "write treutrue" << std::endl;
 					server.clients().erase(curr_event->ident);
-				}
+				}std::cout << "writefilter:3 " << curr_event->ident <<  std::endl;
             } else {
 				std::cout << "what is event ?? : " << curr_event->filter << std::endl;
 			} 

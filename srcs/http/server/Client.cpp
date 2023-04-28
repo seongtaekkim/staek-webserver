@@ -8,6 +8,7 @@ Client::Client(InetAddress inetAddress, Server& server, Socket& socket)
 	, _req(), _res(), _maker(this->_req, this->_res, *this) {
 	Client::_s_connCnt++;
 	this->_currProgress = Client::HEADER;
+	KqueueManage::instance().create(this->_socket, *this);
 }
 
 Client::Client(const Client& other) 
@@ -37,7 +38,10 @@ bool Client::recv(FileDescriptor &fd) {
 
 	std::cout << "request start ===============================" << std::endl;
 
-	Request test(this->_in.storage());
+	URL url = URL().builder().appendPath("http://localhost/Makefile").fragment("hash").build();
+	_req = Request(StatusLine(), url);
+
+	// Request test(this->_in.storage());
 
 	// std::cout << "< Request Line >	\n";
 	// std::cout << test.method() << " " << test.uri() << " " << test.version() << std::endl;
@@ -129,12 +133,10 @@ bool Client::progressBody(void) {
 				// {
 					this->_maker.executeMaker();
 					// this->_maker .doChainingOf(FilterChain::S_AFTER);
-					this->_currProgress = END;
 				// }
 
 				// NIOSelector::instance().update(m_socket, NIOSelector::NONE);
 				// m_filterChain.doChainingOf(FilterChain::S_BETWEEN);
-				this->_currProgress = END;
 				this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
 				// KqueueManage::instance().setEvent(this->_socket.getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 				return (true);
@@ -150,6 +152,11 @@ bool Client::progressBody(void) {
 }
 
 
-int Client::state(void) const {
+int Client::state(void) {
+
+	if (this->_res.body() && this->_res.body()->isEnd() == true)
+		this->_currProgress = Client::END;
+
+
 	return (this->_currProgress);
 }
