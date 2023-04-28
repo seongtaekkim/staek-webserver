@@ -1,5 +1,5 @@
 #include "Response.hpp"
-Response::Response(void) : _state(INIT) {}
+Response::Response(void) : _state(INIT), _body() {}
 Response::Response(const Response& other) {}
 Response& Response::operator=(const Response& other) {
 	return (*this);
@@ -21,23 +21,38 @@ bool Response::store(Storage& buffer) {
 			std::cout << "((((((((((((((((((((((((((((((((((" << _status.first << std::endl;
 			// std::cout << buffer.storage()<< std::endl;
 			std::cout << ")))))))))))))))))))))))))))))))" << std::endl;
-			this->_body += StatusLine(_status).response();
+			_headString += StatusLine(_status).response();
 			// this->_body += SHTTP::CRLF;
 			// this->_body += SHTTP::CRLF;
-			this->_body += buffer.storage();
+			_headString += buffer.storage();
+			
 			// // buffer.store(_header.format());
 			// if (!m_body)
 				// return (true);
 			// this->_body += buffer.storage();
 			_state = BODY;
 
-			return (false);
+
+			// return (false);
 		}
 
 		case BODY:
 		{
-			std::cout << "resposne body !!!!!!!" << std::endl;
-			buffer.store(this->_body);
+			// std::cout << "resposne body !!!!!!!" << std::endl;
+			// Storage s;
+			// s.store(_headString);
+			// this->_body->store(s);
+			buffer.store(_headString);
+			buffer.store(SHTTP::CRLF);
+			buffer.store(SHTTP::CRLF);
+			// buffer.store("\nContent-Length: 1817");
+			// buffer.store("\nContent-Type: text/html");
+			// buffer.store("\nDate: Thu, 30 Mar 2023 19:00:10 GMT");
+			// buffer.store("\nServer: webserv\r\n\r\n");
+
+			this->_body->store(buffer);
+			std::cout << buffer.storage() << std::endl;
+			// buffer.store(this->_body);
 				// m_state = S_FLUSH;
 
 			return (false);
@@ -49,11 +64,11 @@ bool Response::store(Storage& buffer) {
 	return (true);
 }
 
-std::string Response::body(void) const {
+ResponseByFile* Response::body(void) const {
 	return (this->_body);
 }
 
-void Response::body(std::string body) {
+void Response::body(ResponseByFile* body) {
 	this->_body = body;
 }
 

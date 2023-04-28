@@ -4,7 +4,8 @@ Delete::Delete(void) {}
 
 Delete::~Delete(void) {}
 
-void Delete::doMethod(Request &req, Response &res, Client &cli) {
+bool Delete::doMethod(Request &req, Response &res, Client &cli) {
+	return (true);
 }
 
 void Delete::setHasBody(bool hasbody) {

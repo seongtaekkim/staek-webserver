@@ -38,61 +38,118 @@ std::string sampleListing(File file)
 	return (out);
 }
 
+std::string listing(URL& url, File& file) {
+	const std::string &directory = url.path();
+
+	std::string out = ""
+			"<html>\n"
+			"	<head>\n"
+			"		<title>Listing of " + directory + "</title>\n"
+			"	</head>\n"
+			"	<body>\n";
+
+	std::list<File> files = file.list();
+	for (std::list<File>::iterator it = files.begin(); it != files.end(); it++) {
+		std::string name(it->name());
+
+		if (it->isDir())
+			name += '/';
+
+		std::string path(url.path());
+		if (path.empty() || path.c_str()[path.length() - 1] != '/')
+			path += '/';
+		path += name;
+		out += std::string("		<a href=\"") + path + "\">" + name + "</a><br>\n";
+	}
+
+	out += ""
+			"	</body>\n"
+			"</html>\n";
+
+	return (out);
+}
+
 std::string sample() {
-std::string str;
-// str.append("GET / HTTP/1.1");
-// str.append("\nUser-Agent: test");
-// str.append("\nAccept: */*");
-// str.append("\nHost: localhost:8080");
-// str.append("\nAccept-Encoding: gzip, deflate, br");
-// str.append("\nConnection: keep-alive");
- 
-// str.append("\nHTTP/1.1 200 OK");
+	std::string str;
 
-str.append("\nContent-Length: 1092");
-str.append("\nContent-Type: text/html");
-str.append("\nDate: Thu, 30 Mar 2023 19:00:10 GMT");
-str.append("\nServer: webserv\r\n\r\n");
+	str.append("\nContent-Length: 1092");
+	str.append("\nContent-Type: text/html");
+	str.append("\nDate: Thu, 30 Mar 2023 19:00:10 GMT");
+	str.append("\nServer: webserv\r\n\r\n");
 
-
-File f("./");
-str.append(sampleListing(f));
-// str.append("<html>");
-// str.append("<head>");
-// str.append("<title>Listing of /</title>");
-// str.append("</head>");
-// str.append("<body>");
-// str.append("test");
-// str.append("</body>");
-// str.append("</html>");
-// std::cout << str << std::endl;
-
-// std::cout << "str size : " << str.length() << std::endl;
-return str;
+	File f("./");
+	str.append(sampleListing(f));
+	return str;
 }
 
 #include "../../../util/Storage.hpp"
-void Get::doMethod(Request &req, Response &res, Client &cli) {
-	std::string ret = sample();
-	Storage s;
-	s.store(ret);
+#include "../../../util/Time.hpp"
+#include "../../../config/Mime.hpp"
+#include "../../../config/Config.hpp"
+#include "../../../util/ReleaseResource.hpp"
+#include "../ResponseByFile.hpp"
 
-	// if (targetFile.isDirectory()) {
-		// if (!request.listing())
-			// res.status(*HTTPStatus::NOT_FOUND);
-		// else
-		{
-			std::cout << "get domethod" << std::endl;
-			// res.body(ret);
-			// res.headers().html();
-			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
-			res.store(s);
+bool Get::doMethod(Request &req, Response &res, Client &cli) {
 
+
+	File targetFile(req.targetFile());
+	std::cout << "getgetget !!!!!!!!!!!!!!!" << std::endl;
+	std::cout << targetFile.path() << std::endl;
+	if (!targetFile.exists()) {
+		res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
+		return (true);
+	}
+
+	if (targetFile.isFile()) {
+		std::size_t contentLength = targetFile.size();
+		// Time lastModified = targetFile.lastModified();
+		
+		Mime::MimeType contentType;
+
+		std::string extension;
+		
+		std::cout << req.url().fullUrl() << std::endl;
+		if (req.url().extension(extension)) {
+			contentType = Config::instance().mime()->mimeMap()[extension];
 		}
+		std::cout << "extension : " << extension << std::endl;
+		std::cout << "contentType : " << contentType.front() << std::endl;
 
-	// }
+		FileDescriptor *fd = NULL;
+		//FileDescriptorBuffer *fdBuffer = NULL;
+		try {
+			fd = targetFile.open(O_RDONLY, 0666);
+			// fdBuffer = FileDescriptorBuffer::from(*fd, FileDescriptorBuffer::CLOSE | FileDescriptorBuffer::DELETE);
+			res.body(new ResponseByFile(*fd, contentLength));
+			//res.body();
+			// res.header().contentLength(contentLength);
+			// res.headers().contentType(contentType);
+			// response.headers().lastModified(lastModified);
+			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+		}
+		catch (...) {
+			ReleaseResource::pointer<FileDescriptor>(fd);
+			throw;
+		}
+		return (true);
+	}
 
+	if (targetFile.isDir()) {
+		// if (!request.listing())
+			// res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
+		// else {
+			std::string ret = sample();
+			Storage s;
+			s.store(ret);
+			res.store(s);
+			// res.string(listing(request.url(), targetFile)); 
+			// res.headers().html(); // MIME_HTML = "text/html"; mime setting 
+			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+		// }
+		return (true);
+	}
 	res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
+	return (true);
 }
 
 void Get::setHasBody(bool hasbody) {

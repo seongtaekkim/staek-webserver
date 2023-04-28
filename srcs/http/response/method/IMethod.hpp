@@ -14,7 +14,7 @@ public:
 	IMethod(const IMethod& other);
 	IMethod& operator=(const IMethod& other);
 	virtual ~IMethod(void);
-	virtual void doMethod(Request &req, Response &res, Client &cli) = 0;
+	virtual bool doMethod(Request &req, Response &res, Client &cli) = 0;
 	virtual void setHasBody(bool hasbody) = 0;
 	virtual bool getHasBody(void) = 0;
 };
