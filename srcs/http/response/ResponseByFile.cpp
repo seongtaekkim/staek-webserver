@@ -1,6 +1,5 @@
 #include "ResponseByFile.hpp"
 #include "../../iom/KqueueManage.hpp"
-// #include <util/Singleton.hpp>
 #include <iostream>
 
 ResponseByFile::ResponseByFile(FileDescriptor& fd, std::size_t contentLength) :

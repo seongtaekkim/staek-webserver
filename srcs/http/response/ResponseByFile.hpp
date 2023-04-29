@@ -1,14 +1,12 @@
-#ifndef ResponseByFile_HPP
-#define ResponseByFile_HPP
+#ifndef RESPONSEBYFILE_HPP
+#define RESPONSEBYFILE_HPP
 
+#include "IBody.hpp"
 #include "../server/RWCallback.hpp"
 #include "../../file/FileDescriptor.hpp"
-#include "../../util/Storage.hpp"
 #include "../SHTTP.hpp"
 
-class Storage;
-
-class ResponseByFile : RWCallback {
+class ResponseByFile : public RWCallback, public IBody {
 private:
 	FileDescriptor&	_fd;
 	std::size_t		_contentLength;
@@ -23,9 +21,9 @@ private:
 public:
 	ResponseByFile(FileDescriptor& fd, std::size_t contentLength);
 	virtual ~ResponseByFile(void);
-	bool store(Storage& store);
+	virtual bool store(Storage& store);
 	virtual bool recv(FileDescriptor& fd);
-	bool isEnd(void);
+	virtual bool isEnd(void);
 };
 
 #endif

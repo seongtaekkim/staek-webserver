@@ -4,7 +4,7 @@
 #include "HTTPState.hpp"
 #include "../../util/Storage.hpp"
 #include "StatusLine.hpp"
-#include "ResponseByFile.hpp"
+#include "IBody.hpp"
 
 // #include "../Header.hpp"
 // #include "make/ResponseMaker.hpp"
@@ -16,7 +16,7 @@ private:
 	HTTPStatus::StateType	_status;
 	// ResponseMaker			_maker;
 	// Header _header;
-	ResponseByFile*		_body;
+	IBody*		_body;
 	std::string _headString;
 	
 public:
@@ -25,8 +25,8 @@ public:
 	Response& operator=(const Response& other);
 	~Response(void);
 	bool store(Storage& buffer);
-	ResponseByFile* body(void) const;
-	void body(ResponseByFile* body);
+	IBody* body(void) const;
+	void body(IBody* body);
 
 	void status(HTTPStatus::StateType& status);
 	HTTPStatus::StateType& status(void);

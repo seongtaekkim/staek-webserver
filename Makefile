@@ -17,7 +17,7 @@ SRCS 		= srcs/main.cpp srcs/log/LogFactory.cpp srcs/log/Logger.cpp \
 				srcs/util/Storage.cpp srcs/http/server/SocketStorage.cpp \
 				srcs/http/request/Request.cpp srcs/http/request/RequestHeaders.cpp srcs/http/request/RequestParser.cpp srcs/http/request/RequestString.cpp \
 				srcs/http/parse/Parser.cpp \
-				srcs/http/response/ResponseByFile.cpp
+				srcs/http/response/IBody.cpp srcs/http/response/ResponseByString.cpp srcs/http/response/ResponseByFile.cpp
 OBJS 		= $(SRCS:.cpp=.o)
 .c.o :
 	$(CXX) $(CXXFLAGS) -c $< -o $@

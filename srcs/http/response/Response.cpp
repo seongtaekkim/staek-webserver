@@ -64,11 +64,11 @@ bool Response::store(Storage& buffer) {
 	return (true);
 }
 
-ResponseByFile* Response::body(void) const {
+IBody* Response::body(void) const {
 	return (this->_body);
 }
 
-void Response::body(ResponseByFile* body) {
+void Response::body(IBody* body) {
 	this->_body = body;
 }
 
