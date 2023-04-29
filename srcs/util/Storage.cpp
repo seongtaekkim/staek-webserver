@@ -46,3 +46,17 @@ std::string& Storage::storage(void) {
 std::size_t Storage::size(void) const {
 	return (this->_storage.size());
 }
+
+bool Storage::getC(char& c) const {
+	if (this->_storage.empty())
+		return (false);
+	c = this->_storage[0];
+	return (true);
+}
+
+bool Storage::next(void) {
+	if (this->_storage.empty())
+		return (false);
+	this->_storage.erase(0, 1);
+	return (true);
+}

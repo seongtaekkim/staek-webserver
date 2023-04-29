@@ -26,6 +26,8 @@ public:
 	std::string& storage(void);
 	std::size_t size(void) const;
 
+	bool getC(char& c) const;
+	bool next(void);
 
 };
 #endif
