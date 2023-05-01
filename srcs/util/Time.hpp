@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <string>
 #include <sys/time.h>
+#include <sys/errno.h>
 #include "../exception/IOException.hpp"
 
 //https://www.joinc.co.kr/w/man/2/gettimeofday

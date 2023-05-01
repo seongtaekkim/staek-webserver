@@ -31,7 +31,7 @@ std::string& Storage::store(std::string str) {
 }
 
 Storage& Storage::store(Storage& store) {
-	this->_storage += store.storage();
+	this->_storage.append(store.storage());
 	return (*this);
 }
 
