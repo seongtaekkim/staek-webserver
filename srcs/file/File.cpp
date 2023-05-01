@@ -179,7 +179,8 @@ std::string File::concatRootAndResource(const std::string& root, const std::stri
 	bool bStart = false;
 	bool bEnd = false;
 	char slash = '/';
-
+		std::cout << "concatRootAndResource : " << root << std::endl;
+		std::cout << "concatRootAndResource : " << resource << std::endl;
 	if (resource.c_str()[0] == slash)
 		bStart = true;
 	if (root.c_str()[root.length() - 1] == slash)
