@@ -7,38 +7,8 @@ Get::~Get(void) {}
 
 #include "../../../file/File.hpp"
 #include <list>
-std::string sampleListing(File file)
-{
-	const std::string &directory = file.path();
 
-	std::string out = ""
-			"<html>\n"
-			"	<head>\n"
-			"		<title>Listing of " + directory + "</title>\n"
-			"	</head>\n"
-			"	<body>\n";
-
-	std::list<File> files = file.list();
-	for (std::list<File>::iterator it = files.begin(); it != files.end(); it++)
-	{
-		std::string name(it->name());
-		if (it->isDir())
-			name += '/';
-		std::string path(file.path());
-		if (path.empty())
-			path += '/';
-		path += name;
-		out += std::string("<a href=\"") + path + "\">" + name + "</a><br>\n";
-	}
-
-	out += ""
-			"	</body>\n"
-			"</html>\n";
-
-	return (out);
-}
-
-std::string listing(URL& url, File& file) {
+std::string listing(const URL& url, const File& file) {
 	const std::string &directory = url.path();
 
 	std::string out = ""
@@ -67,19 +37,6 @@ std::string listing(URL& url, File& file) {
 			"</html>\n";
 
 	return (out);
-}
-
-std::string sample() {
-	std::string str;
-
-	str.append("\nContent-Length: 1092");
-	str.append("\nContent-Type: text/html");
-	str.append("\nDate: Thu, 30 Mar 2023 19:00:10 GMT");
-	str.append("\nServer: webserv\r\n\r\n");
-
-	File f("./");
-	str.append(sampleListing(f));
-	return str;
 }
 
 #include "../../../util/Storage.hpp"
@@ -116,12 +73,9 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 		std::cout << "contentType : " << contentType.front() << std::endl;
 
 		FileDescriptor *fd = NULL;
-		//FileDescriptorBuffer *fdBuffer = NULL;
 		try {
 			fd = targetFile.open(O_RDONLY, 0666);
-			// fdBuffer = FileDescriptorBuffer::from(*fd, FileDescriptorBuffer::CLOSE | FileDescriptorBuffer::DELETE);
 			res.body(new ResponseByFile(*fd, contentLength));
-			//res.body();
 			// res.header().contentLength(contentLength);
 			// res.headers().contentType(contentType);
 			// response.headers().lastModified(lastModified);
@@ -138,10 +92,8 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 		// if (!request.listing())
 			// res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
 		// else {
-			std::string ret = sample();
-			Storage s;
-			s.store(ret);
-			res.store(s);
+			res.body(listing(req.url(), targetFile));
+
 			// res.string(listing(request.url(), targetFile)); 
 			// res.headers().html(); // MIME_HTML = "text/html"; mime setting 
 			res.status(HTTPStatus::STATE[HTTPStatus::OK]);

@@ -13,7 +13,7 @@ class MethodMaker;
 
 class Method {
 public:
-	typedef std::map<int, IMethod*> MethodMap;
+	typedef std::map<std::string, IMethod*> MethodMap;
 	static MethodMap METHOD;
 	enum { GET, POST, DELETE };
 private:
@@ -21,9 +21,9 @@ private:
 	MethodMaker* _maker; // 인터페이스는 포인터 혹은 레퍼런스로 정의해야 한다.
 	static MethodMap init() {
 		MethodMap map;
-		map[GET] = Get::instance();
-		map[POST] = Post::instance();
-		map[DELETE] = Delete::instance();
+		map["GET"] = Get::instance();
+		map["POST"] = Post::instance();
+		map["DELETE"] = Delete::instance();
 		Get::instance()->setHasBody(false);
 		Post::instance()->setHasBody(true);
 		Delete::instance()->setHasBody(false);
