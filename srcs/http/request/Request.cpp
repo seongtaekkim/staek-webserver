@@ -39,9 +39,9 @@ Request::Request(const Request& __copy) : _resource(__copy._resource) {
 
 Request	Request::operator=(const Request& __copy)
 {
-	if (this != &__copy)
-	{
+	if (this != &__copy) {
 		this->_url = __copy._url;
+
 		_reqString = __copy._reqString;
 		_requestLine = __copy._requestLine;
 		_headers = __copy._headers;
@@ -50,11 +50,7 @@ Request	Request::operator=(const Request& __copy)
 	return (*this);
 }
 
-Request::~Request() {}
-
-/*
-	Member functions
-*/
+Request::~Request(void) {}
 
 Request::Request(std::string __reqString)
 : _reqString(__reqString)
@@ -81,13 +77,11 @@ size_t			Request::header_count() { return (_headers._headerCount); }
 
 
 File Request::targetFile() {
-	// _resource = "/";
-	_resource = "/Makefile";
-	return (File(root(), _resource));
+	return (File(root(), _url.path()));
 }
 
 std::string Request::root(void) const {
-	// if (locationBlock().present())
+	// if (locationBlock).present())
 	// {
 	// 	const LocationBlock &locationBlock = *this->locationBlock().get();
 
@@ -110,6 +104,6 @@ std::string Request::root(void) const {
 	return (File::currentDir());
 }
 
-URL Request::url(void) {
+const URL& Request::url(void) const {
 	return (this->_url);
 }

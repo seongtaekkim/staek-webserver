@@ -62,7 +62,7 @@ public:
 	File targetFile(void);
 	std::string root(void) const;
 
-	URL url(void);
+	const URL& url(void) const;
 };
 
 #endif
