@@ -20,7 +20,7 @@ void MethodMaker::make(Client& client, Request& req, Response& res, ResponseMake
 
 	try {
 		// 임시로 GET 으로 세ㅣㅇrequest 에서 method를 받아 와야함. 
-		IMethod* method = Method::METHOD[Method::GET];
+		IMethod* method = Method::METHOD[client.parser().method()];
 		method->doMethod(req, res, client);
 		std::cout << "<MethodMaker::make> in do method !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 		// Method::METHOD[Method::GET].

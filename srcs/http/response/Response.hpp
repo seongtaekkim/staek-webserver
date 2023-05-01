@@ -5,6 +5,9 @@
 #include "../../util/Storage.hpp"
 #include "StatusLine.hpp"
 #include "IBody.hpp"
+#include "ResponseByString.hpp"
+#include "../../util/ReleaseResource.hpp"
+
 
 // #include "../Header.hpp"
 // #include "make/ResponseMaker.hpp"
@@ -27,6 +30,7 @@ public:
 	bool store(Storage& buffer);
 	IBody* body(void) const;
 	void body(IBody* body);
+	void body(const std::string body);
 
 	void status(HTTPStatus::StateType& status);
 	HTTPStatus::StateType& status(void);
