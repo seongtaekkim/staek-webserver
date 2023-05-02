@@ -14,6 +14,10 @@
 #include "../../exception/Exception.hpp"
 #include "../../iom/KqueueManage.hpp"
 #include "../response/StatusLine.hpp"
+#include "../parse/Parser.hpp"
+#include "../parse/PathParser.hpp"
+
+#include "../../exception/Exception.hpp"
 
 class Server;
 /**
@@ -46,6 +50,8 @@ private:
 	ResponseMaker	_maker;
 	bool 			_isKeepAlive;
 	int				_currProgress;
+	Parser			_parser;
+	PathParser		_pathParser;
 
 	Client(void);
 	Client& operator=(const Client& other);
@@ -62,6 +68,7 @@ public:
 	bool progressBody(void);
 
 	int state(void);
+	Parser parser(void);
 };
 
 #endif

@@ -5,7 +5,7 @@ int Client::_s_connCnt = 0;
 
 Client::Client(InetAddress inetAddress, Server& server, Socket& socket)
 	: _inetAddress(inetAddress), _server(server), _socket(socket), _in(this->_socket), _out(this->_socket)
-	, _req(), _res(), _maker(this->_req, this->_res, *this) {
+	, _req(), _res(), _maker(this->_req, this->_res, *this), _parser(), _pathParser() {
 	Client::_s_connCnt++;
 	this->_currProgress = Client::HEADER;
 	KqueueManage::instance().create(this->_socket, *this);
@@ -20,6 +20,7 @@ Client::~Client(void) {
 	Client::_s_connCnt--;
 	// delete &this->_in;
 	// delete &this->_out;
+	std::cout << "client disconnect !! " << this->_socket.getFd() << std::endl;
 	this->_server.disconnect(*this);
 	// delete &this->_socket;
 }
@@ -37,9 +38,7 @@ bool Client::recv(FileDescriptor &fd) {
 	}
 
 	std::cout << "request start ===============================" << std::endl;
-
-	URL url = URL().builder().appendPath("http://localhost/Makefile").fragment("hash").build();
-	_req = Request(StatusLine(), url);
+	// std::cout << this->_in.storage() << std::endl;
 
 	// Request test(this->_in.storage());
 
@@ -61,7 +60,6 @@ bool Client::recv(FileDescriptor &fd) {
 	// std::cout << "< Body > \n";
 	// std::cout << test.body() << std::endl;
 	std::cout << "request end ===============================" << std::endl;
-
 	std::cout << "receive=================================================================" << std::endl;
 	// std::cout << this->_in.storage() << std::endl;
 	std::cout << "receive end =================================================================" << std::endl;
@@ -117,8 +115,69 @@ bool Client::progress(void) {
 
 
 bool Client::progressHead(void) {
-	this->_currProgress = Client::BODY;
-	progressBody();
+
+	char c;
+	while (this->_in.getC(c)) {
+		std::cout << c ;
+		this->_in.next();
+		//bool catched = true;
+		try {
+			_parser.parse(c);
+			// if (m_parser.state() == HTTPRequestParser::S_END)
+			// {
+			// 	// std::cout << "******" << std::endl;
+			// 	m_request = HTTPRequest(m_parser.version(), m_parser.url(), m_parser.headerFields());
+			// 	m_filterChain.doChainingOf(FilterChain::S_BEFORE);
+
+			// 	if (m_request.method().absent() && m_response.ended())
+			// 	{
+			// 		m_filterChain.doChainingOf(FilterChain::S_AFTER);
+			// 		m_state = S_END;
+			// 		return (true);
+			// 	}
+				
+				// if (this->parser().method())
+				// {
+				// 	m_parser.state() = HTTPRequestParser::S_BODY;
+				// 	m_state = S_BODY;
+				// 	m_parser.consume(0);
+
+				// 	if (m_parser.state() != HTTPRequestParser::S_END) /* No body */
+				// 		return (readBody());
+				// }
+				// else
+				// {
+				// 	NIOSelector::instance().update(m_socket, NIOSelector::NONE);
+				// 	m_filterChain.doChainingOf(FilterChain::S_BETWEEN);
+				// 	m_state = S_END;
+				// }
+			// }
+			if (this->_parser.state() == Parser::END) {
+				// std::cout << "this->_parser.state() : " << this->_parser.state() << std::endl;
+				// std::cout << "_parser.pathParser().path() : " << this->_parser.pathParser().path() << std::endl;
+				// URL url = URL().builder().appendPath("http://localhost/Makefile").fragment("hash").build();
+				URL url = URL().builder().appendPath(_parser.pathParser().path()).build();
+				_req = Request(StatusLine(), url);
+				this->_currProgress = Client::BODY;
+				progressBody();
+				break;
+			}
+			// catched = false;
+		} catch (Exception &exception) {
+			std::cerr << "Failed to process header: " << exception.message() << std::endl;
+			this->_res.status(HTTPStatus::STATE[HTTPStatus::BAD_REQUEST]);
+		}
+
+		// if (catched)
+		// {
+		// 	NIOSelector::instance().update(m_socket, NIOSelector::NONE);
+		// 	m_filterChain.doChainingOf(FilterChain::S_AFTER);
+		// 	m_state = S_END;
+
+		// 	break;
+		// }
+	}
+
 	return (true);
 }
 
@@ -146,7 +205,8 @@ bool Client::progressBody(void) {
 			this->_maker.executeMaker();
 			this->_currProgress = Client::END;
 		}
-	}
+	} else 
+		std::cout << "not end!!!!!!!!!!!" << std::endl;
 
 	return (false);
 }
@@ -159,4 +219,8 @@ int Client::state(void) {
 
 
 	return (this->_currProgress);
+}
+
+Parser Client::parser(void) {
+	return (this->_parser);
 }

@@ -10,7 +10,9 @@ Server::Server(std::string host, int port, std::list<ServerBlock *> sb)
 		//_clients(),
 {}
 
-Server::~Server(void) {}
+Server::~Server(void) {
+	delete _socket;
+}
 
 void Server::init(void) {
 	this->_socket->reuse();
@@ -53,8 +55,8 @@ Socket* Server::connect(Socket* serverSocket) {
 }
 
 void Server::disconnect(Client& client) {
+	_clients.erase(client.socket().getFd());
 	std::cout << "disconnect " << std::endl;
-	this->_clients.clear();
 }
 
 
