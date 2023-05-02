@@ -1,0 +1,28 @@
+
+#include "../../srcs/util/Base64.hpp"
+#include "../test_unit.hpp"
+#include <string>
+
+static std::string encode(const char *str) {
+	return (Base64::encode(str));
+}
+
+static std::string decode(const char *str) {
+	return (Base64::decode(str));
+}
+
+CASE("base64", "encode")
+{
+	ASSERT(encode("Hello") == "SGVsbG8=");
+	ASSERT(encode("World") == "V29ybGQ=");
+
+	return (0);
+}
+
+CASE("base64", "decode")
+{
+	ASSERT(decode("SGVsbG8=") == "Hello");
+	ASSERT(decode("V29ybGQ=") == "World");
+
+	return (0);
+}
