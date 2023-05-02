@@ -73,7 +73,7 @@ void KqueueManage::delEvent(int fd) {
 	}
 	::close(fd);
 	this->_callbackMap.erase(fd);
-	std::cout << "disconnected : " << fd <<  std::endl;
+	this->_fdMap.erase(fd);
 }
 
 void KqueueManage::kevent() {
@@ -99,14 +99,18 @@ struct kevent* KqueueManage::eventArr() {
 
 void KqueueManage::create(FileDescriptor& fd, RWCallback& callback) {
 	int raw = fd.getFd();
-
-	std::cout << "KqueueManage::create : " << raw << std::endl;
 	this->_callbackMap[raw] = &callback;
 	this->_fdMap[raw] = &fd;
 }
 
 bool KqueueManage::recv(int fd) {
-	std::cout << "rKqueueManage::recv : " << fd << std::endl;
+	std::cout << _fdMap.size() << std::endl;
+	std::cout << _callbackMap.size() << std::endl;
 	bool b = this->_callbackMap[fd]->recv(*this->_fdMap[fd]);
+	return (b);
+}
+
+bool KqueueManage::send(int fd) {
+	bool b = this->_callbackMap[fd]->send(*this->_fdMap[fd]);
 	return (b);
 }
