@@ -7,181 +7,13 @@
 #include <string>
 #include <vector>
 #include "../util/Time.hpp"
-#include "response/method/Method.hpp"
 #include "SHTTP.hpp"
+#include "URL.hpp"
 
 class Mime;
 class URL;
 
 class Header {
-	public:
-		typedef std::list<std::string> list;
-		typedef list::const_iterator lconst_iterator;
-
-		// typedef std::map<std::string, list, StringUtils::InsensitiveCompare> map;
-		typedef std::map<std::string, list> map;
-		typedef map::const_iterator mconst_iterator;
-
-	private:
-		map m_storage;
-
-	public:
-		Header(void);
-		Header(map storage);
-		Header(const Header &other);
-		Header& operator=(const Header &other);
-		virtual ~Header();
-
-		inline bool
-		operator ==(const Header &other) const
-		{
-			return (m_storage == other.m_storage);
-		}
-
-		Header&
-		acceptCharsets(const std::string &value);
-
-		Header&
-		acceptLanguage(const std::string &value);
-
-		Header&
-		allow(const Method &method);
-
-		Header&
-		allow(const std::vector<const Method*> &methods);
-
-		Header&
-		allow(const std::list<const Method*> &methods);
-
-		Header&
-		allow(const std::string &value);
-
-		Header&
-		authorization(const std::string &value);
-
-		Header&
-		authorization(const std::string &type, const std::string &credentials);
-
-		Header&
-		contentLanguage(const std::string &value);
-
-		Header&
-		contentLength(size_t length);
-
-		Header&
-		contentLocation(const std::string &value);
-
-		// Header&
-		// contentType(const MimeRegistry &registry, const std::string &extension);
-
-		Header&
-		contentType(const std::string &MimeType);
-
-		Header&
-		contentType(const Mime &Mime);
-
-		Header&
-		contentType(const Mime* &optional);
-
-		Header&
-		date(void);
-
-		Header&
-		date(const std::string &date);
-
-		Header&
-		date(const std::string &value);
-
-		Header&
-		host(const std::string &value);
-
-		Header&
-		lastModified(long seconds);
-
-		Header&
-		lastModified(const Time &time);
-
-		Header&
-		lastModified(const std::string &date);
-
-		Header&
-		lastModified(const std::string &value);
-
-		Header&
-		location(const std::string &value);
-
-		Header&
-		location(const URL &url);
-
-		Header&
-		referer(const std::string &value);
-
-		Header&
-		retryAfter(size_t seconds);
-
-		Header&
-		retryAfter(const std::string &date);
-
-		Header&
-		retryAfter(const std::string &value);
-
-		Header&
-		server(void);
-
-		Header&
-		server(const std::string &value);
-
-		Header&
-		transferEncoding(const std::vector<std::string> &encodings);
-
-		Header&
-		transferEncoding(const std::list<std::string> &encodings);
-
-		Header&
-		transferEncoding(const std::string &value);
-
-		Header&
-		chunkedTransferEncoding(void);
-
-		Header&
-		userAgent(const std::string &value);
-
-		Header&
-		wwwAuthenticate(const std::string &type);
-
-		Header&
-		wwwAuthenticate(const std::string &type, const std::string &realm);
-
-		Header&
-		wwwAuthenticate(const std::string &type, const std::string realm);
-
-		Header&
-		connection(const std::string &value);
-
-		Header&
-		html(void);
-
-		Header&
-		httpMessage(void);
-
-		Header&
-		set(const std::string &key, const std::string &value, bool folding = false);
-
-		Header&
-		merge(const Header &headerFields);
-
-		const std::string get(const std::string &key) const;
-
-		mconst_iterator begin(void) const;
-		mconst_iterator end(void) const;
-
-		std::string format(const std::string &seperator = SHTTP::CRLF) const;
-
-		bool empty(void) const;
-		void clear();
-		map& storage(void);
-		const map& storage(void) const;
-
 	public:
 		static const std::string ACCEPT_CHARSETS;
 		static const std::string ACCEPT_LANGUAGE;
@@ -209,6 +41,62 @@ class Header {
 		static const std::string CHUNKED;
 		static const std::string CLOSE;
 		static const std::string KEEP_ALIVE;
+
+	public:
+		typedef std::list<std::string> list;
+		typedef list::const_iterator lconst_iterator;
+		typedef std::map<std::string, list> map;
+		typedef map::const_iterator mconst_iterator;
+
+	private:
+		map _data;
+
+	public:
+		Header(void);
+		Header(map storage);
+		Header(const Header &other);
+		Header& operator=(const Header &other);
+		virtual ~Header(void);
+		inline bool operator==(const Header &other) const {
+			return (_data == other._data);
+		}
+
+		Header& contentType(const std::string &MimeType);
+			
+		Header& host(const std::string &value);
+
+		Header& location(const std::string &value);
+		Header& location(const URL &url);
+
+		Header& server(void);
+		Header& server(const std::string &value);
+
+		// Header& transferEncoding(const std::vector<std::string> &encodings);
+		// Header& transferEncoding(const std::list<std::string> &encodings);
+		// Header& transferEncoding(const std::string &value);
+		// Header& chunkedTransferEncoding(void);
+
+		// Header& userAgent(const std::string &value);
+
+		Header& connection(const std::string &value);
+
+		Header& html(void);
+
+		Header& set(const std::string &key, const std::string &value, bool folding = false);
+
+		Header& merge(const Header &headerFields);
+
+		const std::string get(const std::string &key) const;
+
+		mconst_iterator begin(void) const;
+		mconst_iterator end(void) const;
+
+		std::string format(const std::string &seperator = SHTTP::CRLF) const;
+
+		bool empty(void) const;
+		void clear(void);
+		map& data(void);
+		const map& data(void) const;
 };
 
 #endif
