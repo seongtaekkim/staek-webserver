@@ -1,6 +1,8 @@
 #include "Parser.hpp"
 
-Parser::Parser(void) : _state(Parser::NOT_STARTED), _pathParser() {}
+long Parser::headerMaxLength = 8 * 1024 * 1024;
+
+Parser::Parser(void) : _state(Parser::NOT_STARTED),_hState(Parser::HSTATE::FIELD), _pathParser(), _header() {}
 
 Parser::~Parser(void) {}
 
@@ -73,6 +75,7 @@ void Parser::parse(char c) {
 
 	switch (this->_state)
 	{
+		std::cout << "state : " << this->_state << std::endl;
 		case Parser::NOT_STARTED:
 		{
 			if (c == '\r' || c == '\n')
@@ -120,8 +123,8 @@ void Parser::parse(char c) {
 		case Parser::PATH:
 		{
 			_pathParser.parse(c);
-
-			if (_pathParser.state() == PathParser::S_END)
+			// std::cout << "_pathParser.path() : " << _pathParser.path() << std::endl;
+			if (_pathParser.state() == PathParser::END)
 				_state = Parser::HTTP_START;
 
 			break;
@@ -237,9 +240,9 @@ void Parser::parse(char c) {
 		case Parser::HTTP_END_N:
 		{
 			if (c == '\r')
-				_state = Parser::END_R;
+				_state = Parser::STATE::END_R;
 			else if (c == '\n')
-				_state = Parser::END;
+				_state = Parser::STATE::END;
 			else
 			{
 				_state = Parser::HEADER_FIELDS;
@@ -252,25 +255,24 @@ void Parser::parse(char c) {
 		case Parser::END_R:
 		{
 			if (c == '\n')
-				_state = Parser::END;
+				_state = Parser::STATE::END;
 			else
-				_state = Parser::END;
+				_state = Parser::STATE::END;
 
 			break;
 		}
 
 		case Parser::HEADER_FIELDS:
 		{
-			// m_headerFieldsParser.consume(c);
-
-			// if (m_headerFieldsParser.state() == HTTPHeaderFieldsParser::S_END)
+			this->headerParse(c);
+			if (this->hState() == Parser::HSTATE::HEND)
 				_state = Parser::END;
-
 			break;
 		}
 
 		case Parser::BODY:
 			_state = Parser::BODY_DECODE;
+			std::cout << "body!" << std::endl;
 			// _bodyDecoder = HTTPBodyEncoding::decoderFor(m_headerFieldsParser.headerFields());
 
 			// if (m_bodyDecoder == NULL)
@@ -286,6 +288,7 @@ void Parser::parse(char c) {
 
 		case Parser::BODY_DECODE:
 		{
+			std::cout << "body!2" << std::endl;
 			// size_t consumed = 0;
 			// bool finished = m_bodyDecoder->consume(m_client.in().storage(), m_client.body(), consumed, m_max);
 
@@ -300,14 +303,13 @@ void Parser::parse(char c) {
 			// }
 
 			// if (finished)
-			// 	_state = Parser::END;
+				_state = Parser::END;
 
 			break;
 		}
 
 		case Parser::END:
 			break;
-
 	}
 }
 
@@ -321,6 +323,150 @@ std::string Parser::method(void) {
 }
 
 
-Parser::STATE Parser::state(void) const {
+Parser::STATE Parser::state(void) {
 	return (this->_state);
+}
+
+void Parser::state(Parser::STATE state) {
+	this->_state = state;
+}
+
+
+void Parser::headerParse(char c) {
+	switch (this->_hState)
+	{
+		case Parser::HSTATE::FIELD:
+		{
+			if (c == ' ')
+			{
+				if (m_key.empty())
+					throw Exception("Space before field");
+				else
+					throw Exception("Space after field");
+			}
+			else if (c == ':')
+				_hState = Parser::HSTATE::COLON;
+			else
+				m_key += c;
+
+			break;
+		}
+		case Parser::HSTATE::COLON:
+		{
+			if (c == ' ')
+				_hState = Parser::HSTATE::SPACES_BEFORE_VALUE;
+			else
+			{
+				_hState = Parser::HSTATE::VALUE;
+				m_value += c;
+			}
+
+			break;
+		}
+		case Parser::HSTATE::SPACES_BEFORE_VALUE:
+		{
+			if (c != ' ')
+			{
+				_hState = Parser::HSTATE::VALUE;
+				m_value += c;
+			}
+
+			break;
+		}
+		case Parser::HSTATE::VALUE:
+		{
+			if (c == ' ')
+				_hState = Parser::HSTATE::SPACES_AFTER_VALUE;
+			else if (c == '\r')
+				commit(Parser::HSTATE::HEND_R);
+			else if (c == '\n')
+				commit(Parser::HSTATE::HEND_N);
+			else
+				m_value += c;
+
+			break;
+		}
+
+		case Parser::HSTATE::SPACES_AFTER_VALUE:
+		{
+			if (c == ' ')
+				_hState = Parser::HSTATE::SPACES_AFTER_VALUE;
+			else if (c == '\r')
+				commit(Parser::HSTATE::HEND_R);
+			else if (c == '\n')
+				commit(Parser::HSTATE::HEND_N);
+			else
+			{
+				m_value += ' ';
+				m_value += c;
+				_hState = Parser::HSTATE::VALUE;
+			}
+
+			break;
+		}
+		case Parser::HSTATE::HEND_R:
+		{
+			if (c == '\n')
+				_hState = Parser::HSTATE::HEND_N;
+			else
+				throw Exception("Expected a \\n");
+
+			break;
+		}
+		case Parser::HSTATE::HEND_N:
+		{
+			if (c == '\r')
+				_hState = Parser::HSTATE::HEND_R2;
+			else if (c == '\n')
+				_hState = Parser::HSTATE::HEND;
+			else
+			{
+				m_key += c;
+				_hState = Parser::HSTATE::FIELD;
+			}
+
+			break;
+		}
+		case Parser::HSTATE::HEND_R2:
+		{
+			if (c == '\n')
+				_hState = Parser::HSTATE::HEND;
+			else
+				throw Exception("Expected a \\n");
+
+			break;
+		}
+
+		case Parser::HSTATE::HEND:
+			return;
+	}
+	this->_headerSize += 1;
+	std::cout << "_hState : " << _hState << std::endl; 
+	if (this->_headerSize >= Parser::headerMaxLength)
+		throw Exception("too long header exception");
+}
+
+void Parser::commit(Parser::HSTATE nextState) {
+	_header.set(m_key, m_value, true);
+
+	m_key.clear();
+	m_value.clear();
+
+	_hState = nextState;
+}
+
+void Parser::headerClear(void) {
+	_hState = Parser::HSTATE::FIELD;
+	_header.clear();
+	m_key.clear();
+	m_value.clear();
+	_headerSize = 0;
+}
+
+Parser::HSTATE Parser::hState(void) const {
+	return (this->_hState);
+}
+
+const Header& Parser::header(void) const {
+	return (this->_header);
 }

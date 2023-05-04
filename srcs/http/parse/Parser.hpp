@@ -5,10 +5,12 @@
 #include "../../exception/Exception.hpp"
 #include <vector>
 #include <string>
+#include <iostream>
+#include "../Header.hpp"
 
-// #define SP		' '
-// #define CRLF	"\r\n"
 #define HTAB	'\t'
+
+class Header;
 
 /**
  * @brief Parser Base class
@@ -40,10 +42,29 @@ public:
 		END_R,
 		END
 	};
+	enum HSTATE
+	{
+		FIELD = 20,
+		COLON,
+		SPACES_BEFORE_VALUE,
+		VALUE,
+		SPACES_AFTER_VALUE,
+		HEND_R,
+		HEND_N,
+		HEND_R2,
+		HEND
+	};
+	static long headerMaxLength;
 private:
 	Parser::STATE	_state;
 	PathParser		_pathParser;
 	std::string		_method;
+
+	Parser::HSTATE	_hState;
+	long			_headerSize;
+	Header			_header;
+	std::string		m_key;
+	std::string		m_value;
 public:
 	Parser(void);
 	~Parser(void);
@@ -55,7 +76,16 @@ public:
 	void parse(char c);
 	PathParser pathParser(void) const;
 	std::string method(void);
-	Parser::STATE state(void) const;
+	Parser::STATE state(void);
+	void state(Parser::STATE state);
+
+	void headerParse(char c);
+	void commit(Parser::HSTATE nextState);
+	void headerClear(void);
+	Parser::HSTATE hState(void) const;
+
+	const Header& header(void) const;
+
 };
 
 #endif
