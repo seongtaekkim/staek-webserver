@@ -443,7 +443,7 @@ void Parser::headerParse(char c) {
 }
 
 void Parser::commit(Parser::HSTATE nextState) {
-	_header.set(m_key, m_value, true);
+	_header.append(m_key, m_value, true);
 
 	m_key.clear();
 	m_value.clear();
