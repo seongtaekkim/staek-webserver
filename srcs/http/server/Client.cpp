@@ -75,8 +75,8 @@ bool Client::send(FileDescriptor& fd) {
 
 	(void)fd;
 	std::cout<< "send in in ini " << std::endl;
-	std::cout << this->_in.size() << std::endl;
-	if (this->_in.size() == 0)
+
+	if (this->_currProgress != Client::END)
 		return (false);
     ssize_t ret = 0;
 	// request, response 로직에서 생서한 응답버퍼 _out 를 send해야 함.
@@ -136,30 +136,22 @@ bool Client::progressHead(void) {
 			// 		return (true);
 			// 	}
 				
-				// if (this->parser().method())
-				// {
-				// 	m_parser.state() = HTTPRequestParser::S_BODY;
-				// 	m_state = S_BODY;
-				// 	m_parser.consume(0);
 
-				// 	if (m_parser.state() != HTTPRequestParser::S_END) /* No body */
-				// 		return (readBody());
-				// }
-				// else
-				// {
-				// 	NIOSelector::instance().update(m_socket, NIOSelector::NONE);
-				// 	m_filterChain.doChainingOf(FilterChain::S_BETWEEN);
-				// 	m_state = S_END;
-				// }
 			// }
+			URL url = URL().builder().appendPath(_parser.pathParser().path()).build();
+			_req = Request(StatusLine(), url);
 			if (this->_parser.state() == Parser::END) {
-				// std::cout << "this->_parser.state() : " << this->_parser.state() << std::endl;
-				// std::cout << "_parser.pathParser().path() : " << this->_parser.pathParser().path() << std::endl;
-				// URL url = URL().builder().appendPath("http://localhost/Makefile").fragment("hash").build();
-				URL url = URL().builder().appendPath(_parser.pathParser().path()).build();
-				_req = Request(StatusLine(), url);
-				this->_currProgress = Client::BODY;
-				progressBody();
+				// if (Method::METHOD[this->parser().method()]->getHasBody() == true) {
+				if (1 == 2) {
+					_parser.state(Parser::STATE::BODY);
+					this->_currProgress = Client::BODY;
+					_parser.parse(0);
+					if (_parser.state() != Parser::END)
+						return (progressBody());
+				} else {
+					this->_maker.executeMaker();
+					this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+				}
 				break;
 			}
 			// catched = false;
@@ -205,9 +197,7 @@ bool Client::progressBody(void) {
 			this->_maker.executeMaker();
 			this->_currProgress = Client::END;
 		}
-	} else 
-		std::cout << "not end!!!!!!!!!!!" << std::endl;
-
+	}
 	return (false);
 }
 

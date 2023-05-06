@@ -13,6 +13,7 @@ public:
 	static std::string 			VERSION();
 	static const char*			DATEFORMAT;
 	static const int			DEFAULT_READSIZE;
+	static const std::string	APPLICATION_NAME;
 };
 
 #endif

@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-#define ISSPACE		"\t\n\v\f\r "
-
 class Base {
 public:
     static const std::string DECIMAL;
@@ -17,29 +15,29 @@ public:
     ~Base(void);
     template <typename T>
     static T convert(std::string str, const std::string base) {
-	int		length;
-	int		result;
-	int		sign;
+        int		length;
+        int		result;
+        int		sign;
 
-	sign = 1;
-	result = 0;
-	length = base.size();
-	std::string::iterator bit = str.begin();
-	for (std::string::iterator i = bit ; i != str.end() ; ++i) {
-		if ((*i) == '+' || (*i) == '-') {
-			if ((*i) == '-')
-				sign *= -1;
-			continue ;
-		}
-		if (getBase(*i, base) > -1) {
-			result = result * length;
-			result = result + getBase(*i, base);
-		}
-		else
-			break ;
-	}
-	return (T(result * sign));
-}
+        sign = 1;
+        result = 0;
+        length = base.size();
+        std::string::iterator bit = str.begin();
+        for (std::string::iterator i = bit ; i != str.end() ; ++i) {
+            if ((*i) == '+' || (*i) == '-') {
+                if ((*i) == '-')
+                    sign *= -1;
+                continue ;
+            }
+            if (getBase(*i, base) > -1) {
+                result = result * length;
+                result = result + getBase(*i, base);
+            }
+            else
+                break ;
+        }
+        return (T(result * sign));
+    }
     static int getBase(char c, std::string base);
 };
 

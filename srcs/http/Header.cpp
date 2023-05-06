@@ -43,11 +43,11 @@ Header& Header::operator=(const Header& other) {
 }
 
 Header& Header::host(const std::string &value) {
-	return (set(HOST, value));
+	return (append(HOST, value));
 }
 
 Header& Header::location(const std::string &value) {
-	return (set(LOCATION, value));
+	return (append(LOCATION, value));
 }
 
 Header& Header::location(const URL &url) {
@@ -59,7 +59,7 @@ Header& Header::server(void) {
 }
 
 Header& Header::server(const std::string &value) {
-	return (set(SERVER, value));
+	return (append(SERVER, value));
 }
 
 // Header& Header::transferEncoding(const std::vector<std::string> &encodings) {
@@ -83,20 +83,22 @@ Header& Header::server(const std::string &value) {
 // }
 
 Header& Header::connection(const std::string& value) {
-	return (set(CONNECTION, value));
+	return (append(CONNECTION, value));
 }
 
-Header& Header::contentType(const std::string &mimeType)
-{
-	std::cout << "contentType!!!!!!" << std::endl;
-	return (set(CONTENT_TYPE, mimeType));
+Header& Header::contentType(const std::string &mimeType) {
+	return (append(CONTENT_TYPE, mimeType));
 }
 
 Header& Header::html(void) {
 	return (contentType(MIME_HTML));
 }
 
-Header& Header::set(const std::string &key, const std::string &value, bool folding) {
+
+/**
+ @ref RFC 7230 - 3.2.2 
+*/
+Header& Header::append(const std::string &key, const std::string &value, bool folding) {
 	static std::string comaAndASpace = ", ";
 
 	list &lst = _data[key];
@@ -106,7 +108,7 @@ Header& Header::set(const std::string &key, const std::string &value, bool foldi
 	else
 	{
 		if (folding)
-			lst.front() += comaAndASpace + value; /* RFC 7230 - 3.2.2 */
+			lst.front() += comaAndASpace + value;
 		else
 			lst.front() = value;
 	}
@@ -139,17 +141,13 @@ Header::mconst_iterator Header::end(void) const {
 	return (_data.end());
 }
 
-std::string
-Header::format(const std::string &separator) const
-{
+std::string Header::format(const std::string &separator) const {
 	static std::string colonAndASpace = ": ";
 
 	std::string str;
 
-	for (mconst_iterator it = begin(); it != end(); it++)
-	{
+	for (mconst_iterator it = begin(); it != end(); it++) {
 		const list &lst = it->second;
-
 		for (lconst_iterator lit = lst.begin(); lit != lst.end(); lit++)
 			str += it->first + colonAndASpace + *lit + separator;
 	}

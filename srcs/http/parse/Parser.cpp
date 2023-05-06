@@ -164,9 +164,7 @@ void Parser::parse(char c) {
 		{
 			if (c != 'P')
 				throw Exception("Expected `P`");
-
 			_state = Parser::HTTP_HTTP;
-
 			break;
 		}
 
@@ -174,9 +172,7 @@ void Parser::parse(char c) {
 		{
 			if (c != '/')
 				throw Exception("Expected `/`");
-
 			_state = Parser::HTTP_SLASH;
-
 			break;
 		}
 

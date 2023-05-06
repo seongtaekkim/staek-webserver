@@ -6,6 +6,7 @@ const int			SHTTP::MAJOR = 1;
 const int			SHTTP::MINOR = 1;
 const char*			SHTTP::DATEFORMAT = "%a, %d %b %Y %H:%M:%S GMT";
 const int			SHTTP::DEFAULT_READSIZE = 32768;
+const std::string	SHTTP::APPLICATION_NAME = "webserv";
 
 std::string SHTTP::VERSION() {
 	std::stringstream version ;

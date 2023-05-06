@@ -82,7 +82,7 @@ class Header {
 
 		Header& html(void);
 
-		Header& set(const std::string &key, const std::string &value, bool folding = false);
+		Header& append(const std::string &key, const std::string &value, bool folding = false);
 
 		Header& merge(const Header &headerFields);
 

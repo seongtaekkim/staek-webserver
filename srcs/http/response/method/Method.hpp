@@ -17,7 +17,6 @@ public:
 	static MethodMap METHOD;
 	enum { GET, POST, DELETE };
 private:
-	Delete del;
 	MethodMaker* _maker; // 인터페이스는 포인터 혹은 레퍼런스로 정의해야 한다.
 	static MethodMap init() {
 		MethodMap map;

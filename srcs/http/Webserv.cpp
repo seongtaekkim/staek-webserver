@@ -24,7 +24,7 @@ void Webserv::start(void) {
 		KqueueManage::instance().kevent();
 		std::cout << "KqueueManage::instance()._changeVec.size()" << KqueueManage::instance()._changeVec.size() << std::endl;
 		(&KqueueManage::instance())->_changeVec.clear();
-		std::cout << "kevent" << std::endl;
+		std::cout << "kevent : " << KqueueManage::instance().eventCount() <<  std::endl;
         for (int i = 0; i < KqueueManage::instance().eventCount() ; ++i) {
             curr_event = &KqueueManage::instance().eventArr()[i];
 			//  (&KqueueManage::instance())->changeVec().clear();
@@ -73,7 +73,7 @@ void Webserv::start(void) {
 					if (server.clients()[curr_event->ident]->state() != server.clients()[curr_event->ident]->END) {
 						// server.clients().erase(curr_event->ident);
 						// KqueueManage::instance().delEvent(curr_event->ident);
-						std::cout << "not end " << std::endl;
+						std::cout << "not end " << curr_event->ident << std::endl;
 						continue;
 					}
 					bool b = KqueueManage::instance().send(curr_event->ident);

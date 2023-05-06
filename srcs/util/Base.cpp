@@ -14,4 +14,3 @@ int	Base::getBase(char c, std::string base) {
 		return (-1);
 	return (index);
 }
-
