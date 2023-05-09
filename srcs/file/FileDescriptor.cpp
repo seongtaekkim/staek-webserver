@@ -2,6 +2,16 @@
 
 FileDescriptor::FileDescriptor(int fd) : _fd(fd), _valid(false), _isClosed(false) {}
 
+FileDescriptor::FileDescriptor(const FileDescriptor& other) {
+	if (this != &other) {
+		this->_fd = other._fd;
+		this->_isClosed = other._isClosed;
+		this->_valid = other._valid;
+	}
+	Storage::operator=(other);
+}
+
+
 FileDescriptor::~FileDescriptor() {
 	if (!this->_isClosed && this->_valid)
 		::close(this->_fd);
@@ -73,4 +83,8 @@ bool FileDescriptor::isClosed() const {
 void FileDescriptor::validateNotClosed(void) const {
 	if (_isClosed)
 		throw IllegalStateException("fd was closed");
+}
+
+FileDescriptor* FileDescriptor::create(FileDescriptor& fd) {
+	return (new FileDescriptor(fd));
 }

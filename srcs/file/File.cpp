@@ -56,6 +56,9 @@ bool File::create() {
 	{
 		std::string newPath = copy.substr(0, found);
 		std::string remainedPath = copy.substr(found + 1, std::string::npos);
+		std::cout << "newPathnewPath : " << newPath << std::endl;
+		std::cout << "remainedPathremainedPath : " << remainedPath << std::endl;
+		std::cout << "previousStrpreviousStrpreviousStr : " << previousStr << std::endl;
 		if (newPath == "./" || newPath == "/")
 		{
 			previousStr = newPath;
@@ -63,7 +66,9 @@ bool File::create() {
 		}
 		else
 		{
+			std::cout << "previousStr + + newPath : " << (previousStr + newPath) << std::endl;
 			File file(previousStr + "/" + newPath);
+			std::cout << "previousStr + + newPath : " << file.path().c_str()<< std::endl;
 			if (!file.exists())
 				::mkdir(file.path().c_str(), 0777);
 			previousStr = newPath;
@@ -71,7 +76,7 @@ bool File::create() {
 		}
 
 	}
-	if ((fd = ::open(this->_path.c_str(), O_CREAT, 0666)) == -1)
+	if ((fd = ::open(this->_path.c_str(), O_CREAT, 0777)) == -1)
 		IOException("filed open file", errno);
 	close(fd);
 	return (true);
@@ -79,8 +84,7 @@ bool File::create() {
 
 FileDescriptor* File::open(int flags, mode_t mode) const {
 	int fd;
-
-	if ((fd = ::open(this->_path.c_str(), mode)) == -1) {
+	if ((fd = ::open(this->_path.c_str(), flags, mode)) == -1) {
 		throw IOException("failed open file", errno);
 	}
 	FileDescriptor *f = new FileDescriptor(fd);
@@ -179,8 +183,8 @@ std::string File::concatRootAndResource(const std::string& root, const std::stri
 	bool bStart = false;
 	bool bEnd = false;
 	char slash = '/';
-		std::cout << "concatRootAndResource : " << root << std::endl;
-		std::cout << "concatRootAndResource : " << resource << std::endl;
+		// std::cout << "concatRootAndResource : " << root << std::endl;
+		// std::cout << "concatRootAndResource : " << resource << std::endl;
 	if (resource.c_str()[0] == slash)
 		bStart = true;
 	if (root.c_str()[root.length() - 1] == slash)

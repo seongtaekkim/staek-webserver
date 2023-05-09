@@ -28,10 +28,10 @@ protected:
 
 private:
 	FileDescriptor(void);
-	FileDescriptor(const FileDescriptor &other);
 	FileDescriptor& operator=(const FileDescriptor &other);
 public:
 	FileDescriptor(int fd);
+	FileDescriptor(const FileDescriptor &other);
 	virtual ~FileDescriptor();
 	ssize_t read(void *buf, std::size_t nbyte);
 	ssize_t write(const void *buf, std::size_t nbyte);
@@ -41,6 +41,8 @@ public:
 	int		getFd(void) const;
 	bool	isClosed(void) const;
 	void	validateNotClosed(void) const;
+public:
+	static FileDescriptor* create(FileDescriptor& fd);
 };
 
 #endif
