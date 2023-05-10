@@ -39,6 +39,14 @@ std::string ServerBlock::getRoot(void) {
 	return (this->_root);
 }
 
+void ServerBlock::setIndex(std::string str) {
+	this->_index = str;
+}
+
+std::string ServerBlock::getIndex(void) {
+	return (this->_index);
+}
+
 void ServerBlock::setCgi(std::string str) {
 	int ret= 0 ;
 	int firstWord = 0;
@@ -75,6 +83,7 @@ void ServerBlock::check(std::string key, std::string value) {
 	_map["server_name"] = &ServerBlock::setServerName;
 	_map["root"] = &ServerBlock::setRoot;
 	_map["cgi"] = &ServerBlock::setCgi;
+	_map["index"] = &ServerBlock::setIndex;
 
 	_pos = _map.find(key);
 	if (_pos != _map.end()) {

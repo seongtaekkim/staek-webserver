@@ -14,6 +14,7 @@ private:
 	std::string							_root;
 	std::pair<std::string, std::string>	_cgi;
 	std::list<LocationBlock*>			_locationBlockList;
+	std::string							_index;
 	// std::pair<std::string, std::string>	_errorPage;
 public:
 	ServerBlock(void);
@@ -29,6 +30,8 @@ public:
 	std::string getServerName(void);
 	void setRoot(std::string str);
 	std::string getRoot(void);
+	void setIndex(std::string str);
+	std::string getIndex(void);
 	void setCgi(std::string str);
 	std::pair<std::string, std::string> getCgi(void);
 

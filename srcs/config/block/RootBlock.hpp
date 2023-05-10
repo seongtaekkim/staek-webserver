@@ -12,14 +12,13 @@ public:
 	// typedef FuncMap::iterator FuncMapIter;
 	// FuncMap							_map;
 	// FuncMapIter						_pos;
-	
-	
 
 private:
 	std::list<ServerBlock*>			_serverBlockList;
 	int								_maxConnection;
 	int								_workerCnt;
 	std::string						_include;
+	std::string						_root;
 public:
 	RootBlock(const RootBlock& other);
 	RootBlock& operator=(const RootBlock& other);
