@@ -1,3 +1,4 @@
+#include "main.hpp"
 
 #include <iostream>
 #include "log/LogFactory.hpp"
@@ -7,9 +8,6 @@
 #include <map>
 #include <vector>
 
-# ifndef APPLICATION_NAME
-#  define APPLICATION_NAME "webserv"
-# endif
 
 
 using namespace std;
