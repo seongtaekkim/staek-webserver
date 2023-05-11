@@ -27,8 +27,7 @@ void exit_with_perror(const string& msg)
 }
 
 void change_events(vector<struct kevent>& change_list, uintptr_t ident, int16_t filter,
-        uint16_t flags, uint32_t fflags, intptr_t data, void *udata)
-{
+        uint16_t flags, uint32_t fflags, intptr_t data, void *udata) {
     struct kevent temp_event;
 
     EV_SET(&temp_event, ident, filter, flags, fflags, data, udata);
@@ -98,6 +97,7 @@ struct kevent* KqueueManage::eventArr() {
 }
 
 void KqueueManage::create(FileDescriptor& fd, RWCallback& callback) {
+	std::cout << "KqueueManage::create : " << fd.getFd() << std::endl;
 	int raw = fd.getFd();
 	this->_callbackMap[raw] = &callback;
 	this->_fdMap[raw] = &fd;
@@ -111,6 +111,10 @@ bool KqueueManage::recv(int fd) {
 }
 
 bool KqueueManage::send(int fd) {
-	bool b = this->_callbackMap[fd]->send(*this->_fdMap[fd]);
+	std::cout << "KqueueManage::send : " << fd << std::endl;
+	bool b;
+	if (!this->_callbackMap[fd])
+		return (true);
+	b = this->_callbackMap[fd]->send(*this->_fdMap[fd]);
 	return (b);
 }
