@@ -2,6 +2,8 @@
 #define BASE_HPP
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 class Base {
 public:
@@ -38,6 +40,13 @@ public:
         }
         return (T(result * sign));
     }
+	template<typename T>
+	inline static std::string
+	toString(const T &t, int base) {
+		std::stringstream stream;
+		stream << std::setbase(base) << t;
+		return (stream.str());
+	}
     static int getBase(char c, std::string base);
 };
 
