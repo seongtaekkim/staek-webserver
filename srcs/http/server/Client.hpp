@@ -17,10 +17,9 @@
 #include "../parse/Parser.hpp"
 #include "../parse/PathParser.hpp"
 // #include "../response/method/IMethod.hpp"
-// #include "../response/method/Method.hpp"
 
 #include "../../exception/Exception.hpp"
-
+#include "../response/method/PutTask.hpp"
 
 class Server;
 /**
@@ -33,6 +32,8 @@ class Server;
 // class ResponseMaker;
 class Response;
 class Request;
+class PutTask;
+class Parser;
 
 class Client : public RWCallback {
 public:
@@ -42,7 +43,7 @@ private:
 	InetAddress		_inetAddress;
 	Server&			_server;
 	Socket&			_socket;
-	std::string 	_body;
+	std::string 	_body; // request body
 	SocketStorage 	_in;
 	SocketStorage 	_out;
 	//State m_state;
@@ -55,6 +56,8 @@ private:
 	int				_currProgress;
 	Parser			_parser;
 	PathParser		_pathParser;
+
+	PutTask*		_putTask;
 
 	Client(void);
 	Client& operator=(const Client& other);
@@ -71,7 +74,14 @@ public:
 	bool progressBody(void);
 
 	int state(void);
-	Parser parser(void);
+	Parser& parser(void);
+	Response& response(void);
+	ResponseMaker& maker(void);
+	void fileWrite(PutTask& task);
+	std::string& body(void);
+	SocketStorage& in(void);
+	SocketStorage& out(void);
+	void end(void);
 };
 
 #endif

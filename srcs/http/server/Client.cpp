@@ -1,11 +1,12 @@
 #include "Client.hpp"
+#include "../response/method/Method.hpp"
 
 int Client::_s_connCnt = 0;
 
 
 Client::Client(InetAddress inetAddress, Server& server, Socket& socket)
 	: _inetAddress(inetAddress), _server(server), _socket(socket), _in(this->_socket), _out(this->_socket)
-	, _req(), _res(), _maker(this->_req, this->_res, *this), _parser(), _pathParser() {
+	, _req(), _res(), _maker(this->_req, this->_res, *this), _parser(*this), _pathParser() {
 	Client::_s_connCnt++;
 	this->_currProgress = Client::HEADER;
 	KqueueManage::instance().create(this->_socket, *this);
@@ -14,13 +15,14 @@ Client::Client(InetAddress inetAddress, Server& server, Socket& socket)
 Client::Client(const Client& other) 
 	: _inetAddress(other._inetAddress), _server(other._server)
 	, _socket(other._socket), _in(this->_socket), _out(this->_socket)
-	, _req(other._req), _res(other._res), _maker(other._maker){}
+	, _req(other._req), _res(other._res), _maker(other._maker), _parser(other._parser) {}
 
 Client::~Client(void) {
 	Client::_s_connCnt--;
 	// delete &this->_in;
 	// delete &this->_out;
 	std::cout << "client disconnect !! " << this->_socket.getFd() << std::endl;
+	ReleaseResource::pointer(this->_putTask);
 	this->_server.disconnect(*this);
 	// delete &this->_socket;
 }
@@ -72,11 +74,12 @@ bool Client::send(FileDescriptor& fd) {
 	
 	// response 종료 체크
 	// m_out size 체크
-
 	(void)fd;
 	std::cout<< "send in in ini " << std::endl;
 
-	if (this->_currProgress != Client::END)
+	// if (this->_currProgress != Client::END)
+	// 	return (false);
+	if (this->_res.isEnd() != true)
 		return (false);
     ssize_t ret = 0;
 	// request, response 로직에서 생서한 응답버퍼 _out 를 send해야 함.
@@ -138,19 +141,21 @@ bool Client::progressHead(void) {
 				
 
 			// }
-			URL url = URL().builder().appendPath(_parser.pathParser().path()).build();
-			_req = Request(StatusLine(), url);
 			if (this->_parser.state() == Parser::END) {
-				// if (Method::METHOD[this->parser().method()]->getHasBody() == true) {
-				if (1 == 2) {
+				URL url = URL().builder().appendPath(_parser.pathParser().path()).build();
+				_req = Request(_parser.header() ,StatusLine(), url);
+				if (Method::METHOD[this->parser().method()]->getHasBody() == true) {
+				// if (1 == 1) {
 					_parser.state(Parser::STATE::BODY);
 					this->_currProgress = Client::BODY;
 					_parser.parse(0);
 					if (_parser.state() != Parser::END)
 						return (progressBody());
 				} else {
+					this->_maker.setMaker();
 					this->_maker.executeMaker();
 					this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+					// this->_currProgress = Client::END;
 				}
 				break;
 			}
@@ -176,17 +181,16 @@ bool Client::progressHead(void) {
 bool Client::progressBody(void) {
 	if (!this->_in.storage().empty()) {
 		try {
-			// m_parser.consume(0);
+			_parser.parse(0);
 
 			// if (m_parser.state() == HTTPRequestParser::S_END)
 			// {
 				// if (m_response.ended())
 				// {
+					this->_maker.setMaker();
 					this->_maker.executeMaker();
 					// this->_maker .doChainingOf(FilterChain::S_AFTER);
 				// }
-
-				// NIOSelector::instance().update(m_socket, NIOSelector::NONE);
 				// m_filterChain.doChainingOf(FilterChain::S_BETWEEN);
 				this->_res.status(HTTPStatus::STATE[HTTPStatus::OK]);
 				// KqueueManage::instance().setEvent(this->_socket.getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
@@ -194,8 +198,9 @@ bool Client::progressBody(void) {
 				// }
 		} catch (Exception &exception) {
 			this->_res.status(HTTPStatus::STATE[HTTPStatus::BAD_REQUEST]);
+			this->_maker.setMaker();
 			this->_maker.executeMaker();
-			this->_currProgress = Client::END;
+			// this->_currProgress = Client::END;
 		}
 	}
 	return (false);
@@ -211,6 +216,36 @@ int Client::state(void) {
 	return (this->_currProgress);
 }
 
-Parser Client::parser(void) {
+Parser& Client::parser(void) {
 	return (this->_parser);
+}
+
+Response& Client::response(void) {
+	return (this->_res);
+}
+
+ResponseMaker& Client::maker(void) {
+	return (this->_maker);
+}
+
+void Client::fileWrite(PutTask &task) {
+	if (_putTask)
+		delete _putTask;
+	_putTask = &task;
+}
+
+std::string& Client::body(void) {
+	return (this->_body);
+}
+
+SocketStorage& Client::in(void) {
+	return (this->_in);
+}
+
+SocketStorage& Client::out(void) {
+	return (this->_out);
+}
+
+void Client::end() {
+	this->_currProgress = Client::END;
 }

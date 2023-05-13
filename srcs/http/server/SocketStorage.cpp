@@ -4,7 +4,9 @@ std::size_t	SocketStorage::_s_len = 2 << 10;
 int			SocketStorage::_s_flags = 0;
 	
 SocketStorage::SocketStorage(FileDescriptor& fd) : _fd(fd) {}
-SocketStorage::~SocketStorage(void) {}
+SocketStorage::~SocketStorage(void) {
+	std::cout << "delete SocketStorage::~SocketStorage " << std::endl;
+}
 
 SocketStorage* SocketStorage::of(Socket& socket) {
 	return (new SocketStorage(socket));
