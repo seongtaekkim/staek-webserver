@@ -58,29 +58,17 @@ Header& Header::server(void) {
 	return (server(SHTTP::APPLICATION_NAME));
 }
 
-Header& Header::server(const std::string &value) {
+Header& Header::server(const std::string& value) {
 	return (append(SERVER, value));
 }
 
-// Header& Header::transferEncoding(const std::vector<std::string> &encodings) {
-// 	return (transferEncoding(Convert::join(encodings)));
-// }
+Header& Header::transferEncoding(const std::string& value) {
+	return (append(TRANSFER_ENCODING, value));
+}
 
-// Header& Header::transferEncoding(const std::list<std::string> &encodings) {
-// 	return (transferEncoding(Convert::join(encodings)));
-// }
-
-// Header& Header::transferEncoding(const std::string &value) {
-// 	return (set(TRANSFER_ENCODING, value));
-// }
-
-// Header& Header::chunkedTransferEncoding(void) {
-// 	return (transferEncoding(CHUNKED));
-// }
-
-// Header& Header::userAgent(const std::string &value) {
-// 	return (set(USER_AGENT, value));
-// }
+Header& Header::chunkedTransferEncoding(void) {
+	return (transferEncoding(CHUNKED));
+}
 
 Header& Header::connection(const std::string& value) {
 	return (append(CONNECTION, value));
@@ -169,4 +157,8 @@ Header::map& Header::data(void) {
 
 const Header::map& Header::data(void) const {
 	return (_data);
+}
+
+Header& Header::contentLength(std::size_t length) {
+	return (append(CONTENT_LENGTH, Base::toString(length, 10)));
 }

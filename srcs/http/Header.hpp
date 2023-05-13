@@ -9,6 +9,7 @@
 #include "../util/Time.hpp"
 #include "SHTTP.hpp"
 #include "URL.hpp"
+#include "../util/Base.hpp"
 
 class Mime;
 class URL;
@@ -71,12 +72,8 @@ class Header {
 		Header& server(void);
 		Header& server(const std::string &value);
 
-		// Header& transferEncoding(const std::vector<std::string> &encodings);
-		// Header& transferEncoding(const std::list<std::string> &encodings);
-		// Header& transferEncoding(const std::string &value);
-		// Header& chunkedTransferEncoding(void);
-
-		// Header& userAgent(const std::string &value);
+		Header& transferEncoding(const std::string& value);
+		Header& chunkedTransferEncoding(void);
 
 		Header& connection(const std::string &value);
 
@@ -97,6 +94,8 @@ class Header {
 		void clear(void);
 		map& data(void);
 		const map& data(void) const;
+
+		Header& contentLength(std::size_t length);
 };
 
 #endif
