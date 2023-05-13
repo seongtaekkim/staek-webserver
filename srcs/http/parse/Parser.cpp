@@ -1,8 +1,12 @@
 #include "Parser.hpp"
 
+#include "../server/Client.hpp"
+
+class Client;
+
 long Parser::headerMaxLength = 8 * 1024 * 1024;
 
-Parser::Parser(void) : _state(Parser::NOT_STARTED),_hState(Parser::HSTATE::FIELD), _pathParser(), _header() {}
+Parser::Parser(Client& client) : _state(Parser::NOT_STARTED),_hState(Parser::HSTATE::FIELD), _pathParser(), _header(), _client(client), _isMax(false) {}
 
 Parser::~Parser(void) {}
 
@@ -269,13 +273,13 @@ void Parser::parse(char c) {
 		case Parser::BODY:
 			_state = Parser::BODY_DECODE;
 			std::cout << "body!" << std::endl;
-			// _bodyDecoder = HTTPBodyEncoding::decoderFor(m_headerFieldsParser.headerFields());
+			_bodyDecoder = HTTPBodyEncoding::decoderFor(this->_header);
 
-			// if (m_bodyDecoder == NULL)
-			// {
-			// 	_state = Parser::END;
-			// 	break;
-			// }
+			if (_bodyDecoder == NULL)
+			{
+				_state = Parser::END;
+				break;
+			}
 
 			if (c == 0)
 				break;
@@ -285,10 +289,12 @@ void Parser::parse(char c) {
 		case Parser::BODY_DECODE:
 		{
 			std::cout << "body!2" << std::endl;
-			// size_t consumed = 0;
-			// bool finished = m_bodyDecoder->consume(m_client.in().storage(), m_client.body(), consumed, m_max);
+			size_t consumed = 0;
 
-			// m_client.in().skip(consumed);
+			bool finished = _bodyDecoder->consume(_client.in().storage(), _client.body(), consumed, _isMax);
+
+			// _client.in().skip(consumed);
+			_client.in().clear();
 			// m_totalSize += consumed;
 
 			// if (m_maxBodySize != -1 && (long long)m_client.body().size() > m_maxBodySize) // TODO This kept everything in RAM...
@@ -298,9 +304,8 @@ void Parser::parse(char c) {
 			// 		throw HTTPRequestPayloadTooLargeException();
 			// }
 
-			// if (finished)
-				_state = Parser::END;
-
+			if (finished)
+				this->_state = Parser::END;
 			break;
 		}
 
@@ -437,7 +442,7 @@ void Parser::headerParse(char c) {
 			return;
 	}
 	this->_headerSize += 1;
-	std::cout << "_hState : " << _hState << std::endl; 
+	// std::cout << "_hState : " << _hState << std::endl; 
 	if (this->_headerSize >= Parser::headerMaxLength)
 		throw Exception("too long header exception");
 }

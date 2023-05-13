@@ -7,11 +7,12 @@
 #include <string>
 #include <iostream>
 #include "../Header.hpp"
-
+#include "../encode/HTTPBodyEncoding.hpp"
+#include "../decode/IHTTPBodyDecoder.hpp"
 #define HTAB	'\t'
 
 class Header;
-
+class Client;
 /**
  * @brief Parser Base class
  * @details 파싱에서 공통적으로 사용될 함수들 정의
@@ -65,8 +66,13 @@ private:
 	Header			_header;
 	std::string		m_key;
 	std::string		m_value;
-public:
+	IHTTPBodyDecoder* _bodyDecoder;
+	Client&			_client;
+	bool _isMax;
+
 	Parser(void);
+public:
+	Parser(Client& client);
 	~Parser(void);
 	static std::vector<std::string>		split(std::string str, std::string delim);
 	static std::vector<std::string>		split(std::string str, char delim);
