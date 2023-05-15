@@ -39,4 +39,4 @@ def brute(port):
         thread_launcher(args[i][0], args[i][1], args[i][2], args[i][3])
         input("Press Enter: ")
 
-brute(80)
+brute(8080)

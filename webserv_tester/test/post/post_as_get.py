@@ -21,4 +21,4 @@ def post_as_get(port):
     print(data.decode("ascii"))
     s.close()
 
-post_as_get(80)
+post_as_get(8080)
