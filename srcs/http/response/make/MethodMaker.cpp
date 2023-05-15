@@ -21,8 +21,9 @@ void MethodMaker::make(Client& client, Request& req, Response& res, ResponseMake
 	try {
 		// 임시로 GET 으로 세ㅣㅇrequest 에서 method를 받아 와야함. 
 		IMethod* method = Method::METHOD[client.parser().method()];
-		method->doMethod(req, res, client);
-		std::cout << "<MethodMaker::make> in do method !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+		std::cout << "<MethodMaker::make> in do method !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << client.parser().method() <<  std::endl;
+		if (method->doMethod(req, res, client))
+			maker.executeMaker();
 		// Method::METHOD[Method::GET].
 		// const HTTPMethod *methodPtr = HTTPMethod::find(client.parser().method());
 		// if (methodPtr)
@@ -39,12 +40,9 @@ void MethodMaker::make(Client& client, Request& req, Response& res, ResponseMake
 		// response.headers().allow(request.allowedMethods());
 		// response.status(*HTTPStatus::METHOD_NOT_ALLOWED);
 		// response.end();
-
-
-		// maker.nextMaker();
 	} catch (Exception &exception) {
 		// Failed to do method
 		res.status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
-		//maker.nextMaker();
+		maker.executeMaker();
 	}
 }
