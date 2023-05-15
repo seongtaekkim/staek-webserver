@@ -20,7 +20,7 @@ void Webserv::start(void) {
     struct kevent* curr_event;
     while (1)
     {
-		usleep(1000000); //  usleep(1000000); // delay setting
+		usleep(1000); //  usleep(1000000); // delay setting
 		KqueueManage::instance().kevent();
 		std::cout << "KqueueManage::instance()._changeVec.size()" << KqueueManage::instance()._changeVec.size() << std::endl;
 		(&KqueueManage::instance())->_changeVec.clear();
@@ -48,7 +48,7 @@ void Webserv::start(void) {
 						Socket* clientSocket = server.connect(server.getSocket());
 						std::cout << "new:clientsocket : " <<  clientSocket->getFd() << " " << curr_event->ident << std::endl;
 						KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
-						KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+						// KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 					} catch (IOException e) {}
                 }
                 else
@@ -70,7 +70,10 @@ void Webserv::start(void) {
             {
 				std::cout << "writefilter: " << curr_event->ident <<  std::endl;
 				if (server.clients()[curr_event->ident]) {
-					if (server.clients()[curr_event->ident]->state() != server.clients()[curr_event->ident]->END) {
+					std::cout << "server.clients()[curr_event->ident]->state() : " << server.clients()[curr_event->ident]->response().state() << std::endl;
+					// if (server.clients()[curr_event->ident]->state() != server.clients()[curr_event->ident]->END) {
+					if (server.clients()[curr_event->ident]->response().isEnd() != true) {
+					// if (!server.clients()[curr_event->ident]->in().storage().empty()) {
 						// server.clients().erase(curr_event->ident);
 						// KqueueManage::instance().delEvent(curr_event->ident);
 						std::cout << "not end " << curr_event->ident << std::endl;
@@ -89,9 +92,13 @@ void Webserv::start(void) {
 						KqueueManage::instance().delEvent(curr_event->ident);
 
 					}
+				} else {
+					KqueueManage::instance().send(curr_event->ident);
+					//KqueueManage::instance().delEvent(curr_event->ident);
 				}
             } else {
 				std::cout << "what is event ?? : " << curr_event->filter << std::endl;
+				
 			} 
 		}
 		std::cout << "KqueueManage::instance()._changeVec.size() ebd?? " << KqueueManage::instance()._changeVec.size() << std::endl;
