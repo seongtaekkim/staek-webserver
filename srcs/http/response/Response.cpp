@@ -1,5 +1,6 @@
 #include "Response.hpp"
-Response::Response(void) : _state(INIT), _body() {}
+Response::Response(void) : _state(INIT), _isEnd(false), _body() {	std::cout << "response create" << std::endl;
+}
 Response::Response(const Response& other) {}
 Response& Response::operator=(const Response& other) {
 	return (*this);
@@ -38,24 +39,27 @@ bool Response::store(Storage& buffer) {
 		{
 
 			std::cout << "((((((((((((((((((((((((((((((((((" << _status.first << std::endl;
-			// std::cout << buffer.storage()<< std::endl;
-			std::cout << ")))))))))))))))))))))))))))))))" << std::endl;
 			_headString.append(StatusLine(_status).response());
 			_headString.append(SHTTP::CRLF);
-			_headString.append("Content-Length: 1940");
+			_headString.append("Content-Length: ");
+			_headString.append(this->header().get(Header::CONTENT_LENGTH));
+
 			_headString.append(SHTTP::CRLF);
 			_headString.append("Content-Type: text/html");
 			_headString.append(SHTTP::CRLF);
 			_headString.append("Date: ");
 			_headString.append(Time::NOW().format(SHTTP::DATEFORMAT));
 			_headString.append(SHTTP::CRLF);
-			_headString.append("Server: webserv");
+			_headString.append("Server: ");
+			_headString.append(APPLICATION_NAME);
 			_headString.append(SHTTP::CRLF);
 			_headString.append(SHTTP::CRLF);
 			buffer.store(_headString);
-				
-			this->_body->store(buffer);
+			
+			if (this->_body)
+				this->_body->store(buffer);
 			std::cout << buffer.storage() << std::endl;
+			std::cout << ")))))))))))))))))))))))))))))))" << _state << std::endl;
 			return (false);
 		}
 
@@ -75,7 +79,8 @@ void Response::body(IBody* body) {
 
 void Response::body(const std::string str) {
 	this->body(new ResponseByString(str));
-	// str.length(); // header 에 contentlength 추가.
+	header().contentLength(str.length());
+	this->end();
 }
 
 void Response::status(HTTPStatus::StateType& status) {
@@ -84,4 +89,21 @@ void Response::status(HTTPStatus::StateType& status) {
 
 HTTPStatus::StateType& Response::status(void) {
 	return (this->_status);
+}
+
+Header& Response::header(void) {
+	return (this->_header);
+}
+
+void Response::end(void) {
+	this->_isEnd = true;
+}
+
+bool Response::isEnd(void) const {
+	return (this->_isEnd);
+}
+
+
+int Response::state(void) const {
+	return (this->_state);
 }

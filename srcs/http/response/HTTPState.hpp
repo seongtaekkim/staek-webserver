@@ -55,7 +55,8 @@ private:
 		// state[HTTPStatus::UNAUTHORIZED] = "Unauthorized";
 		// state[HTTPStatus::PAYMENT_REQUIRED] = "Payment Required";
 		// state[HTTPStatus::FORBIDDEN] = "Forbidden";
-		// state[HTTPStatus::NOT_FOUND] = "Not Found";
+		state[HTTPStatus::NOT_FOUND].first = HTTPStatus::NOT_FOUND;
+		state[HTTPStatus::NOT_FOUND].second = "Not Found";
 		// state[HTTPStatus::METHOD_NOT_ALLOWED] = "Method Not Allowed";
 		// state[HTTPStatus::NOT_ACCEPTABLE] = "Not Acceptable";
 		// state[HTTPStatus::PROXY_AUTHENTICATION_REQUIRED] = "Proxy Authentication Required";
