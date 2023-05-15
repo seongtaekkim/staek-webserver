@@ -76,7 +76,7 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 		try {
 			fd = targetFile.open(O_RDONLY, 0666);
 			res.body(new ResponseByFile(*fd, contentLength));
-			// res.header().contentLength(contentLength);
+			res.header().contentLength(contentLength);
 			// res.headers().contentType(contentType);
 			// response.headers().lastModified(lastModified);
 			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
@@ -93,7 +93,6 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 			// res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
 		// else {
 			res.body(listing(req.url(), targetFile));
-
 			// res.string(listing(request.url(), targetFile)); 
 			// res.headers().html(); // MIME_HTML = "text/html"; mime setting 
 			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
@@ -101,6 +100,7 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 		return (true);
 	}
 	res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
+	// cli.end();
 	return (true);
 }
 
