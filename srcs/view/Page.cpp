@@ -1,16 +1,16 @@
-#include "../http/response/HTTPState.hpp"
 #include "Page.hpp"
+#include "../http/response/HTTPState.hpp"
 #include "../util/Base.hpp"
 #include "../main.hpp"
 
-Page::Page(void)  {}
+Page::Page(void) {}
 
 Page::~Page(void) {}
 
-const std::string& Page::resolve(const HTTPStatus::StateType& httpStatus) {
+const std::string Page::resolve(const HTTPStatus::StateType& httpStatus) {
 
-	std::string line = Base::toString(httpStatus.first, 10) + " " + httpStatus.second;
-	std::string html = ""
+	const std::string line = Base::toString(httpStatus.first, 10) + " " + httpStatus.second;
+	const std::string html = ""
 			"<html>\n"
 			"	<head>\n"
 			"		<title>" + line + "</title>\n"
