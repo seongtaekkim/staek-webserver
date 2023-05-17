@@ -25,7 +25,7 @@ protected:
 	int		_fd;
 	bool	_valid;
 	bool	_isClosed;
-
+	bool	_isReadCompleted;
 private:
 	FileDescriptor(void);
 	FileDescriptor& operator=(const FileDescriptor &other);
@@ -41,6 +41,7 @@ public:
 	int		getFd(void) const;
 	bool	isClosed(void) const;
 	void	validateNotClosed(void) const;
+	bool	isReadCompleted(void) const;
 public:
 	static FileDescriptor* create(FileDescriptor& fd);
 };

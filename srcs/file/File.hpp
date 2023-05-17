@@ -24,6 +24,8 @@ private:
 public:
 	File(const std::string path);
 	File(const File &other);
+	File(const File &parent, const std::string &path);
+			File(const File &parent, const File &child);
 	File(const std::string &root, const std::string &resource);
 	virtual ~File(void) throw();
 	File& operator=(const File &other);

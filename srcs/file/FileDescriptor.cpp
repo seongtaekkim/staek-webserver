@@ -1,6 +1,6 @@
 #include "FileDescriptor.hpp"
 
-FileDescriptor::FileDescriptor(int fd) : _fd(fd), _valid(false), _isClosed(false) {}
+FileDescriptor::FileDescriptor(int fd) : _fd(fd), _valid(false), _isClosed(false), _isReadCompleted(false) {}
 
 FileDescriptor::FileDescriptor(const FileDescriptor& other) {
 	if (this != &other) {
@@ -22,6 +22,8 @@ ssize_t FileDescriptor::read(void *buf, std::size_t nbyte) {
 	ssize_t ret = ::read(this->_fd, buf, nbyte);
 	if (!this->_valid && ret != -1)
 		this->_valid = true;
+	if (ret == 0)
+		this->_isReadCompleted = true;
 	return (ret);
 }
 
@@ -87,4 +89,8 @@ void FileDescriptor::validateNotClosed(void) const {
 
 FileDescriptor* FileDescriptor::create(FileDescriptor& fd) {
 	return (new FileDescriptor(fd));
+}
+
+bool FileDescriptor::isReadCompleted(void) const {
+	return (this->_isReadCompleted);
 }

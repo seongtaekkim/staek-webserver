@@ -5,8 +5,16 @@
 File::File(const std::string path) : _path(path) {}
 File::File(const File &other) 
 	: _path(other._path) {}
+
 File::File(const std::string &root, const std::string &resource) 
 	: _path(concatRootAndResource(root, resource)) {}
+
+File::File(const File &parent, const std::string &path)
+	: _path(concatRootAndResource(parent.path(), path)) {}
+
+File::File(const File &parent, const File &child) :
+		_path(concatRootAndResource(parent.path(), child.path()))
+{}
 
 File::~File(void) throw() {}
 File& File::operator=(const File &other) {
@@ -143,6 +151,7 @@ std::list<File> File::list(void) const {
 
 std::string File::getExtension() {
 	std::string::size_type index = indexOfExtension();
+	std::cout << "index : " << index << std::endl;
 	if (index == std::string::npos)
 		return ("");
 	return (this->_path.substr(index + 1));
@@ -154,11 +163,14 @@ std::string::size_type File::indexOfSeparator(void) {
 
 std::string::size_type File::indexOfExtension() {
 	std::string::size_type extensionPos = this->_path.rfind(EXTENSION);
-
-	if (indexOfSeparator() > extensionPos)
+	std::cout << "extensionPos : " << extensionPos << " " << indexOfSeparator() << " " << std::string::npos <<  std::endl;
+	if (this->_path.rfind(SLASH) > std::string::npos)
 		return (std::string::npos);
-	else 
+	else  {
+		std::cout << "????????????????????????????????????" << std::endl;
 		return (extensionPos);
+		}
+
 }
 
 // 현재 디렉토리 
