@@ -74,7 +74,8 @@ SEnvironment& SEnvironment::getEnv(void) {
 */
 char** SEnvironment::mapToChar(void) const {
 	char **envp = new char*[this->_env.size() + 1];
-
+	std::cout << this->_env.size() << std::endl;
+	// std::cout << envp << std::endl;
 	EnvMap::size_type index = 0;	
 	for (EnvMap::const_iterator it = this->_env.begin(); it != this->_env.end(); ++it) {
 		std::string line = it->first + '=' + it->second;
