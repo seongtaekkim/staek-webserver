@@ -31,6 +31,8 @@ public:
 	std::string format(const char* str);
 public:
 	static Time NOW(void);
+	static unsigned long currentSecond(void);
+
 };
 
 #endif

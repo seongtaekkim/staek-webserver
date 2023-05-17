@@ -14,6 +14,8 @@ public:
 	static const char*			DATEFORMAT;
 	static const int			DEFAULT_READSIZE;
 	static const std::string	APPLICATION_NAME;
+	static const int 			DEFAULT_MAX_ACTIVE_CLIENT;
+	static const int 			DEFAULT_TIMEOUT;
 };
 
 #endif

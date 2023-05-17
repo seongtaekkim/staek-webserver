@@ -34,3 +34,10 @@ std::string Time::format(const char* str) {
 	::strftime(tmbuf, sizeof(tmbuf), str, time);
 	return (std::string(tmbuf));
 }
+
+unsigned long Time::currentSecond(void) {
+	struct timeval val;
+	if (::gettimeofday(&val, NULL) == -1)
+		return (0);
+	return (val.tv_sec);
+}
