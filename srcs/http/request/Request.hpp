@@ -41,6 +41,10 @@ public:
 	const URL&		url(void) const;
 	const std::string resource() const;
 	void resource(const std::string& resource);
-};
 
+	void serverBlock(const ServerBlock& serverBlock);
+	const ServerBlock* serverBlock(void) const;
+	void locationBlock(const LocationBlock& locationBlock);
+	const LocationBlock* locationBlock(void) const;
+};
 #endif
