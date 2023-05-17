@@ -14,3 +14,15 @@ int	Base::getBase(char c, std::string base) {
 		return (-1);
 	return (index);
 }
+
+std::string Base::toUpper(const std::string& base) {
+	std::string				out;
+	const char* 			arr = base.c_str();
+	std::string::size_type	size = base.size();
+
+	while (*arr) {
+		out += std::toupper(*arr);
+		arr++;
+	}
+	return (out);
+}

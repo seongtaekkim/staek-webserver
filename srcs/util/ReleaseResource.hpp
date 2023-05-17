@@ -21,6 +21,18 @@ public:
 			delete ptr;
 		ptr = NULL;
 	}
+	template<typename T>
+	static void pointer2th(T **arr) {
+		T **start = arr;
+		if (arr) {
+			T *ptr;
+			while ((ptr = *arr++))
+				if (ptr)
+					delete[] ptr;
+
+			delete[] start;
+		}
+	}
 };
 
 #endif

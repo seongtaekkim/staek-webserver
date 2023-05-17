@@ -2,14 +2,11 @@
 #define COMMON_HPP
 
 #include <iostream>
-#include <map>
-#include <vector>
-#include <set>
-// #include "Server.hpp"
+#include <cstring>
 
-//typedef std::vector<Listen>					Listens;
-typedef std::vector<std::string>			Methods;
-typedef std::set<std::string, std::string>	ErrorPages;
-typedef std::vector<std::string>			Tokens;
+namespace ft {
+	std::size_t	strlen(const char* str);
+	char*		strdup(const char* str);
+}
 
 #endif

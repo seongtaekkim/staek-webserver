@@ -1,9 +1,19 @@
+#include "Common.hpp"
 
-#include <iostream>
+namespace ft {
+	std::size_t strlen(const char *str) {
+		std::size_t length = 0;
+		while (*str)
+			length++;
+		return (length);
+	}
 
-template<typename T>
-void safe_delete(T **p) {
-	if (*p)
-		delete (*p);
-	*p = NULL;
+	char* strdup(const char *str) {
+		if (str) {
+			std::size_t len = strlen(str);
+			char* dup = new char[len + 1];
+			return ((char*)std::memcpy(dup, str, len + 1));
+		}
+		return (NULL);
+	}
 }

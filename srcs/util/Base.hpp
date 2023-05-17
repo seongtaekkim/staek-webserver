@@ -48,6 +48,7 @@ public:
 		return (stream.str());
 	}
     static int getBase(char c, std::string base);
+    static std::string toUpper(const std::string& base);
 };
 
 #endif
