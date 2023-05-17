@@ -35,7 +35,7 @@ void ServerBlock::setRoot(std::string str) {
 	this->_root = str;
 }
 
-std::string ServerBlock::getRoot(void) {
+std::string ServerBlock::getRoot(void) const {
 	return (this->_root);
 }
 
@@ -43,7 +43,7 @@ void ServerBlock::setIndex(std::string str) {
 	this->_index = str;
 }
 
-std::string ServerBlock::getIndex(void) {
+std::string ServerBlock::getIndex(void) const {
 	return (this->_index);
 }
 
@@ -53,19 +53,18 @@ void ServerBlock::setCgi(std::string str) {
 
 	ret = str.find_first_of(ISSPACE, firstWord);
 	this->_cgi.first = str.substr(firstWord, ret - firstWord);
-	this->_cgi.second = str.substr(ret);
+	this->_cgi.second = str.substr(ret + 1);
 }
 
-std::pair<std::string, std::string> ServerBlock::getCgi(void) {
+std::pair<std::string, std::string> ServerBlock::getCgi(void) const {
 	return (this->_cgi);
 }
 
 void ServerBlock::appendLocationBlock(LocationBlock* locationBlock) {
 	this->_locationBlockList.push_back(locationBlock);
-
 }
 
-std::list<LocationBlock*> ServerBlock::LocationBlockList(void) {
+const std::list<LocationBlock*> ServerBlock::locationBlockList(void) const {
 	return (this->_locationBlockList);
 }
 

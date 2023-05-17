@@ -8,14 +8,16 @@
 #include "../Reader.hpp"
 
 class ServerBlock {
+public:
+	typedef std::pair<std::string, std::string> CgiType;
 private:
 	int									_listen;
 	std::string 						_serverName;
 	std::string							_root;
-	std::pair<std::string, std::string>	_cgi;
+	CgiType								_cgi;
 	std::list<LocationBlock*>			_locationBlockList;
 	std::string							_index;
-	// std::pair<std::string, std::string>	_errorPage;
+
 public:
 	ServerBlock(void);
 	ServerBlock(const ServerBlock& other);
@@ -29,14 +31,14 @@ public:
 	void setServerName(std::string str);
 	std::string getServerName(void);
 	void setRoot(std::string str);
-	std::string getRoot(void);
+	std::string getRoot(void) const;
 	void setIndex(std::string str);
-	std::string getIndex(void);
+	std::string getIndex(void) const;
 	void setCgi(std::string str);
-	std::pair<std::string, std::string> getCgi(void);
+	std::pair<std::string, std::string> getCgi(void) const;
 
 	void appendLocationBlock(LocationBlock* locationBlock);
-	std::list<LocationBlock*> LocationBlockList(void);
+	const std::list<LocationBlock*> locationBlockList(void) const;
 };
 
 #endif

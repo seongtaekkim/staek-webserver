@@ -13,7 +13,7 @@ void LocationBlock::setIndex(std::string str) {
 	this->_index = str;
 }
 
-std::string LocationBlock::getIndex(void) {
+std::string LocationBlock::getIndex(void) const {
 	return (this->_index);
 }
 
@@ -21,9 +21,18 @@ void LocationBlock::setPath(std::string str) {
 	this->_path = str;
 }
 
-std::string LocationBlock::getPath(void) {
+std::string LocationBlock::getPath(void) const {
 	return (this->_path);
 }
+
+void LocationBlock::setRoot(std::string str) {
+	this->_root = str;
+}
+
+std::string LocationBlock::getRoot(void) const {
+	return (this->_root);
+}
+
 
 #include <map>
 void LocationBlock::check(std::string key, std::string value) {
@@ -35,6 +44,8 @@ void LocationBlock::check(std::string key, std::string value) {
 
 	_map["index"] = &LocationBlock::setIndex;
 	_map["path"] = &LocationBlock::setPath;
+	_map["root"] = &LocationBlock::setRoot;
+
 	// _map["limit_except"] = &LocationBlock::setListen;
 	// _map["auth"] = &LocationBlock::setListen;
 	// _map["auth"] = &LocationBlock::setListen;
