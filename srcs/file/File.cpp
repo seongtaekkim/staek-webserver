@@ -151,10 +151,10 @@ std::list<File> File::list(void) const {
 
 std::string File::getExtension() {
 	std::string::size_type index = indexOfExtension();
-	std::cout << "index : " << index << std::endl;
+	std::cout << "index : " << index << " " << this->_path.substr(index + 1) << std::endl;
 	if (index == std::string::npos)
 		return ("");
-	return (this->_path.substr(index + 1));
+	return (this->_path.substr(index));
 }
 
 std::string::size_type File::indexOfSeparator(void) {

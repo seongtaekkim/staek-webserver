@@ -20,6 +20,8 @@ FileDescriptor::~FileDescriptor() {
 ssize_t FileDescriptor::read(void *buf, std::size_t nbyte) {
 	this->validateNotClosed();
 	ssize_t ret = ::read(this->_fd, buf, nbyte);
+	// std::cout << "ret? : " <<ret << " " << errno << std::endl;
+	// std::cout << "ret? : " <<buf<< std::endl;
 	if (!this->_valid && ret != -1)
 		this->_valid = true;
 	if (ret == 0)
