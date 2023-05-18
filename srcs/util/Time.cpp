@@ -4,6 +4,10 @@ Time::Time(void) : _timeval() {}
 
 Time::Time(Tv timeval) : _timeval(timeval) {}
 
+Time::Time(Tm time) : _time(time) {}
+
+Time::Time(Ts timespac) : _timespac(timespac) {}
+
 Time::Time(const Time& other) {
 	this->_timeval = other._timeval;
 }
@@ -31,6 +35,14 @@ std::string Time::format(const char* str) {
 	char tmbuf[40];
 
 	Tm *time = ::localtime(&this->_timeval.tv_sec);
+	::strftime(tmbuf, sizeof(tmbuf), str, time);
+	return (std::string(tmbuf));
+}
+
+std::string Time::formatTimeSpec(const char* str) {
+	char tmbuf[40];
+
+	Tm *time = ::localtime(&this->_timespac.tv_sec);
 	::strftime(tmbuf, sizeof(tmbuf), str, time);
 	return (std::string(tmbuf));
 }

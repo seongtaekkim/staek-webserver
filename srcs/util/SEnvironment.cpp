@@ -17,20 +17,6 @@ SEnvironment& SEnvironment::operator=(const SEnvironment& other) {
 
 SEnvironment::~SEnvironment(void) {}
 
-	char*
-	strchr2(char *str, char c)
-	{
-		if (str)
-		{
-			char x;
-			while ((x = *str++))
-				if (x == c)
-					return (--str);
-		}
-
-		return (NULL);
-	}
-
 /**
 * @brief os env 세팅
 * @param char **env
@@ -41,7 +27,7 @@ SEnvironment SEnvironment::charToMap(char **env) {
 
 	char* key;
 	while ((key = *env)) {
-		char* equal = strchr2(key, '=');
+		char* equal = std::strchr(key, '=');
 		std::string str = key;
 		char* value;
 		if (equal) {
@@ -56,7 +42,6 @@ SEnvironment SEnvironment::charToMap(char **env) {
 
 void SEnvironment::setEnv(char** envp) {
 	SEnvironment::_sEnv = SEnvironment::charToMap(envp);
-	// std::cout << _sEnv.size() << std::endl;
 }
 
 SEnvironment::EnvMap& SEnvironment::getMap(void) {
@@ -74,8 +59,6 @@ SEnvironment& SEnvironment::getEnv(void) {
 */
 char** SEnvironment::mapToChar(void) const {
 	char **envp = new char*[this->_env.size() + 1];
-	std::cout << this->_env.size() << std::endl;
-	// std::cout << envp << std::endl;
 	EnvMap::size_type index = 0;	
 	for (EnvMap::const_iterator it = this->_env.begin(); it != this->_env.end(); ++it) {
 		std::string line = it->first + '=' + it->second;
@@ -99,7 +82,8 @@ void SEnvironment::appendOne(const std::string& key, const std::string& value) {
 
 	if (it == this->_env.end()) 
 		this->_env.insert(std::make_pair(key, value));
-	(*it).second = value;
+	else
+		(*it).second = value;
 }
 
 std::string SEnvironment::getOne(const std::string& key) {
