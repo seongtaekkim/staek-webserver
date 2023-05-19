@@ -76,11 +76,12 @@ void KqueueManage::delEvent(int fd) {
 }
 
 void KqueueManage::kevent() {
+	struct timespec myTime  = {1, 0};
+	
 	this->_eventCount = ::kevent(this->_kqueueFd, &this->_changeVec[0]
-							, this->_changeVec.size() , this->_eventArr, 300, NULL);
-	if (this->_eventCount == -1)
-		throw IOException("kevent() error : ", errno);
-	std::cout << "kevent pending : " << this->_eventCount << std::endl;
+							, this->_changeVec.size() , this->_eventArr, 300, &myTime);
+	// if (this->_eventCount == -1)
+		// throw IOException("kevent() error : ", errno);
 }
 
 int KqueueManage::eventCount(void) const {
@@ -113,8 +114,10 @@ bool KqueueManage::recv(int fd) {
 bool KqueueManage::send(int fd) {
 	std::cout << "KqueueManage::send : " << fd << std::endl;
 	bool b;
-	if (!this->_callbackMap[fd])
+	if (!this->_callbackMap[fd]) {
+		std::cout << "KqueueManage::send : _callbackMap" << fd << std::endl;
 		return (true);
+	}
 	b = this->_callbackMap[fd]->send(*this->_fdMap[fd]);
 	return (b);
 }
