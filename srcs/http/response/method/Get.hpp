@@ -18,6 +18,7 @@ public:
 	virtual bool doMethod(Request &req, Response &res, Client &cli);
 	virtual void setHasBody(bool hasbody);
 	virtual bool getHasBody();
+	std::string listing(const URL& url, const File& file);
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "Post.hpp"
+#include "Get.hpp"
 
 Post::Post(void) {}
 
@@ -8,20 +9,20 @@ bool Post::doMethod(Request &req, Response &res, Client &cli) {
 	File targetFile(req.targetFile());
 
 	bool justCreated = false;
-
 	std::string out;
 	if (targetFile.exists()) {
-		if (targetFile.isDir() || !targetFile.isFile()) // TODO This is not supposed to work like that, but 42 tester....
-		{
-			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
+		if (targetFile.isDir() || !targetFile.isFile()) {
+			std::cout << "req.url().fullUrl()" << req.url().fullUrl() << std::endl;
+			std::cout << Get::instance()->listing(req.url(), targetFile) << std::endl;
+			res.body(Get::instance()->listing(req.url(), targetFile));
+			res.header().allow("GET");
+			res.status(HTTPStatus::STATE[HTTPStatus::METHOD_NOT_ALLOWED]);
 			return (true);
 		}
-	}
-	else
-	{
+	} else {
 		try {
 			targetFile.create();
-			// res.headers().contentLocation(targetFile.path()); // TODO Wrong value returned
+			// res.headers().contentLocation(targetFile.path());
 			justCreated = true;
 		}
 		catch (Exception &exception) {

@@ -10,28 +10,25 @@
 #include <stddef.h>
 #include <string>
 
-
 class Client;
 class Request;
 
 class PutTask : public RWCallback {
-	private:
-		Client& m_client;
-		FileDescriptor &m_fileDescriptor;
-		ssize_t m_storedCount;
-		bool m_justCreated;
+private:
+	Client& _client;
+	FileDescriptor &_fileDescriptor;
+	ssize_t _storedCount;
+	bool _justCreated;
 
-	private:
-		PutTask(void);
-		PutTask(const PutTask &other);
-		PutTask& operator=(const PutTask &other);
+private:
+	PutTask(void);
+	PutTask(const PutTask& other);
+	PutTask& operator=(const PutTask& other);
 
-	public:
-		PutTask(Client &client, FileDescriptor &fd, bool justCreated);
-
-		virtual ~PutTask(void);
-
-		virtual bool send(FileDescriptor& fd);
+public:
+	PutTask(Client& client, FileDescriptor& fd, bool justCreated);
+	virtual ~PutTask(void);
+	virtual bool send(FileDescriptor& fd);
 };
 
 #endif

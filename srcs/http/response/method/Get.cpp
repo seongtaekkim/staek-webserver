@@ -1,4 +1,5 @@
 #include "Get.hpp"
+#include "../../../util/Time.hpp"
 
 Get::Get(void) {}
 
@@ -8,7 +9,7 @@ Get::~Get(void) {}
 #include "../../../file/File.hpp"
 #include <list>
 
-std::string listing(const URL& url, const File& file) {
+std::string Get::listing(const URL& url, const File& file) {
 	const std::string &directory = url.path();
 
 	std::string out = ""
@@ -48,10 +49,14 @@ std::string listing(const URL& url, const File& file) {
 
 bool Get::doMethod(Request &req, Response &res, Client &cli) {
 
-
 	File targetFile(req.targetFile());
 	std::cout << "getgetget !!!!!!!!!!!!!!!" << std::endl;
 	std::cout << targetFile.path() << std::endl;
+
+	if (res.body()) {
+		return (true);
+	}
+	
 	if (!targetFile.exists()) {
 		res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
 		return (true);
@@ -59,8 +64,7 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 
 	if (targetFile.isFile()) {
 		std::size_t contentLength = targetFile.size();
-		// Time lastModified = targetFile.lastModified();
-		
+		Time lastupdate(targetFile.stat().st_mtimespec);
 		Mime::MimeType contentType;
 
 		std::string extension;
@@ -77,8 +81,8 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 			fd = targetFile.open(O_RDONLY, 0666);
 			res.body(new ResponseByFile(*fd, contentLength));
 			res.header().contentLength(contentLength);
-			// res.headers().contentType(contentType);
-			// response.headers().lastModified(lastModified);
+			// res.header().contentType(contentType);
+			res.header().lastModified(lastupdate.formatTimeSpec(SHTTP::DATEFORMAT));
 			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
 		}
 		catch (...) {
