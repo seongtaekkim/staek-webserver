@@ -57,7 +57,8 @@ private:
 		// state[HTTPStatus::FORBIDDEN] = "Forbidden";
 		state[HTTPStatus::NOT_FOUND].first = HTTPStatus::NOT_FOUND;
 		state[HTTPStatus::NOT_FOUND].second = "Not Found";
-		// state[HTTPStatus::METHOD_NOT_ALLOWED] = "Method Not Allowed";
+		state[HTTPStatus::METHOD_NOT_ALLOWED].first = HTTPStatus::METHOD_NOT_ALLOWED;
+		state[HTTPStatus::METHOD_NOT_ALLOWED].second = "Method Not Allowed";
 		// state[HTTPStatus::NOT_ACCEPTABLE] = "Not Acceptable";
 		// state[HTTPStatus::PROXY_AUTHENTICATION_REQUIRED] = "Proxy Authentication Required";
 		// state[HTTPStatus::REQUEST_TIMEOUT] = "Request Timeout";
@@ -176,10 +177,6 @@ public:
 		BANDWIDTH_LIMIT_EXCEEDED			=509,
 		NOT_EXTENDED						=510,
 	};
-
-	// std::pair<int, std::string>& operator[](const int& k) {
-	// 	return (HTTPStatus::STATE[k]);
-	// }
 };
 
 #endif

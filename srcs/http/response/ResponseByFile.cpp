@@ -11,7 +11,7 @@ ResponseByFile::ResponseByFile(FileDescriptor& fd, std::size_t contentLength) :
 ResponseByFile::~ResponseByFile() {
 	std::cout << "ResponseByFile delete" << this->_fd.getFd() << std::endl;
 	KqueueManage::instance().delEvent(this->_fd.getFd());
-	// delete &_fd;
+	delete &_fd;
 }
 
 bool ResponseByFile::store(Storage& storage) {
