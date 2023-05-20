@@ -1,5 +1,5 @@
-#ifndef ERRORPAGEMAKER_HPP
-#define ERRORPAGEMAKER_HPP
+#ifndef INTERCEPTORMAKER_HPP
+#define INTERCEPTORMAKER_HPP
 
 #include "../../../util/Singleton.hpp"
 #include "../../../exception/IOException.hpp"
@@ -9,12 +9,12 @@
 #include "../Response.hpp"
 #include "../../request/Request.hpp"
 
-class ErrorPageMaker : public IMaker, public Singleton<ErrorPageMaker> {
+class InterceptorMaker : public IMaker, public Singleton<InterceptorMaker> {
 public:
-	ErrorPageMaker(void);
-	ErrorPageMaker(const ErrorPageMaker &other);
-	virtual ~ErrorPageMaker(void);
-	ErrorPageMaker& operator=(const ErrorPageMaker &other);
+	InterceptorMaker(void);
+	InterceptorMaker(const InterceptorMaker &other);
+	virtual ~InterceptorMaker(void);
+	InterceptorMaker& operator=(const InterceptorMaker &other);
 	virtual void make(Client& client, Request& req, Response& res, ResponseMaker& maker);
 };
 

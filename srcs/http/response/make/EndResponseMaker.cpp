@@ -26,6 +26,8 @@ void EndResponseMaker::make(Client& client, Request& req, Response& res, Respons
 	if (!res.body() && res.header().get(Header::TRANSFER_ENCODING).length() > 0 ) {
 		res.header().contentLength(0);
 	}
+	if (client.parser().method().compare("HEAD") == 0)
+		res.body(NULL);
 
 	// res.headers().date();
 	// res.headers().server();

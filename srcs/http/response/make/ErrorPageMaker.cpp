@@ -46,7 +46,7 @@ void ErrorPageMaker::make(Client& client, Request& req, Response& res, ResponseM
 	// 	return (next());
 
 	const HTTPStatus::StateType state = res.status();
-	if (state.first / 100 != 4 && state.first / 100 != 5) {
+	if (state.first / 100 != 4 && state.first / 100 != 5 || state.first == 405) {
 		maker.executeMaker();
 		return ;
 	}

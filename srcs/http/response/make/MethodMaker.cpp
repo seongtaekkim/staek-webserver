@@ -19,12 +19,10 @@ void MethodMaker::make(Client& client, Request& req, Response& res, ResponseMake
 		// return (maker.nextMaker(););
 
 	try {
-		// 임시로 GET 으로 세ㅣㅇrequest 에서 method를 받아 와야함. 
 		IMethod* method = Method::METHOD[client.parser().method()];
 		std::cout << "<MethodMaker::make> in do method !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << client.parser().method() <<  std::endl;
 		if (method->doMethod(req, res, client))
 			maker.executeMaker();
-		// Method::METHOD[Method::GET].
 		// const HTTPMethod *methodPtr = HTTPMethod::find(client.parser().method());
 		// if (methodPtr)
 		// {
