@@ -1,8 +1,10 @@
-#ifndef COMMONGATEWAYINTERFACE_HPP
-#define COMMONGATEWAYINTERFACE_HPP
+#ifndef CGI_HPP
+#define CGI_HPP
 
 #include "../../config/Config.hpp"
+#include "../../config/block/ServerBlock.hpp"
 #include "../../file/FileDescriptor.hpp"
+#include "../../file/File.hpp"
 #include <sys/types.h>
 #include "../../util/SEnvironment.hpp"
 #include <string>
@@ -12,54 +14,47 @@ class CGITask;
 class Logger;
 class FileDescriptor;
 class CGIBlock;
-class HTTPClient;
+class Client;
 
-class CommonGatewayInterface {
+class CGI {
 	private:
-		pid_t m_pid;
-		FileDescriptor &m_in;
-		FileDescriptor &m_out;
-		bool m_killed;
+		pid_t			_pid;
+		FileDescriptor&	_in;
+		FileDescriptor&	_out;
+		File&			_file;
+		bool			_killed;
 
 	private:
-		CommonGatewayInterface();
-		CommonGatewayInterface(pid_t pid, FileDescriptor &in, FileDescriptor &out);
-		CommonGatewayInterface(const CommonGatewayInterface &other);
-
-		CommonGatewayInterface& operator=(const CommonGatewayInterface &other);
+		CGI(void);
+		CGI(pid_t pid, FileDescriptor& in, FileDescriptor& out, File& file);
+		CGI(const CGI& other);
+		CGI& operator=(const CGI& other);
 
 	public:
-		virtual ~CommonGatewayInterface();
+		virtual ~CGI();
 
-		void
-		kill();
+		void kill(void);
+		void wait(void);
+		bool running(void);
 
-		void
-		wait();
-
-		bool
-		running();
-
-		inline FileDescriptor&
-		in() const
-		{
-			return (m_in);
+		inline FileDescriptor& in() const {
+			return (this->_in);
 		}
 
-		inline FileDescriptor&
-		out() const
-		{
-			return (m_out);
+		inline FileDescriptor& out() const {
+			return (this->_out);
+		}
+		
+		inline File& file() const {
+			return (this->_file);
 		}
 
-		inline pid_t
-		pid() const
-		{
-			return (m_pid);
+		inline pid_t pid() const {
+			return (_pid);
 		}
 
 	public:
-		static CGITask* execute(Client& client, const CGIBlock &cgiBlock, const Environment &environment);
+		static CGITask* execute(Client& client, const ServerBlock::CgiType& cgiBlock, const SEnvironment& env);
 
 	public:
 		static const std::string ENV_AUTH_TYPE;
@@ -81,6 +76,7 @@ class CommonGatewayInterface {
 		static const std::string ENV_SERVER_PORT;
 		static const std::string ENV_SERVER_PROTOCOL;
 		static const std::string ENV_SERVER_SOFTWARE;
+		static const std::string REDIRECT_STATUS;
 };
 
 #endif

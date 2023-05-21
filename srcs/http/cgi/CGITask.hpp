@@ -1,32 +1,28 @@
 #ifndef CGITASK_HPP
 #define CGITASK_HPP
 
-// #include "../parse/Parser.hpp"
-// #include <http/task/HTTPTask.hpp>
+#include "../parse/Parser.hpp"
 #include "../../file/FileDescriptor.hpp"
 #include "../server/RWCallback.hpp"
 #include <stddef.h>
 
-class CommonGatewayInterface;
-class HTTPClient;
+class CGI;
+class Client;
 
 class CGITask : public RWCallback {
 	private:
-		HTTPClient& _client;
-		CommonGatewayInterface& _cgi;
-		FileDescriptor& _out;
-		Parser _parser;
-		size_t wroteBodyUpTo;
-		bool _running;
-		bool _nextCalled;
-
+		Client&					_client;
+		CGI&					_cgi;
+		FileDescriptor&			_out;
+		size_t					wroteBodyUpTo;
+		bool					_running;
 	private:
 		CGITask(void);
 		CGITask(const CGITask &other);
 		CGITask& operator=(const CGITask &other);
 
 	public:
-		CGITask(HTTPClient &client, CommonGatewayInterface &cgi);
+		CGITask(Client &client, CGI &cgi);
 		virtual ~CGITask(void);
 		bool running();
 		bool recv(FileDescriptor &fd);

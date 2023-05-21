@@ -1,43 +1,46 @@
-#include "CommonGatewayInterface.hpp"
+#include "CGI.hpp"
 #include "../../exception/Exception.hpp"
 #include "CGITask.hpp"
 #include "../response/method/Method.hpp"
-#include "../HTTPState.hpp"
-#include "../make/ResponseMaker.hpp"
+#include "../response/method/IMethod.hpp"
+#include "../response/HTTPState.hpp"
+#include "../response/make/ResponseMaker.hpp"
 #include "../response/HTTPState.hpp"
 #include "../server/Client.hpp"
 #include "../request/Request.hpp"
-// #include <http/response/body/impl/CGIResponseBody.hpp>
+#include "../response/ResponseByCGI.hpp"
 #include "../response/Response.hpp"
 #include "../server/Socket.hpp"
-// #include <log/Logger.hpp>
-// #include <log/LoggerFactory.hpp>
 #include <sys/types.h>
 #include "../../util/Base.hpp"
+#include "../SHTTP.hpp"
 #include <iostream>
 #include <string>
 
-CGITask::CGITask(HTTPClient &client, CommonGatewayInterface &cgi) :
+class Parser;
+class ResponseByCGI;
+
+CGITask::CGITask(Client& client, CGI& cgi) :
 		_client(client),
 		_cgi(cgi),
 		_out(*FileDescriptor::create(_cgi.out())),
 		wroteBodyUpTo(),
-		_running(true),
-		_nextCalled(false)
-{
-	// FileDescriptor *f = new FileDescriptor(_cgi.out());
-	// if (_client.request().method().get()->hasBody())
-	// 	NIOSelector::instance().add(m_cgi.in(), *this, NIOSelector::WRITE);
-	// else
-	// 	m_cgi.in().close();
-
-	// NIOSelector::instance().add(m_cgi.out(), *this, NIOSelector::READ);
+		_running(true) {
+	IMethod* method = Method::METHOD[client.parser().method()];
+	std::cout << "CGITask::CGITask(Client& client, CGI& cgi)  : " << _out.getFd() << " " << method->getHasBody() <<  std::endl;
+	KqueueManage::instance().create(this->_out, *this);
+	if (method->getHasBody()) {
+		KqueueManage::instance().setEvent(this->_out.getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+	}
+	else
+		this->_cgi.in().close();
+	KqueueManage::instance().setEvent(this->_out.getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 }
 
-CGITask::~CGITask()
-{
-	_cgi.kill();
+CGITask::~CGITask(void) {
+		std::cout << "CGITask::~CGITask : " << _cgi.in().getFd() << std::endl;
 
+	this->_cgi.kill();
 	KqueueManage::instance().delEvent(_cgi.in().getFd());
 	KqueueManage::instance().delEvent(_cgi.out().getFd());
 
@@ -45,154 +48,95 @@ CGITask::~CGITask()
 	delete &_cgi;
 }
 
-bool
-CGITask::running()
-{
+bool CGITask::running() {
 	return (_running);
 }
 
-bool CGITask::send(FileDescriptor &fd) {
+bool CGITask::send(FileDescriptor& fd) {
+	std::cout << "CGITask::send(FileDescriptor& fd) : " << _client.body().c_str() << "|" << std::endl;
 	
 	if (wroteBodyUpTo == _client.body().length())
 		return (true);
 
 	ssize_t wrote = fd.write(_client.body().c_str() + wroteBodyUpTo, _client.body().length() - wroteBodyUpTo);
 
-	if (wrote <= 0)
-	{
-		_cgi.in().close();
+	if (wrote <= 0) {
+		this->_cgi.in().close();
 		KqueueManage::instance().delEvent(_cgi.in().getFd());
 		return (true);
 	}
 
 	wroteBodyUpTo += wrote;
-	if (wroteBodyUpTo == _client.body().length())
-	{
+	if (wroteBodyUpTo == _client.body().length()) {
 		_cgi.in().close();
 		KqueueManage::instance().delEvent(_cgi.in().getFd());
 		return (true);
 	}
-
 	return (false);
 }
 
-bool CGITask::recv(FileDescriptor &fd) {
+bool CGITask::recv(FileDescriptor& fd) {
 	(void)fd;
 
-	ssize_t r = _out.read();
-	if (r == -1)
-	{
-		_client.response().status(*HTTPStatus::INTERNAL_SERVER_ERROR);
-		_client.filterChain().next();
-
-		KqueueManage::instance().update(m_client.socket(), KqueueManage::WRITE);
+	char buf[SHTTP::DEFAULT_READSIZE];
+	this->_out.lseek(0, SEEK_SET);
+	ssize_t r = this->_out.read(buf, SHTTP::DEFAULT_READSIZE);
+	this->_out.store(buf);
+	std::cout << "CGITask::recv(FileDescriptor& fd) : " << buf << "|" << r << _out.storage().empty() << std::endl;
+	if (r == -1) {
+		_client.response().status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
+		_client.maker().executeMaker();
+		KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 		return (true);
 	}
 
-	if (r == 0 && _out.empty() && _parser.state() != HTTPHeaderFieldsParser::S_END)
-	{
-		_client.response().status(*HTTPStatus::GATEWAY_TIMEOUT);
-
-		_nextCalled = true;
-		_client.filterChain().next();
+	if (r == 0 && _out.storage().empty()) {
+		_client.response().status(HTTPStatus::STATE[HTTPStatus::GATEWAY_TIMEOUT]);
+		_client.maker().executeMaker();
 		return (true);
 	}
+		try {
+				// this->_client.response().header().chunkedTransferEncoding();
+				std::cout << "???????????????/" << std::endl;
+				this->_client.response().header().append(Header::CONTENT_LENGTH, Base::toString(r, 10));
+				this->_client.response().body(new ResponseByCGI(this->_client, *this));
+				_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
+				_client.maker().executeMaker();
 
-	if (_parser.state() != HTTPHeaderFieldsParser::S_END)
-	{
-		char c;
-		bool parsed = false;
-
-		try
-		{
-			while (_out.next(c))
-			{
-				_parser.consume(c);
-
-				if (m_headerFieldsParser.state() == HTTPHeaderFieldsParser::S_END)
-				{
-					parsed = true;
-					break;
-				}
-			}
-
-			if (parsed)
-			{
-				m_client.response().headers().merge(m_headerFieldsParser.headerFields());
-
-				Optional<std::string> statusOpt = m_headerFieldsParser.headerFields().get(HTTPHeaderFields::STATUS);
-				if (statusOpt.present())
-				{
-					std::string codePart = statusOpt.get().substr(0, statusOpt.get().find(' '));
-
-					int code = Number::parse<int>(codePart);
-					const HTTPStatus *newStatus = HTTPStatus::find(code);
-
-					if (newStatus)
-						m_client.response().status(*newStatus);
-				}
-
-				m_client.response().headers().chunkedTransferEncoding();
-				m_client.response().body(new CGIResponseBody(m_client, *this));
-
-				m_nextCalled = true;
-				m_client.filterChain().next();
-
-				NIOSelector::instance().update(m_client.socket(), NIOSelector::WRITE);
-			}
-
+				KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 			return (false);
 		}
-		catch (Exception &exception)
-		{
-			LOG.warn() << "CGI produced an error: " << exception.message() << std::endl;
+		catch (Exception &exception) {
+			this->_client.response().status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
+			this->_client.maker().executeMaker();
 
-			m_client.response().status(*HTTPStatus::INTERNAL_SERVER_ERROR);
-
-			m_nextCalled = true;
-			m_client.filterChain().next();
-
-			NIOSelector::instance().update(m_client.socket(), NIOSelector::WRITE);
+			KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 			return (true);
-		}
 	}
 
-	if (m_bufferedOut.hasReadEverything())
-	{
-		NIOSelector::instance().remove(m_cgi.out());
+	if (this->_out.isReadCompleted()) {
+		KqueueManage::instance().delEvent(_cgi.in().getFd());
 		return (true);
 	}
-
 	return (false);
 }
 
-bool
-CGITask::isDone()
-{
-	return (m_bufferedOut.hasReadEverything() && m_bufferedOut.empty());
+bool CGITask::isDone() {
+	return (this->_out.isReadCompleted() && this->_out.storage().empty());
 }
 
-bool
-CGITask::hasReadHeaders()
-{
-	return (m_headerFieldsParser.state() != HTTPHeaderFieldsParser::S_END);
+bool CGITask::hasReadHeaders() {
+	return (_client.parser().state() != Parser::HSTATE::HEND);
 }
 
-FileDescriptorBuffer&
-CGITask::out()
-{
-	return (m_bufferedOut);
+FileDescriptor& CGITask::out() {
+	return (this->_out);
 }
 
-bool
-CGITask::timeoutTouch()
-{
-	if (m_running)
-	{
-		m_running = m_cgi.running();
-
+bool CGITask::timeoutTouch() {
+	if (this->_running) {
+		this->_running = this->_cgi.running();
 		return (true);
 	}
-
 	return (false);
 }
