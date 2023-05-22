@@ -96,6 +96,8 @@ class Header {
 		const map& data(void) const;
 
 		Header& contentLength(std::size_t length);
+		Header& allow(const std::string& value);
+		Header& lastModified(const std::string& value);
 };
 
 #endif

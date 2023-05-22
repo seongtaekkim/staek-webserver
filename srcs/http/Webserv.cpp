@@ -1,26 +1,27 @@
 #include "Webserv.hpp"
-#include "../http/server/Server.hpp"
 #include "../config/block/ServerBlock.hpp"
+#include "../config/Config.hpp"
 #include "../iom/KqueueManage.hpp"
+#include "../http/server/Server.hpp"
+#include "../log/LogFactory.hpp"
+#include "../util/Base.hpp"
+
+Logger& Webserv::logger = LogFactory::get("Webserv");
 
 Webserv::Webserv(void) {}
+Webserv::Webserv(const ServerList& server) : _servers(server), _isRun(false), _isStop(false) {}
+
 Webserv::Webserv(const Webserv& other) {}
 Webserv& Webserv::operator=(const Webserv& other) { return (*this);}
 Webserv::~Webserv(void) {}
 
-/*
-server & kqueue & client
-*/
-void Webserv::start(void) {
-	std::list<ServerBlock *> sbs;
-	Server server("127.0.0.1", 8080, sbs);
-	server.init();
+void Webserv::run(void) {
 
-    /* main loop */
+	this->_servers.front()->init();
+	this->_isRun = true;
+
     struct kevent* curr_event;
-    while (1)
-    {
-		usleep(1000); //  usleep(1000000); // delay setting
+    while (this->_isRun) {
 		KqueueManage::instance().kevent();
 		std::cout << "KqueueManage::instance()._changeVec.size()" << KqueueManage::instance()._changeVec.size() << std::endl;
 		(&KqueueManage::instance())->_changeVec.clear();
@@ -31,7 +32,7 @@ void Webserv::start(void) {
 			std::cout << "curr_event->ident : " << curr_event->ident <<  " " << KqueueManage::instance().eventCount() <<  std::endl;
 			
             if (curr_event->flags & EV_ERROR) {
-                if (curr_event->ident == server.getSocket()->getFd())
+                if (curr_event->ident == this->_servers.front()->getSocket()->getFd())
                     throw IOException("server socket error", errno);
                 else
                 {
@@ -41,11 +42,11 @@ void Webserv::start(void) {
             }
             else if (curr_event->filter == EVFILT_READ)
             {
-                if (curr_event->ident == server.getSocket()->getFd())
+                if (curr_event->ident == this->_servers.front()->getSocket()->getFd())
                 {
                     /* accept new client */
 					try {
-						Socket* clientSocket = server.connect(server.getSocket());
+						Socket* clientSocket = this->_servers.front()->connect(this->_servers.front()->getSocket());
 						std::cout << "new:clientsocket : " <<  clientSocket->getFd() << " " << curr_event->ident << std::endl;
 						KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 						// KqueueManage::instance().setEvent(clientSocket->getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
@@ -58,7 +59,7 @@ void Webserv::start(void) {
 					bool b = KqueueManage::instance().recv(curr_event->ident);
 					if (b == false) {
 						//std::cout <<"read false =================================================================";
-						server.clients().erase(curr_event->ident);
+						this->_servers.front()->clients().erase(curr_event->ident);
 						KqueueManage::instance().delEvent(curr_event->ident);
 						// throw IOException("recv error : ", errno);
 					} else {
@@ -69,10 +70,10 @@ void Webserv::start(void) {
             else if (curr_event->filter == EVFILT_WRITE)
             {
 				std::cout << "writefilter: " << curr_event->ident <<  std::endl;
-				if (server.clients()[curr_event->ident]) {
-					std::cout << "server.clients()[curr_event->ident]->state() : " << server.clients()[curr_event->ident]->response().state() << std::endl;
+				if (this->_servers.front()->clients()[curr_event->ident]) {
+					// std::cout << "server.clients()[curr_event->ident]->state() : " << server.clients()[curr_event->ident]->response().state() << std::endl;
 					// if (server.clients()[curr_event->ident]->state() != server.clients()[curr_event->ident]->END) {
-					if (server.clients()[curr_event->ident]->response().isEnd() != true) {
+					if (this->_servers.front()->clients()[curr_event->ident]->response().isEnd() != true) {
 					// if (!server.clients()[curr_event->ident]->in().storage().empty()) {
 						// server.clients().erase(curr_event->ident);
 						// KqueueManage::instance().delEvent(curr_event->ident);
@@ -82,30 +83,60 @@ void Webserv::start(void) {
 					bool b = KqueueManage::instance().send(curr_event->ident);
 					if (b == false) {
 						std::cout << "write fail " << std::endl;
-						server.clients().erase(curr_event->ident);
-						delete server.clients()[curr_event->ident];
+						this->_servers.front()->clients().erase(curr_event->ident);
+						delete this->_servers.front()->clients()[curr_event->ident];
 						KqueueManage::instance().delEvent(curr_event->ident);
 					} else {
 						std::cout << "write treutrue" << std::endl;
-						server.clients().erase(curr_event->ident);
-						delete server.clients()[curr_event->ident];
+						// this->_servers.front()->clients().erase(curr_event->ident);
+						// delete this->_servers.front()->clients()[curr_event->ident];
 						KqueueManage::instance().delEvent(curr_event->ident);
-
 					}
 				} else {
 					KqueueManage::instance().send(curr_event->ident);
 					//KqueueManage::instance().delEvent(curr_event->ident);
 				}
             } else {
-				std::cout << "what is event ?? : " << curr_event->filter << std::endl;
-				
 			} 
 		}
 		std::cout << "KqueueManage::instance()._changeVec.size() ebd?? " << KqueueManage::instance()._changeVec.size() << std::endl;
-
+		for (std::list<Server*>::iterator it = _servers.begin(); it != _servers.end(); it++)
+			(*it)->checkTimeout();
+		if (this->_isStop == true) {
+			if (KqueueManage::instance().eventCount() < 1) {
+				this->_isRun = false;
+				break;
+			}
+		}
     }
+
+
+	while (!_servers.empty()) {
+		ServerList::iterator it = _servers.begin();
+		Server &server = *(*it);
+
+		try {
+			KqueueManage::instance().delEvent(server.getSocket()->getFd());
+			server.close();
+		}
+		catch (Exception& exception) {
+			// logger.error("Failed to terminate: " + server.getHost() + ":" + Base::toString(server.getPort(),10) + ": " + exception.message());
+		}
+		delete &server;
+		_servers.erase(it);
+	}
+}
+
+Webserv* Webserv::create(void) {
+	ServerList list;
+	list.push_back(new Server( Config::instance().rootBlock()->ServerBlockList().front()->getServerName()
+							, Config::instance().rootBlock()->ServerBlockList().front()->getListen()
+							, Config::instance().rootBlock()->ServerBlockList()));
+	return (new Webserv(list));
 }
 
 void Webserv::stop(void) {
-
+	for (ServerList::iterator it = _servers.begin(); it != _servers.end(); it++)
+		KqueueManage::instance().delEvent((*it)->getSocket()->getFd());
+	this->_isStop = true;
 }

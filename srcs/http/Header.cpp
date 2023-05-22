@@ -162,3 +162,11 @@ const Header::map& Header::data(void) const {
 Header& Header::contentLength(std::size_t length) {
 	return (append(CONTENT_LENGTH, Base::toString(length, 10)));
 }
+
+Header& Header::allow(const std::string& value) {
+	return (append(ALLOW, value));
+}
+
+Header& Header::lastModified(const std::string &value) {
+	return (append(LAST_MODIFIED, value));
+}

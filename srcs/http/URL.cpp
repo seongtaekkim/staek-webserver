@@ -1,6 +1,6 @@
 #include "URL.hpp"
 
-URL::URL() : _path(), _queryParameters(), _fragment() {
+URL::URL(void) : _path(), _queryParameters(), _fragment() {
 }
 
 URL::URL(const std::string &path, const std::map<std::string, std::string> queryParameters, const std::string fragment) :
@@ -11,7 +11,7 @@ URL::URL(const URL &other) :
 		_path(other._path), _queryParameters(other._queryParameters), _fragment(other._fragment) {
 }
 
-URL::~URL() {}
+URL::~URL(void) {}
 
 URL& URL::operator= (const URL &other) {
 	if (this != &other) {
