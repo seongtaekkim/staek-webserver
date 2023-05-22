@@ -69,7 +69,6 @@ private:
 	IHTTPBodyDecoder* _bodyDecoder;
 	Client&			_client;
 	bool _isMax;
-
 	Parser(void);
 public:
 	Parser(Client& client);

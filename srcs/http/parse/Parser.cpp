@@ -6,9 +6,12 @@ class Client;
 
 long Parser::headerMaxLength = 8 * 1024 * 1024;
 
-Parser::Parser(Client& client) : _state(Parser::NOT_STARTED),_hState(Parser::HSTATE::FIELD), _pathParser(), _header(), _client(client), _isMax(false) {}
+Parser::Parser(Client& client) : _state(Parser::NOT_STARTED),_hState(Parser::HSTATE::FIELD), _pathParser(), _header(), _client(client), _isMax(false), _headerSize(0) {}
 
-Parser::~Parser(void) {}
+Parser::~Parser(void) {
+	if (_bodyDecoder)
+		delete _bodyDecoder;
+}
 
 std::vector<std::string>	Parser::split(std::string str, std::string delim)
 {
@@ -16,8 +19,7 @@ std::vector<std::string>	Parser::split(std::string str, std::string delim)
     size_t						pos = 0;
     std::string					token;
 
-    while ((pos = str.find(delim)) != std::string::npos)
-	{
+    while ((pos = str.find(delim)) != std::string::npos) {
         token = str.substr(0, pos);
         tokens.push_back(token);
         str.erase(0, pos + delim.length());
@@ -127,10 +129,8 @@ void Parser::parse(char c) {
 		case Parser::PATH:
 		{
 			_pathParser.parse(c);
-			// std::cout << "_pathParser.path() : " << _pathParser.path() << std::endl;
 			if (_pathParser.state() == PathParser::END)
 				_state = Parser::HTTP_START;
-
 			break;
 		}
 
@@ -272,20 +272,13 @@ void Parser::parse(char c) {
 
 		case Parser::BODY:
 			_state = Parser::BODY_DECODE;
-			std::cout << "body!" << std::endl;
 			_bodyDecoder = HTTPBodyEncoding::decoderFor(this->_header);
-
-			if (_bodyDecoder == NULL)
-			{
+			if (_bodyDecoder == NULL) {
 				_state = Parser::END;
 				break;
 			}
-
 			if (c == 0)
 				break;
-
-			// fall through
-
 		case Parser::BODY_DECODE:
 		{
 			std::cout << "body!2" << std::endl;
