@@ -8,6 +8,7 @@
 #include "Client.hpp"
 #include "../../config/block/ServerBlock.hpp"
 #include "RWCallback.hpp"
+#include "../SHTTP.hpp"
 #include <map>
 
 /**
@@ -25,10 +26,6 @@ private:
 	int							_port;
 	std::list<ServerBlock *>	_serverBlocks;
 	std::map<int, Client*>		_clients;
-	
-	//int			_maxFd;
-	//int			_readFd;
-	//int			_writeFd;
 	Server(void);
 public:
 	virtual ~Server(void);
@@ -43,6 +40,7 @@ public:
 	void disconnect(Client& client);
 	std::map<int, Client*> clients();
 	bool recv(FileDescriptor &fd);
+	void checkTimeout(void);
 };
 
 #endif

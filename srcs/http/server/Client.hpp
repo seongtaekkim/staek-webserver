@@ -20,6 +20,8 @@
 
 #include "../../exception/Exception.hpp"
 #include "../response/method/PutTask.hpp"
+#include "../cgi/CGITask.hpp"
+#include "../../util/Time.hpp"
 
 class Server;
 /**
@@ -33,6 +35,7 @@ class Server;
 class Response;
 class Request;
 class PutTask;
+class CGITask;
 class Parser;
 
 class Client : public RWCallback {
@@ -58,6 +61,9 @@ private:
 	PathParser		_pathParser;
 
 	PutTask*		_putTask;
+	CGITask*		_cgiTask;
+
+	unsigned long	_lastTime;
 
 	Client(void);
 	Client& operator=(const Client& other);
@@ -72,16 +78,24 @@ public:
 	bool progress(void);
 	bool progressHead(void);
 	bool progressBody(void);
+	Server& server(void);
 
 	int state(void);
 	Parser& parser(void);
 	Response& response(void);
+	Request& request(void);
 	ResponseMaker& maker(void);
 	void fileWrite(PutTask& task);
+	void cgiWrite(CGITask& task);
+	PutTask* fileWrite(void);
+	CGITask* cgiWrite(void);
 	std::string& body(void);
 	SocketStorage& in(void);
 	SocketStorage& out(void);
 	void end(void);
+	InetAddress inetAddress(void) const;
+	void updateTime(void);
+	unsigned long lastTime(void) const;
 };
 
 #endif

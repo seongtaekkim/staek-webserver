@@ -10,6 +10,7 @@ Client::Client(InetAddress inetAddress, Server& server, Socket& socket)
 	Client::_s_connCnt++;
 	this->_currProgress = Client::HEADER;
 	KqueueManage::instance().create(this->_socket, *this);
+	updateTime();
 }
 
 Client::Client(const Client& other) 
@@ -22,9 +23,12 @@ Client::~Client(void) {
 	// delete &this->_in;
 	// delete &this->_out;
 	std::cout << "client disconnect !! " << this->_socket.getFd() << std::endl;
-	ReleaseResource::pointer(this->_putTask);
+	if (this->_putTask)
+		ReleaseResource::pointer(this->_putTask);
+	if (this->_cgiTask)
+		ReleaseResource::pointer(this->_cgiTask);
 	this->_server.disconnect(*this);
-	// delete &this->_socket;
+	delete &this->_socket;
 }
 
 Socket& Client::socket() const {
@@ -66,6 +70,7 @@ bool Client::recv(FileDescriptor &fd) {
 	// std::cout << this->_in.storage() << std::endl;
 	std::cout << "receive end =================================================================" << std::endl;
 	this->progress();
+	updateTime();
 	std::cout << "progress end !!!!!!!" << std::endl;
 	return (true);
 }
@@ -77,8 +82,8 @@ bool Client::send(FileDescriptor& fd) {
 	(void)fd;
 	std::cout<< "send in in ini " << std::endl;
 
-	// if (this->_currProgress != Client::END)
-	// 	return (false);
+	if (this->_currProgress == Client::END)
+		return (false);
 	if (this->_res.isEnd() != true)
 		return (false);
     ssize_t ret = 0;
@@ -89,13 +94,17 @@ bool Client::send(FileDescriptor& fd) {
  		// 시간 체크
 		// std::cout << this->_res.body() << std::endl;
 	// _out.store(this->_res.body());
-	std::cout << "send=================================================================" << std::endl;
+	std::cout << "send================================================================= " << this->_currProgress << std::endl;
 	this->_res.store(_out);
 	// std::cout << this->_out.storage() << std::endl;
 	std::cout << "send end ===============================================" << std::endl;
 	ret = this->_out.send();
-	if (ret == -1)
-		delete this;
+	if (ret > 0)
+		updateTime();
+		std::cout << "send end ===============================================" << std::endl;
+	this->_currProgress = Client::END;
+	// if (ret == -1)
+	// 	delete this;
 	_out.clear();
 	_in.clear();
 	return (true);
@@ -142,15 +151,22 @@ bool Client::progressHead(void) {
 
 			// }
 			if (this->_parser.state() == Parser::END) {
+				std::cout << "in " << std::endl;
 				URL url = URL().builder().appendPath(_parser.pathParser().path()).build();
 				_req = Request(_parser.header() ,StatusLine(), url);
+				std::cout << _parser.pathParser().path() << Method::METHOD[this->parser().method()] << std::endl;
 				if (Method::METHOD[this->parser().method()]->getHasBody() == true) {
-				// if (1 == 1) {
 					_parser.state(Parser::STATE::BODY);
 					this->_currProgress = Client::BODY;
 					_parser.parse(0);
 					if (_parser.state() != Parser::END)
 						return (progressBody());
+					else {
+						this->_maker.setMaker();
+						this->_maker.executeMaker();
+						// this->_res.header().contentLength(0);
+						// this->_res.status(HTTPStatus::STATE[HTTPStatus::METHOD_NOT_ALLOWED]);
+					}
 				} else {
 					this->_maker.setMaker();
 					this->_maker.executeMaker();
@@ -234,6 +250,20 @@ void Client::fileWrite(PutTask &task) {
 	_putTask = &task;
 }
 
+void Client::cgiWrite(CGITask& task) {
+	if (_cgiTask)
+		delete _cgiTask;
+	_cgiTask = &task;
+}
+
+PutTask* Client::fileWrite(void) {
+	return (this->_putTask);
+}
+
+CGITask* Client::cgiWrite(void) {
+	return (this->_cgiTask);
+}
+
 std::string& Client::body(void) {
 	return (this->_body);
 }
@@ -248,4 +278,26 @@ SocketStorage& Client::out(void) {
 
 void Client::end() {
 	this->_currProgress = Client::END;
+}
+
+Request& Client::request(void) {
+	return (this->_req);
+}
+
+Server& Client::server(void) {
+	return (this->_server);
+}
+
+InetAddress Client::inetAddress(void) const {
+	return (this->_inetAddress);
+}
+
+void Client::updateTime(void) {
+	unsigned long time = Time::currentSecond();
+	if (time)
+		this->_lastTime = time;
+}
+
+unsigned long Client::lastTime(void) const {
+	return (this->_lastTime);
 }

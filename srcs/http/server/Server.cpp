@@ -1,6 +1,7 @@
 #include "Server.hpp"
 #include "../../iom/KqueueManage.hpp"
 #include "../../address/InetAddress.hpp"
+#include "../../util/Time.hpp"
 
 Server::Server(std::string host, int port, std::list<ServerBlock *> sb)
 		: _host(host),
@@ -8,7 +9,14 @@ Server::Server(std::string host, int port, std::list<ServerBlock *> sb)
 		_serverBlocks(sb),
 		_socket(Socket::create())
 		//_clients(),
-{}
+{
+	if (this->_port == 0) {
+		this->_port = SHTTP::DEFAULT_PORT;
+	}
+	if (_host.empty()) {
+		this->_host = SHTTP::DEFAULT_HOST;
+	}
+}
 
 Server::~Server(void) {
 	delete _socket;
@@ -17,7 +25,7 @@ Server::~Server(void) {
 void Server::init(void) {
 	this->_socket->reuse();
 	this->_socket->setNonBlock();
-	this->_socket->bind();
+	this->_socket->bind(this->_port);
 	this->_socket->listen();
 	std::cout << "server socket : " << this->_socket->getFd() << std::endl;
 	KqueueManage::instance().setEvent(this->_socket->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
@@ -42,9 +50,9 @@ Socket* Server::connect(Socket* serverSocket) {
 	// Socket &serverSocket = static_cast<Socket&>(fd);
 
 	InetAddress socketAddress;
-	Socket *socket = serverSocket->accept();
+	Socket *socket = serverSocket->accept(&socketAddress);
 
-	std::cout << "Accepted: " << socketAddress.address() << " (fd=" << socket->getFd() << ')' << std::endl;
+	std::cout << "Accepted: "  << " (fd=" << socket->getFd() << ')' << std::endl;
 
 	socket->setNonBlock();
 	Client& client = *(new Client(socketAddress, *this, *socket));
@@ -70,4 +78,32 @@ bool Server::recv(FileDescriptor &fd) {
 		// Client::setUnavailable(httpClient);
 
 	return (false);
+}
+
+std::list<ServerBlock *> Server::getServerBlocks() const {
+	return (this->_serverBlocks);
+}
+
+
+void Server::checkTimeout(void) {
+	if (_clients.empty())
+		return;
+
+	unsigned long now = Time::currentSecond();
+	unsigned long timeout = SHTTP::DEFAULT_TIMEOUT;
+
+	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end();) {
+		Client& client = *(*it).second;
+		std::cout<<"*************Server::checkTimeout : " << (*it).first<< " " << client.lastTime()  << std::endl;
+
+		it++;	
+		if (client.cgiWrite() && client.cgiWrite()->timeoutTouch()) {
+            std::cout<<" client.cgiWrite()->timeoutTouch(" << std::endl;
+			client.updateTime();
+		} else if (client.lastTime() + timeout < now) {
+			this->clients().erase(client.socket().getFd());
+			delete this->clients()[client.socket().getFd()];
+			KqueueManage::instance().delEvent(client.socket().getFd());
+		}
+	}
 }
