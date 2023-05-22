@@ -32,3 +32,6 @@ def chunk500_size4000(port):
     print(data.decode("ascii"))
     print(green + "Check there is the file chunk2000000 in /pythonTest/putStuff (file size = 2000000)" + nc)
     s.close()
+
+
+chunk500_size4000(8080)

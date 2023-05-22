@@ -8,17 +8,19 @@ SRCS 		= srcs/main.cpp srcs/log/LogFactory.cpp srcs/log/Logger.cpp \
 				srcs/file/FileDescriptor.cpp srcs/file/File.cpp \
 				srcs/config/block/RootBlock.cpp srcs/config/block/ServerBlock.cpp srcs/config/block/LocationBlock.cpp srcs/config/Config.cpp srcs/config/Mime.cpp srcs/config/Reader.cpp \
 				srcs/http/server/Server.cpp srcs/http/server/Socket.cpp srcs/http/Header.cpp \
+				srcs/http/cgi/CGI.cpp srcs/http/cgi/CGITask.cpp \
 				srcs/http/server/Client.cpp srcs/http/server/RWCallback.cpp srcs/http/Webserv.cpp srcs/http/SHTTP.cpp srcs/http/URL.cpp \
 				srcs/http/response/HTTPState.cpp srcs/http/response/Response.cpp srcs/http/response/StatusLine.cpp \
-				srcs/http/response/make/IMaker.cpp srcs/http/response/make/MethodMaker.cpp srcs/http/response/make/ResponseMaker.cpp srcs/http/response/make/ErrorPageMaker.cpp srcs/http/response/make/EndResponseMaker.cpp srcs/http/response/make/DefaultPageMaker.cpp \
-				srcs/http/response/method/IMethod.cpp srcs/http/response/method/Method.cpp srcs/http/response/method/Get.cpp srcs/http/response/method/Post.cpp srcs/http/response/method/Delete.cpp srcs/http/response/method/PutTask.cpp \
+				srcs/http/response/make/IMaker.cpp srcs/http/response/make/MethodMaker.cpp srcs/http/response/make/ResponseMaker.cpp srcs/http/response/make/ErrorPageMaker.cpp srcs/http/response/make/EndResponseMaker.cpp srcs/http/response/make/DefaultPageMaker.cpp srcs/http/response/make/CGIMaker.cpp srcs/http/response/make/InterceptorMaker.cpp  \
+				srcs/http/response/method/IMethod.cpp srcs/http/response/method/Method.cpp srcs/http/response/method/Get.cpp srcs/http/response/method/Post.cpp srcs/http/response/method/HEAD.cpp srcs/http/response/method/Delete.cpp srcs/http/response/method/Put.cpp srcs/http/response/method/PutTask.cpp \
+				srcs/http/interceptor/HTTPFindLocation.cpp srcs/http/interceptor/HTTPLocationInterpretor.cpp \
 				srcs/iom/KqueueManage.cpp \
 				srcs/address/InetAddress.cpp \
 				srcs/util/Storage.cpp srcs/http/server/SocketStorage.cpp \
 				srcs/http/request/Request.cpp \
 				srcs/http/parse/Parser.cpp srcs/http/parse/PathParser.cpp \
-				srcs/http/response/IBody.cpp srcs/http/response/ResponseByString.cpp srcs/http/response/ResponseByFile.cpp \
-				srcs/util/Time.cpp srcs/util/Base64.cpp srcs/util/Base.cpp \
+				srcs/http/response/IBody.cpp srcs/http/response/ResponseByString.cpp srcs/http/response/ResponseByFile.cpp srcs/http/response/ResponseByCGI.cpp \
+				srcs/util/Time.cpp srcs/util/Base64.cpp srcs/util/Base.cpp srcs/util/Replace.cpp srcs/util/SEnvironment.cpp srcs/util/Common.cpp \
 				srcs/http/decode/ChunkDecoder.cpp srcs/http/decode/IdentityDecoder.cpp srcs/http/decode/IHTTPBodyDecoder.cpp \
 				srcs/http/encode/ChunkEncoder.cpp srcs/http/encode/HTTPBodyEncoding.cpp srcs/http/encode/IdentityEncoder.cpp srcs/http/encode/IHTTPBodyEncoder.cpp \
 				srcs/view/Page.cpp
