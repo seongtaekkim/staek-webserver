@@ -1,13 +1,17 @@
 #include "Get.hpp"
 #include "../../../util/Time.hpp"
+#include "../../../util/Storage.hpp"
+#include "../../../util/Time.hpp"
+#include "../../../config/Mime.hpp"
+#include "../../../config/Config.hpp"
+#include "../../../util/ReleaseResource.hpp"
+#include "../ResponseByFile.hpp"
+#include "../../../file/File.hpp"
+#include <list>
 
 Get::Get(void) {}
 
 Get::~Get(void) {}
-
-
-#include "../../../file/File.hpp"
-#include <list>
 
 std::string Get::listing(const URL& url, const File& file) {
 	const std::string &directory = url.path();
@@ -22,36 +26,23 @@ std::string Get::listing(const URL& url, const File& file) {
 	std::list<File> files = file.list();
 	for (std::list<File>::iterator it = files.begin(); it != files.end(); it++) {
 		std::string name(it->name());
-
 		if (it->isDir())
 			name += '/';
-
 		std::string path(url.path());
 		if (path.empty() || path.c_str()[path.length() - 1] != '/')
 			path += '/';
 		path += name;
 		out += std::string("		<a href=\"") + path + "\">" + name + "</a><br>\n";
 	}
-
 	out += ""
 			"	</body>\n"
 			"</html>\n";
-
 	return (out);
 }
-
-#include "../../../util/Storage.hpp"
-#include "../../../util/Time.hpp"
-#include "../../../config/Mime.hpp"
-#include "../../../config/Config.hpp"
-#include "../../../util/ReleaseResource.hpp"
-#include "../ResponseByFile.hpp"
 
 bool Get::doMethod(Request &req, Response &res, Client &cli) {
 
 	File targetFile(req.targetFile());
-	std::cout << "getgetget !!!!!!!!!!!!!!!" << std::endl;
-	std::cout << targetFile.path() << std::endl;
 
 	if (res.body()) {
 		return (true);
@@ -65,23 +56,19 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 	if (targetFile.isFile()) {
 		std::size_t contentLength = targetFile.size();
 		Time lastupdate(targetFile.stat().st_mtimespec);
-		Mime::MimeType contentType;
-
+		std::string contentType;
 		std::string extension;
 		
-		std::cout << req.url().fullUrl() << std::endl;
 		if (req.url().extension(extension)) {
-			contentType = Config::instance().mime()->mimeMap()[extension];
+			const Mime* mime = Config::instance().mime();
+			contentType = mime->findType(extension);
 		}
-		std::cout << "extension : " << extension << std::endl;
-		std::cout << "contentType : " << contentType.front() << std::endl;
-
 		FileDescriptor *fd = NULL;
 		try {
 			fd = targetFile.open(O_RDONLY, 0666);
-			res.body(new ResponseByFile(*fd, contentLength));
+			res.body(new ResponseByFile(*fd, contentLength, cli.server().getSocket()->getFd()));
 			res.header().contentLength(contentLength);
-			// res.header().contentType(contentType);
+			res.header().contentType(contentType);
 			res.header().lastModified(lastupdate.formatTimeSpec(SHTTP::DATEFORMAT));
 			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
 		}
@@ -93,18 +80,17 @@ bool Get::doMethod(Request &req, Response &res, Client &cli) {
 	}
 
 	if (targetFile.isDir()) {
-		// if (!request.listing())
-			// res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
-		// else {
+		
+		if (req.locationBlock()->getAutoindex().compare("on") != 0)
+			res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
+		else {
 			res.body(listing(req.url(), targetFile));
-			// res.string(listing(request.url(), targetFile)); 
-			// res.headers().html(); // MIME_HTML = "text/html"; mime setting 
+			res.header().mimeHTML(); 
 			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
-		// }
+		}
 		return (true);
 	}
 	res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
-	// cli.end();
 	return (true);
 }
 

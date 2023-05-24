@@ -9,8 +9,9 @@
 
 class InetAddress {
 private:
-	int				_port;
 	unsigned char 	_address[4];
+	int				_port;
+
 public:
 	InetAddress(const InetAddress& other);
 	InetAddress(unsigned int address, int port);
@@ -19,6 +20,7 @@ public:
 	~InetAddress(void);
 	int port(void) const;
 	std::string address(void) const;
+
 public:
 	static InetAddress create(const struct sockaddr* addr);
 };

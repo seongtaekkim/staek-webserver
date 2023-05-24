@@ -2,8 +2,7 @@
 
 HTTPBodyEncoding::~HTTPBodyEncoding(void) {}
 
-IHTTPBodyDecoder* HTTPBodyEncoding::decoderFor(const Header& headerFields)
-{
+IHTTPBodyDecoder* HTTPBodyEncoding::decodeSelector(const Header& headerFields) {
 	std::string transfertEncodingOpt = headerFields.get(Header::TRANSFER_ENCODING);
 	if (!transfertEncodingOpt.empty()) {
 		if (transfertEncodingOpt == Header::CHUNKED)

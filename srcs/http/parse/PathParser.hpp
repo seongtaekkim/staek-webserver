@@ -72,9 +72,7 @@ class PathParser {
 		void hexToValue(char c);
 		void hexToFragment(char c);
 		void commitQueryKeyValue(State nextState);
-		inline void
-		hexStart(HexStorer hexStorer)
-		{
+		inline void hexStart(HexStorer hexStorer) {
 			m_hexBeforeState = m_state;
 			m_state = HEX_START;
 			m_hexStorer = hexStorer;

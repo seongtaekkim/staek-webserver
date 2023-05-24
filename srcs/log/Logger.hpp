@@ -54,6 +54,9 @@ public:
 	void	debug(const std::string msg);
 
 	bool	isErrorEnabled() const;
+	bool	isWarnEnabled() const;
+	bool	isInfoEnabled() const;
+	bool	isDebugEnabled() const;
 };
 
 #endif

@@ -48,7 +48,7 @@ Mime::Mime(const std::string file) {
 		}
 		pos = ret;
 
-		// type이 존재하면 list를 append 한다.
+		// if type exist append list.
 		if (_mimeMap[type].empty())
 			_mimeMap[type] = extensions;
 		else {
@@ -60,9 +60,12 @@ Mime::Mime(const std::string file) {
 	}
 }
 
-Mime::Mime(const Mime& other) {}
+Mime::Mime(const Mime& other) {
+	(void)other;
+}
 
 Mime& Mime::operator=(const Mime& other) {
+	(void)other;
 	return (*this);
 }
 
@@ -74,4 +77,17 @@ Mime::MimeMapType Mime::mimeMap(void) const {
 
 Mime::MimeType Mime::mime(void) const {
 	return (this->_mime);
+}
+
+// find key by value
+std::string Mime::findType(std::string extension) const {
+	for (Mime::MimeMapType::const_iterator it = _mimeMap.begin() ; it != _mimeMap.end() ; ++it) {
+		std::list<std::string> list = it->second;
+		for (std::list<std::string>::const_iterator lit = list.begin() ; lit != list.end() ; ++lit) {
+			if (extension.compare(*lit) == 0) {
+				return (it->first);
+			}
+		}
+	}
+	return ("");
 }

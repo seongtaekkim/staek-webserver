@@ -1,5 +1,5 @@
 #include "Page.hpp"
-#include "../http/response/HTTPState.hpp"
+#include "../http/response/HTTPStatus.hpp"
 #include "../util/Base.hpp"
 #include "../main.hpp"
 

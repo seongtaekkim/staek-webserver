@@ -6,9 +6,9 @@
 
 class IdentityDecoder : public IHTTPBodyDecoder {
 private:
-	bool m_isAllocated;
-	long long m_contentLength;
-	long long m_consumed;
+	bool _isAllocated;
+	long long _contentLength;
+	long long _consumed;
 
 private:
 	IdentityDecoder(void);
@@ -19,7 +19,7 @@ public:
 	IdentityDecoder(bool isAllocated, long long contentLength);
 	virtual ~IdentityDecoder(void);
 
-	bool consume(const std::string &in, std::string &out, size_t &consumed, bool max);
+	bool parse(const std::string &in, std::string &out, size_t &consumed, bool max);
 	void cleanup();
 };
 

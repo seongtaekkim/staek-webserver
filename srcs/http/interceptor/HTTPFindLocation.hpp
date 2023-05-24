@@ -4,32 +4,21 @@
 
 #include "../../config/block/ServerBlock.hpp"
 
-
-class HTTPFindLocation
-{	
+class HTTPFindLocation {
 	private:
-		std::string m_clientPath;
-		std::list<LocationBlock*> m_serverLocations;
-		const LocationBlock* m_locationBlock;
+		std::string _clientPath;
+		std::list<LocationBlock*> _serverLocations;
+		const LocationBlock* _locationBlock;
 		
 	public:
 		HTTPFindLocation();
 		HTTPFindLocation(std::string clientPath, std::list<LocationBlock*> serverBlock);
-		HTTPFindLocation(const HTTPFindLocation &other);
-		
-		virtual
+		HTTPFindLocation(const HTTPFindLocation& other);
+		HTTPFindLocation& operator=(const HTTPFindLocation& other);
 		~HTTPFindLocation();
-
-		HTTPFindLocation&
-		operator =(const HTTPFindLocation &other);
-
-		HTTPFindLocation&
-		location(const LocationBlock* locationBlock);
-		
+		HTTPFindLocation& location(const LocationBlock* locationBlock);
 		const LocationBlock* location(void) const;
-
-		HTTPFindLocation&
-		parse(void);
+		HTTPFindLocation& parse(void);
 };
 
 #endif

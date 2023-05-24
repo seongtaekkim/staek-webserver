@@ -6,14 +6,16 @@ Post::Post(void) {}
 Post::~Post(void) {}
 
 bool Post::doMethod(Request &req, Response &res, Client &cli) {
-	File targetFile(req.targetFile());
 
+	if (res.body()) {
+		return (true);
+	}
+
+	File targetFile(req.targetFile());
 	bool justCreated = false;
 	std::string out;
 	if (targetFile.exists()) {
 		if (targetFile.isDir() || !targetFile.isFile()) {
-			std::cout << "req.url().fullUrl()" << req.url().fullUrl() << std::endl;
-			std::cout << Get::instance()->listing(req.url(), targetFile) << std::endl;
 			res.body(Get::instance()->listing(req.url(), targetFile));
 			res.header().allow("GET");
 			res.status(HTTPStatus::STATE[HTTPStatus::METHOD_NOT_ALLOWED]);
@@ -22,7 +24,6 @@ bool Post::doMethod(Request &req, Response &res, Client &cli) {
 	} else {
 		try {
 			targetFile.create();
-			// res.headers().contentLocation(targetFile.path());
 			justCreated = true;
 		}
 		catch (Exception &exception) {
@@ -37,7 +38,7 @@ bool Post::doMethod(Request &req, Response &res, Client &cli) {
 		fd.lseek(0, SEEK_END);
 	cli.fileWrite(*(new PutTask(cli, fd, justCreated)));
 
-	return (false);
+	return (true);
 }
 
 void Post::setHasBody(bool hasbody) {

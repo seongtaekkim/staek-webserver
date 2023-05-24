@@ -6,17 +6,15 @@ Delete::Delete(void) {}
 Delete::~Delete(void) {}
 
 bool Delete::doMethod(Request& req, Response& res, Client& cli) {
+	(void)cli;
 	File file(req.targetFile());
 
-	if (!file.exists())
+	if (!file.exists() || !file.isFile())
 		res.status(HTTPStatus::STATE[HTTPStatus::NO_CONTENT]);
-	else
-	{
+	else {
 		try {
 			file.remove();
 			res.status(HTTPStatus::STATE[HTTPStatus::OK]);
-			IMethod* method = Method::METHOD["GET"];
-			method->doMethod(req, res, cli);
 		} catch (Exception& e) {
 			res.status(HTTPStatus::STATE[HTTPStatus::ACCEPTED]);
 		}

@@ -2,8 +2,6 @@
 #define SERVER_HPP
 
 #include <iostream>
-// #include "ServContext.hpp"
-// #include "Common.hpp"
 #include "Socket.hpp"
 #include "Client.hpp"
 #include "../../config/block/ServerBlock.hpp"

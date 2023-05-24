@@ -9,7 +9,7 @@ Base::Base(void) {}
 Base::~Base(void) {}
 
 int	Base::getBase(char c, std::string base) {
-	int index = base.find(c);
+	std::string::size_type index = base.find(c);
 	if (index == std::string::npos)
 		return (-1);
 	return (index);
@@ -18,7 +18,6 @@ int	Base::getBase(char c, std::string base) {
 std::string Base::toUpper(const std::string& base) {
 	std::string				out;
 	const char* 			arr = base.c_str();
-	std::string::size_type	size = base.size();
 
 	while (*arr) {
 		out += std::toupper(*arr);

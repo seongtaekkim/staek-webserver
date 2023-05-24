@@ -20,13 +20,30 @@ FileDescriptor::~FileDescriptor() {
 ssize_t FileDescriptor::read(void *buf, std::size_t nbyte) {
 	this->validateNotClosed();
 	ssize_t ret = ::read(this->_fd, buf, nbyte);
-	// std::cout << "ret? : " <<ret << " " << errno << std::endl;
-	// std::cout << "ret? : " <<buf<< std::endl;
 	if (!this->_valid && ret != -1)
 		this->_valid = true;
 	if (ret == 0)
 		this->_isReadCompleted = true;
 	return (ret);
+}
+
+std::string FileDescriptor::readString(void) {
+  ssize_t size;
+  std::string content;
+  char buf[SHTTP::DEFAULT_READSIZE + 1];
+  ::lseek(this->_fd, 0, SEEK_SET);
+  while (true) {
+    size = ::read(_fd, buf, SHTTP::DEFAULT_READSIZE);
+    if (!size) {
+		this->_isReadCompleted = true;
+		return content;
+    } else if (size == -1) {
+		return "";
+    } else {
+		buf[size] = '\0';
+		content.insert(content.length(), buf, size);
+    }
+  }
 }
 
 ssize_t FileDescriptor::write(const void *buf, std::size_t nbyte) {

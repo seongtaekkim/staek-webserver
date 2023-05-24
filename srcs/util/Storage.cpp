@@ -1,6 +1,5 @@
 #include "Storage.hpp"
 
-
 Storage::Storage(void) : _maxSize(std::string::npos) {}
 
 Storage::Storage(SizeType maxSize) : _maxSize(maxSize) {}
@@ -12,7 +11,13 @@ Storage::Storage(const Storage& other) {
 	}
 }
 
-Storage& Storage::operator=(const Storage& other) {return (*this);}
+Storage& Storage::operator=(const Storage& other) {
+	if (this != &other) {
+		this->_storage = other._storage;
+		this->_maxSize = other._maxSize;
+	}
+	return (*this);
+}
 
 Storage::~Storage(void) {
 	this->clear();

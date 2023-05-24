@@ -1,7 +1,7 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include "HTTPState.hpp"
+#include "HTTPStatus.hpp"
 #include "../../util/Storage.hpp"
 #include "StatusLine.hpp"
 #include "IBody.hpp"
@@ -11,22 +11,17 @@
 #include "../../util/Base.hpp"
 #include "../../main.hpp"
 
-// #include "make/ResponseMaker.hpp"
-
-// class ResponseMaker;
-
 class Response {
 public:
 	enum State { INIT, HEADER, BODY, END };
 private:
 	HTTPStatus::StateType	_status;
-	// ResponseMaker			_maker;
-
 	Header		_header;
 	IBody*		_body;
 	std::string _headString;
 	int			_state;
 	bool		_isEnd;
+	std::string _cgiExtension;
 	
 public:
 	Response(void);
@@ -44,7 +39,8 @@ public:
 	void end(void);
 	bool isEnd(void) const;
 	int state(void) const;
-
+	void cgiExtension(std::string str);
+	std::string cgiExtension(void) const;
 
 };
 

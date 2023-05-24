@@ -8,7 +8,6 @@
 #include <string>
 #include "../../util/Base.hpp"
 
-
 class IHTTPBodyDecoder;
 
 class HTTPBodyEncoding {
@@ -21,7 +20,7 @@ public:
 	virtual ~HTTPBodyEncoding(void);
 
 public:
-	static IHTTPBodyDecoder* decoderFor(const Header &header);
+	static IHTTPBodyDecoder* decodeSelector(const Header &header);
 };
 
 #endif

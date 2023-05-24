@@ -16,6 +16,8 @@ public:
 	virtual ~InterceptorMaker(void);
 	InterceptorMaker& operator=(const InterceptorMaker &other);
 	virtual void make(Client& client, Request& req, Response& res, ResponseMaker& maker);
+	ServerBlock& findServerBlock(std::list<ServerBlock *> serverList, Client& client);
+
 };
 
 #endif

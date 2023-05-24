@@ -1,12 +1,19 @@
 #include "RootBlock.hpp"
 #include <iostream>
+#include <map>
 
 RootBlock::RootBlock(void) {}
 
 RootBlock::~RootBlock(void) {}
 
-RootBlock::RootBlock(const RootBlock& other) {}
-RootBlock& RootBlock::operator=(const RootBlock& other) {return (*this);}
+RootBlock::RootBlock(const RootBlock& other) {
+	(void)other;
+}
+
+RootBlock& RootBlock::operator=(const RootBlock& other) {
+	(void)other;
+	return (*this);
+}
 
 void RootBlock::setMaxConnection(std::string str) {
 	this->_maxConnection = (int)::strtol(str.c_str(), NULL, 10);
@@ -32,9 +39,15 @@ std::string RootBlock::getInclude(void) const {
 	return (this->_include);
 }
 
-#include <map>
-void RootBlock::check(std::string key, std::string value) {
+void RootBlock::setRoot(std::string str) {
+	this->_root = str;
+}
 
+std::string RootBlock::getRoot(void) const {
+	return (this->_root);
+}
+
+void RootBlock::check(std::string key, std::string value) {
 
 	typedef void (RootBlock::*FuncPointer)(std::string);
 	typedef std::map<std::string, FuncPointer> FuncMap;
@@ -45,12 +58,13 @@ void RootBlock::check(std::string key, std::string value) {
 	_map["worker_connections"] = &RootBlock::setMaxConnection;
 	_map["worker_processes"] = &RootBlock::setWorkerCnt;
 	_map["include"] = &RootBlock::setInclude;
+	_map["root"] = &RootBlock::setRoot;
 
-		_pos = _map.find(key);
-		if (_pos != _map.end()) {
-			FuncPointer ptr = _pos->second;
-			(this->*ptr)(value);
-		}
+	_pos = _map.find(key);
+	if (_pos != _map.end()) {
+		FuncPointer ptr = _pos->second;
+		(this->*ptr)(value);
+	}
 	
 }
 

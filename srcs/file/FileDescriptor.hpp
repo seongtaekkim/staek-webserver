@@ -11,6 +11,7 @@
 #include "../exception/IllegalStateException.hpp"
 #include "../exception/IOException.hpp"
 #include "../util/Storage.hpp"
+#include "../http/SHTTP.hpp"
 
 // 객체 생성할 때 nonblock 설정해주도록 고려해보자
 /**
@@ -42,6 +43,8 @@ public:
 	bool	isClosed(void) const;
 	void	validateNotClosed(void) const;
 	bool	isReadCompleted(void) const;
+	std::string readString(void);
+
 public:
 	static FileDescriptor* create(FileDescriptor& fd);
 };

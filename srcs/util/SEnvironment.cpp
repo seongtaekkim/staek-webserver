@@ -29,8 +29,8 @@ SEnvironment SEnvironment::charToMap(char **env) {
 	while ((key = *env)) {
 		char* equal = std::strchr(key, '=');
 		std::string str = key;
-		char* value;
-		if (equal) {
+		char* value = NULL;
+		if (*equal) {
 			equal[0] = '\0';
 			value = equal + 1; 
 		}

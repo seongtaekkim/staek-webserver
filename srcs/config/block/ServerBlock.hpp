@@ -17,6 +17,7 @@ private:
 	CgiType								_cgi;
 	std::list<LocationBlock*>			_locationBlockList;
 	std::string							_index;
+	unsigned long						_clientMaxBodySize;
 
 public:
 	ServerBlock(void);
@@ -36,7 +37,9 @@ public:
 	std::string getIndex(void) const;
 	void setCgi(std::string str);
 	std::pair<std::string, std::string> getCgi(void) const;
-
+	void setClientMaxBodySize(std::string str);
+	unsigned long getClientMaxBodySize(void) const;
+ 
 	void appendLocationBlock(LocationBlock* locationBlock);
 	const std::list<LocationBlock*> locationBlockList(void) const;
 };

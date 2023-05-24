@@ -13,7 +13,6 @@ class CGITask : public RWCallback {
 	private:
 		Client&					_client;
 		CGI&					_cgi;
-		FileDescriptor&			_out;
 		size_t					wroteBodyUpTo;
 		bool					_running;
 	private:
@@ -31,6 +30,9 @@ class CGITask : public RWCallback {
 		bool hasReadHeaders();
 		FileDescriptor& out();
 		bool timeoutTouch();
+		inline CGI& cgi(void)  const {
+			return (this->_cgi);
+		}
 };
 
 #endif

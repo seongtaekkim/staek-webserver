@@ -7,7 +7,7 @@ std::string IHTTPBodyDecoder::decode(const std::string &input, bool max) {
 	std::string out;
 
 	size_t consumed = 0;
-	consume(input, out, consumed, max);
+	parse(input, out, consumed, max);
 
 	return (out);
 }

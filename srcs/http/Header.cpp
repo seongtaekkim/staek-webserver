@@ -78,14 +78,11 @@ Header& Header::contentType(const std::string &mimeType) {
 	return (append(CONTENT_TYPE, mimeType));
 }
 
-Header& Header::html(void) {
+Header& Header::mimeHTML(void) {
 	return (contentType(MIME_HTML));
 }
 
 
-/**
- @ref RFC 7230 - 3.2.2 
-*/
 Header& Header::append(const std::string &key, const std::string &value, bool folding) {
 	static std::string comaAndASpace = ", ";
 

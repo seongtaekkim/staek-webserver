@@ -57,11 +57,11 @@ public:
 	};
 	static long headerMaxLength;
 private:
-	Parser::STATE	_state;
+	int				_state;
 	PathParser		_pathParser;
 	std::string		_method;
 
-	Parser::HSTATE	_hState;
+	int				_hState;
 	long			_headerSize;
 	Header			_header;
 	std::string		m_key;
@@ -69,27 +69,30 @@ private:
 	IHTTPBodyDecoder* _bodyDecoder;
 	Client&			_client;
 	bool _isMax;
+	int				_major;
+	int				_minor;
+	unsigned long	_clientMaxBodySize;
 	Parser(void);
 public:
 	Parser(Client& client);
 	~Parser(void);
-	static std::vector<std::string>		split(std::string str, std::string delim);
-	static std::vector<std::string>		split(std::string str, char delim);
-	static void							trim(std::string& str);
-	static std::string					toupper(std::string str);
 
 	void parse(char c);
 	PathParser pathParser(void) const;
 	std::string method(void);
-	Parser::STATE state(void);
-	void state(Parser::STATE state);
+	int			state(void);
+	void state(int state);
 
 	void headerParse(char c);
 	void commit(Parser::HSTATE nextState);
 	void headerClear(void);
-	Parser::HSTATE hState(void) const;
+	int hState(void) const;
+	void hState(int state);
 
 	const Header& header(void) const;
+
+	unsigned long clientMaxBodySize(void) const;
+	void clientMaxBodySize(unsigned long size);
 
 };
 

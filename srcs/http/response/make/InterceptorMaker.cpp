@@ -22,21 +22,29 @@ InterceptorMaker& InterceptorMaker::operator=(const InterceptorMaker& other) {
 	return (*this);
 }
 
+ServerBlock& InterceptorMaker::findServerBlock(std::list<ServerBlock *> serverList, Client& client) {
+	for (std::list<ServerBlock *>::iterator it = serverList.begin(); it != serverList.end(); it++) {
+		if ((*it)->getListen() == client.server().getPort() && (*it)->getServerName().compare(client.server().getHost()) == 0) 
+			return (*(*it));
+	}
+	return (*serverList.front());
+}
+
 void InterceptorMaker::make(Client& client, Request& req, Response& res, ResponseMaker& maker) {
-	std::list<ServerBlock *> serverList =  client.server().getServerBlocks();
+	std::list<ServerBlock *> serverList = client.server().getServerBlocks();
 	if (serverList.size() < 1) {
 		res.status(HTTPStatus::STATE[HTTPStatus::NOT_FOUND]);
 		res.end();
 		return ;
 	}
-	req.serverBlock(*serverList.front()); // currnt only one (later for find one)
+	req.serverBlock(findServerBlock(serverList, client));
 	const ServerBlock &serverBlock = *req.serverBlock();
 	const std::list<LocationBlock*> locations = serverBlock.locationBlockList();
 	if (locations.empty())
-		return (client.maker().executeMaker());
+		return (maker.executeMaker());
 
 	const std::string& path = client.parser().pathParser().path();
-
+	std::cout << "before path :  " << path << std::endl;
 	HTTPFindLocation findLocation(path, locations);
 	if (findLocation.parse().location()) {
 		const LocationBlock &locationBlock = *findLocation.parse().location();
@@ -57,8 +65,9 @@ void InterceptorMaker::make(Client& client, Request& req, Response& res, Respons
 				else
 					path = locationBlock.getPath();
 			}
+			std::cout << "path : " << path <<  " "  << locationBlock.getPath() << std::endl;
 			req.resource(path);
 		}
 	}
-	client.maker().executeMaker();
+	maker.executeMaker();
 }

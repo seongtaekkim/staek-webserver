@@ -4,7 +4,6 @@
 #include "../../file/File.hpp"
 #include "../response/StatusLine.hpp"
 #include "../URL.hpp"
-// #include "../response/method/Method.hpp"
 #include "../Header.hpp"
 #include "../../config/Config.hpp"
 #include <iostream>

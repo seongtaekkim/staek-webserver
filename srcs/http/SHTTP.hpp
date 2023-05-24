@@ -19,6 +19,7 @@ public:
 	static const std::string	DEFAULT_TMP_FILE;
 	static const int			DEFAULT_PORT;
 	static const std::string	DEFAULT_HOST;
+	static const unsigned long	DEFAULT_MAX_BODY_SIZE;
 };
 
 #endif

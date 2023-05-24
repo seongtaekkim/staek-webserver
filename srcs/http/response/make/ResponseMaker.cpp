@@ -24,13 +24,16 @@ void ResponseMaker::setMaker(void) {
 	this->_maker.push(&EndResponseMaker::instance());
 }
 
+void ResponseMaker::setLastMaker(void) {
+	this->_maker.push(&ErrorPageMaker::instance());
+	this->_maker.push(&EndResponseMaker::instance());
+}
+
 void ResponseMaker::popMaker(void) {
 	this->_maker.pop();
-	std::cout << " ResponseMaker::popMaker :" << this->_maker.size() << std::endl;
 }
 
 void ResponseMaker::executeMaker(void) {
-	std::cout << "ResponseMaker::executeMaker " << this->_maker.size() << " " << this->_res.status().first << std::endl;
 	if (!this->_maker.empty()) {
 		IMaker *maker = this->_maker.front();
 		popMaker();

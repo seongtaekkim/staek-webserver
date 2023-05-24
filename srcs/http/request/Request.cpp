@@ -1,21 +1,22 @@
 #include "Request.hpp"
 
-/* 
-	OCCF
-*/
 Request::Request(void) : _resource(), _header() {}
 
 Request::Request(const Header& header, const StatusLine& statusLine, const URL& url) :
-		_statusLine(statusLine),
-		_url(url),
-		_header(header),
-		// _method(),
-		_resource(url.path())
-{
-}
+	_resource(url.path()), _statusLine(statusLine), _url(url), _header(header)
+{}
 
-Request::Request(const Request& __copy) : _resource(__copy._resource) {
-	_body = __copy._body;
+Request::Request(const Request& other) {
+	if (this != &other) {
+		this->_resource = other._resource;
+		this->_body = other._body;
+		this->_isChunked = other._isChunked;
+		this->_statusLine = other._statusLine;
+		this->_url = other._url;
+		this->_header = other._header;
+		this->_serverBlock = other._serverBlock;
+		this->_locationBlock = other._locationBlock;
+	}
 }
 
 Request	Request::operator=(const Request& other) {
@@ -32,9 +33,7 @@ Request	Request::operator=(const Request& other) {
 	return (*this);
 }
 
-Request::~Request(void) {
-	std::cout << "delete Request::~Request " << std::endl;
-}
+Request::~Request(void) {}
 
 std::string Request::body() {
 	return (_body);
@@ -54,8 +53,8 @@ std::string Request::root(void) const {
 			return (this->_serverBlock->getRoot());
 		}
 	}
-	if (!Config::instance().rootBlock()->ServerBlockList().front()->getRoot().empty())
-		return (Config::instance().rootBlock()->ServerBlockList().front()->getRoot());
+	if (!Config::instance().rootBlock()->getRoot().empty())
+		return (Config::instance().rootBlock()->getRoot());
 	return (File::currentDir());
 }
 

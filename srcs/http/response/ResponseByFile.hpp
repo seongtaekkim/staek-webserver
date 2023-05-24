@@ -19,7 +19,7 @@ private:
 	ResponseByFile& operator=(const ResponseByFile& other);
 
 public:
-	ResponseByFile(FileDescriptor& fd, std::size_t contentLength);
+	ResponseByFile(FileDescriptor& fd, std::size_t contentLength, int serverFd);
 	virtual ~ResponseByFile(void);
 	virtual bool store(Storage& store);
 	virtual bool recv(FileDescriptor& fd);

@@ -1,23 +1,42 @@
 #include "Response.hpp"
-Response::Response(void) : _state(INIT), _isEnd(false), _body() {	std::cout << "response create" << std::endl;
+#include "../../config/Config.hpp"
+#include "../SHTTP.hpp"
+#include "../../util/Time.hpp"
+
+Response::Response(void) : _body(), _state(INIT), _isEnd(false) {}
+
+Response::Response(const Response& other) {
+	if (this != &other) {
+		this->_body = other._body;
+		this->_cgiExtension = other._cgiExtension;
+		this->_header = other._header;
+		this->_headString = other._headString;
+		this->_isEnd = other._isEnd;
+		this->_state = other._state;
+		this->_status = other._status;
+	}
 }
-Response::Response(const Response& other) {}
+
 Response& Response::operator=(const Response& other) {
+	if (this != &other) {
+		this->_body = other._body;
+		this->_cgiExtension = other._cgiExtension;
+		this->_header = other._header;
+		this->_headString = other._headString;
+		this->_isEnd = other._isEnd;
+		this->_state = other._state;
+		this->_status = other._status;
+	}
 	return (*this);
 }
+
 Response::~Response(void) {
-	std::cout << "response delete" << std::endl;
 	ReleaseResource::pointer(this->_body);
 }
 
-
-#include "../SHTTP.hpp"
-#include "../../util/Time.hpp"
 bool Response::store(Storage& buffer) {
-	// if (!m_ended)
-	// 	return (false);
-
-	// this->_body += buffer;
+	if (!_isEnd)
+		return (false);
 
 	switch (_state) {
 		case INIT:
@@ -26,41 +45,21 @@ bool Response::store(Storage& buffer) {
 			_state = BODY;
 		case BODY:
 		{
-
-			std::cout << "((((((((((((((((((((((((((((((((((" << _status.first << std::endl;
 			_headString.append(StatusLine(_status).response());
 			_headString.append(SHTTP::CRLF);
-			
 			_headString.append(header().format());
-			// _headString.append("Content-Length: ");
-			// _headString.append(this->header().get(Header::CONTENT_LENGTH));
-			// _headString.append(SHTTP::CRLF);
-			_headString.append("Content-Type: text/html");
-			_headString.append(SHTTP::CRLF);
 			_headString.append("Date: ");
 			_headString.append(Time::NOW().format(SHTTP::DATEFORMAT));
 			_headString.append(SHTTP::CRLF);
 			_headString.append("Server: ");
-			_headString.append(APPLICATION_NAME);
-							_headString.append(SHTTP::CRLF);
-				_headString.append(SHTTP::CRLF);
-				// _headString.append(SHTTP::CRLF);
+			_headString.append(APPLICATION_NAME);	
+			_headString.append(SHTTP::CRLF);
+			_headString.append(SHTTP::CRLF);
 			buffer.store(_headString);
-			std::cout << "================!!!=====================" << std::endl;
-			if (this->_body) {
+			if (this->_body)
 				this->_body->store(buffer);
-			}
-			else {
-				_headString.append(SHTTP::CRLF);
-				_headString.append(SHTTP::CRLF);
-			}
-			std::cout << buffer.storage() << std::endl;
-			std::cout << ")))))))))))))))))))))))))))))))" << _state << std::endl;
 			return (false);
 		}
-
-		// case END:
-			// return (buffer.empty());
 	}
 	return (true);
 }
@@ -99,7 +98,14 @@ bool Response::isEnd(void) const {
 	return (this->_isEnd);
 }
 
-
 int Response::state(void) const {
 	return (this->_state);
+}
+
+void Response::cgiExtension(std::string str) {
+	this->_cgiExtension = str;
+}
+
+std::string Response::cgiExtension(void) const {
+	return (this->_cgiExtension);
 }

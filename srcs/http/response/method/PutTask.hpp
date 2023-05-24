@@ -4,7 +4,7 @@
 #include "../../../file/FileDescriptor.hpp"
 #include "../../server/RWCallback.hpp"
 #include "../../server/Client.hpp"
-#include "../HTTPState.hpp"
+#include "../HTTPStatus.hpp"
 #include "../Response.hpp"
 #include "../make/ResponseMaker.hpp"
 #include <stddef.h>

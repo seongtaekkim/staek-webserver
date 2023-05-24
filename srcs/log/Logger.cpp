@@ -34,20 +34,31 @@ Logger::log(const std::string& color, std::string msg) {
 * @return bool : true(enable), false(unenable)
 * @date 2023.03.21
 */
-bool
-Logger::isErrorEnabled() const
-{
+bool Logger::isErrorEnabled() const {
 	return (ERROR);
 }
+
+bool Logger::isWarnEnabled() const {
+	return (WARNING);
+}
+
+bool Logger::isInfoEnabled() const {
+	return (INFO);
+}
+
+bool Logger::isDebugEnabled() const {
+	return (DEBUG);
+}
+
 
 /**
 * @brief error 레벨인 경우, 해당로그를 출력한다.
 * @param msg(메세지)
 * @date 2023.03.21
 */
-void
-Logger::error(const std::string msg) {
-	if (isErrorEnabled())  this->log(RED, msg);
+void Logger::error(const std::string msg) {
+	if (isErrorEnabled())
+    this->log(RED, msg);
 }
 
 /**
@@ -56,7 +67,8 @@ Logger::error(const std::string msg) {
 * @date 2023.03.21
 */void
 Logger::warning(const std::string msg) {
-
+	if (isWarnEnabled())
+    this->log(CYAN, msg);
 }
 
 /**
@@ -66,7 +78,8 @@ Logger::warning(const std::string msg) {
 */
 void
 Logger::info(const std::string msg) {
-
+	if (isInfoEnabled())
+    this->log(GREEN, msg);
 }
 
 /**
@@ -76,5 +89,6 @@ Logger::info(const std::string msg) {
 */
 void
 Logger::debug(const std::string msg) {
-
+	if (isDebugEnabled())
+    this->log(BLACK, msg);
 }

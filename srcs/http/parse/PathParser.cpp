@@ -128,29 +128,24 @@ void PathParser::parse(char c) {
 
 	m_original += c;
 
-	if (m_original.size() >= PathParser::maxLength)
+	if (m_original.size() >= (unsigned long)PathParser::maxLength)
 		throw RuntimeException("too long url exception");
 }
 
 void PathParser::hexToPath(char c) {
 	_path += c;
 
-	if (c == '/')
-	{
-		if (m_dot == 2)
-		{
-			// _path = File(_path).parent().parent().path();
+	if (c == '/') {
+		if (m_dot == 2) {
 			_path = File(_path).path();
 
 			if (--m_level == -1)
 				throw Exception("Out of root directory");
-		}
-		else
+		} else
 			m_level++;
 
 		m_dot = 0;
-	}
-	else if (c == '.')
+	} else if (c == '.')
 		m_dot++;
 }
 

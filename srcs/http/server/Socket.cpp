@@ -55,7 +55,6 @@ Socket* Socket::accept(InetAddress* address) const {
 }
 
 ssize_t Socket::recv(void *buffer, std::size_t length, int flags) {
-	std::cout << "socket:recv : " << this->getFd() << std::endl;
 	this->validateNotClosed();
 	ssize_t ret;
 	if ((ret = ::recv(this->getFd(), buffer, length, flags)) == -1)
@@ -65,18 +64,14 @@ ssize_t Socket::recv(void *buffer, std::size_t length, int flags) {
 
 
 ssize_t Socket::send(const void *buffer, size_t length, int flags) {
+	(void)length;
 	this->validateNotClosed();
 	ssize_t ret;
-	// std::cout << "socket send : " << static_cast<const char *>(buffer) << std::endl;
 	
 	std::string s = std::string(static_cast<const char*>(buffer));
 
-	// std::string tmps = sample();
-	// const char* tmp = tmps.c_str();
-	// if ((ret = ::send(this->getFd(), tmp, tmps.size(), flags)) == -1)
 	if ((ret = ::send(this->getFd(), buffer, s.size(), flags)) == -1)
 		throw IOException("send error : ", errno);
-	// std::cout << "send ret : " << ret << std::endl;
 	return (ret);
 }
 

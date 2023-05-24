@@ -3,24 +3,25 @@
 #include <string>
 
 IdentityDecoder::IdentityDecoder(bool isAllocated, long long contentLength) :
-		m_isAllocated(isAllocated),
-		m_contentLength(contentLength),
-		m_consumed() {}
+		_isAllocated(isAllocated),
+		_contentLength(contentLength),
+		_consumed() {}
 
 IdentityDecoder::~IdentityDecoder(void) {}
 
-bool IdentityDecoder::consume(const std::string &in, std::string &out, size_t &consumed, bool max) {
-	consumed = std::min(in.size(), size_t(m_contentLength - m_consumed));
+bool IdentityDecoder::parse(const std::string &in, std::string &out, size_t &consumed, bool max) {
+	consumed = std::min(in.size(), size_t(_contentLength - _consumed));
 
 	if (!max)
 		out.append(in.c_str(), in.c_str() + consumed);
 
-	m_consumed += consumed;
-
-	return (m_consumed == m_contentLength);
+	_consumed += consumed;
+	if (_consumed == _contentLength)
+		return (true);
+	return (false);
 }
 
 void IdentityDecoder::cleanup() {
-	if (m_isAllocated)
+	if (_isAllocated)
 		delete this;
 }

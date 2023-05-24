@@ -2,7 +2,7 @@
 #define STATUSLINE_HPP
 
 #include <sstream>
-#include "HTTPState.hpp"
+#include "HTTPStatus.hpp"
 #include "../SHTTP.hpp"
 
 // HTTP/1.1 200 OK

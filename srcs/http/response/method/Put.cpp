@@ -1,4 +1,4 @@
-#include "../HTTPState.hpp"
+#include "../HTTPStatus.hpp"
 #include "Put.hpp"
 #include "PutTask.hpp"
 #include <sys/fcntl.h>
@@ -37,7 +37,7 @@ bool Put::doMethod(Request& req, Response& res, Client& cli) {
 	
 	FileDescriptor &fd = *targetFile.open(O_WRONLY | O_TRUNC, 0777);
 	cli.fileWrite(*(new PutTask(cli, fd, justCreated)));
-	return (false);
+	return (true);
 }
 
 void Put::setHasBody(bool hasbody) {

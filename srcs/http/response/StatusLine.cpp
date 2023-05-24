@@ -1,12 +1,21 @@
 #include "StatusLine.hpp"
 
-StatusLine::StatusLine(void) : _status(), _version(SHTTP::VERSION()) {}
+StatusLine::StatusLine(void) : _version(SHTTP::VERSION()), _status() {}
 
-StatusLine::StatusLine(HTTPStatus::StateType status) : _status(status), _version(SHTTP::VERSION()) {}
+StatusLine::StatusLine(HTTPStatus::StateType status) : _version(SHTTP::VERSION()), _status(status) {}
 
-StatusLine::StatusLine(const StatusLine& other) {}
+StatusLine::StatusLine(const StatusLine& other) {
+	if (this != &other) {
+		this->_status = other._status;
+		this->_version = other._version;
+	}	
+}
 
 StatusLine& StatusLine::operator=(const StatusLine& other) {
+	if (this != &other) {
+		this->_status = other._status;
+		this->_version = other._version;
+	}
 	return (*this);
 }
 

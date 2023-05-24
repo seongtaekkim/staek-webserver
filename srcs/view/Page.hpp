@@ -3,7 +3,7 @@
 
 #include <string>
 #include "../util/Singleton.hpp"
-#include "../http/response/HTTPState.hpp"
+#include "../http/response/HTTPStatus.hpp"
 
 class Page : public Singleton<Page> {
 	private:

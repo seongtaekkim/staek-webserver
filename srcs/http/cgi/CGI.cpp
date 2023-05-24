@@ -48,12 +48,10 @@ const std::string CGI::ENV_SERVER_PROTOCOL = "SERVER_PROTOCOL";
 const std::string CGI::ENV_SERVER_SOFTWARE = "SERVER_SOFTWARE";
 const std::string CGI::REDIRECT_STATUS = "REDIRECT_STATUS";
 
-CGI::CGI(pid_t pid, FileDescriptor& in, FileDescriptor& out, File& file) :
-		_pid(pid), _in(in), _out(out), _file(file), _killed(false) {}
+CGI::CGI(pid_t pid, FileDescriptor& in, FileDescriptor& out) :
+		_pid(pid), _in(in), _out(out), _killed(false) {}
 
 CGI::~CGI(void) {
-	std::cout << "CGI::~CGI : " << std::endl; 
-	// _file.remove();
 	delete &_in;
 	delete &_out;
 	kill();
@@ -90,14 +88,18 @@ CGITask* CGI::execute(Client& client, const ServerBlock::CgiType& cgiBlock, cons
 	int inPipe[2];
 	if (::pipe(inPipe) == -1)
 		throw IOException("in pipe exception", errno);
+	int outPipe[2];
+	if (pipe(outPipe) == -1) {
+		int err = errno;
+		::close(inPipe[0]);
+		::close(inPipe[1]);
+		::close(outPipe[0]);
+		::close(outPipe[1]);
 
-std::cerr << "start 11" << std::endl;
-std::cerr << "start 11" << client.inetAddress().address() << std::endl;
-
+		throw IOException("pipe (out)", err);
+	}
 	SEnvironment env = environment;
-
 	Request& request = client.request();
-std::cerr << "start 11" << std::endl;
 
 	File scriptFile(request.resource());
 	File scriptRelativeFile(request.root(), scriptFile);
@@ -106,26 +108,26 @@ std::cerr << "start 11" << std::endl;
 	if (scriptAbsoluteFile.path().c_str()[0] != '/')
 		scriptAbsoluteFile = File(File::currentDir(), scriptAbsoluteFile.path());
 
-
-  	File _tmp(SHTTP::DEFAULT_TMP_FILE + Base::toString(client.socket().getFd(), 10));
-  	FileDescriptor* _fileFd = _tmp.open( O_APPEND | O_CREAT | O_RDWR, 0777);
-	_fileFd->setNonBlock();
+	FileDescriptor* _targetFile = scriptAbsoluteFile.open(O_RDONLY , 0777);
+	_targetFile->setNonBlock();
+	std::string buf = _targetFile->readString();
+	ReleaseResource::pointer<FileDescriptor>(_targetFile);
 
     std::string appName;
     appName.append(APPLICATION_NAME).append("/").append(APPLICATION_VERSION);
-std::cerr << "start 112 " <<  env.size() << std::endl;
+	std::string cgiPath = File(request.root(), cgiBlock.second).path();
+	if (cgiPath.c_str()[0] != '/')
+		cgiPath = File(File::currentDir(), cgiPath).path();
+
 	env.appendOne(ENV_GATEWAY_INTERFACE, "CGI/1.1");
-std::cerr << "start 11" <<  client.inetAddress().address() << std::endl;
 	env.appendOne(ENV_REMOTE_ADDR, client.inetAddress().address());
 	env.appendOne(ENV_REMOTE_PORT, Base::toString(client.inetAddress().port(), 10));
 	env.appendOne(ENV_REQUEST_METHOD, client.parser().method());
 	env.appendOne(ENV_REQUEST_URI, request.url().path());
 	env.appendOne(ENV_SCRIPT_FILENAME, scriptAbsoluteFile.path());
-	env.appendOne(ENV_SCRIPT_NAME, request.url().path());
-	// env.appendOne(ENV_SERVER_NAME, client.httpServer().host()); 
-	env.appendOne(ENV_SERVER_NAME, "127.0.0.1");
-	// env.appendOne(ENV_SERVER_PORT, Convert::toString(client.httpServer().port()));
-	env.appendOne(ENV_SERVER_PORT, "8080");
+	env.appendOne(ENV_SCRIPT_NAME, cgiPath);
+	env.appendOne(ENV_SERVER_NAME,client.server().getHost());
+	env.appendOne(ENV_SERVER_PORT,  Base::toString(client.server().getPort(), 10));
 	env.appendOne(ENV_SERVER_PROTOCOL, SHTTP::VERSION());
 	env.appendOne(ENV_SERVER_SOFTWARE, appName);
 	env.appendOne(ENV_PATH_INFO, request.url().path());
@@ -139,23 +141,9 @@ std::cerr << "start 11" <<  client.inetAddress().address() << std::endl;
 		if (contentType.size() > 0)
 			env.appendOne(ENV_CONTENT_TYPE, contentType);
 	}
-	env.appendOne(REDIRECT_STATUS, "200");
+	if (client.response().cgiExtension().compare(".php") == 0)
+		env.appendOne(REDIRECT_STATUS, "200");
 
-	// const AuthBlock* authBlockOpt = request.authBlock();
-	// if (authBlockOpt.present())
-	// {
-	// 	const AuthBlock &authBlock = *authBlockOpt.get();
-
-	// 	env.appendOne(ENV_AUTH_TYPE, authBlock.prettyType());
-
-	// 	const BasicAuthBlock *basicAuthBlock = dynamic_cast<BasicAuthBlock const*>(&authBlock);
-	// 	if (basicAuthBlock)
-	// 	{
-	// 		env.appendOne(ENV_REMOTE_USER, basicAuthBlock->user());
-	// 		env.appendOne(ENV_REMOTE_IDENT, basicAuthBlock->user());
-	// 	}
-	// }
-	std::cerr << "start 11" << std::endl;
 	const Header& header = client.parser().header();
 	for (Header::mconst_iterator it = header.begin(); it != header.end(); it++)
 		env.appendOne("HTTP_" + Base::toUpper(Replace::replace(Replace::replace(it->first, "=", "_"), "-", "_")), it->second.front());
@@ -183,23 +171,26 @@ std::cerr << "start 11" <<  client.inetAddress().address() << std::endl;
 		::chdir(request.root().c_str());
 
 		::dup2(inPipe[0], 0);
-		::dup2(_fileFd->getFd(), 1);
+		::dup2(outPipe[1], 1);
 
 		::close(inPipe[1]);
-		::close(inPipe[0]);
+		::close(outPipe[0]);
+		// ::close(inPipe[0]);
+		// ::close(outPipe[1]);
 
 		char *const argv[] = {const_cast<char*>(path.c_str()), const_cast<char*>(file.c_str()), NULL};
-		// std::cerr << "start child pid : " <<  path.c_str() <<  " " << file.c_str() << " " << request.root().c_str() << _fileFd->getFd()  <<  std::endl;
 		::execve(path.c_str(), argv, envp);
-		
-		std::cerr << "Status: 500\r\n\r\nFAILED TO RUN CGI\n" << path << "\n" << std::strerror(errno) << std::flush;
 		::exit(1);
 		return (NULL);
 	} else {
+		::close(inPipe[0]);
+		::close(outPipe[1]);
+
+		if (client.body().empty())
+        	write(inPipe[1],buf.c_str(),buf.size());
+		
 		ReleaseResource::pointer2th<char>(envp);
 
-		::close(inPipe[0]);
-		// ::close(inPipe[1]);
 		FileDescriptor *stdin = NULL;
 		FileDescriptor *stdout = NULL;
 		CGI *cgi = NULL;
@@ -207,26 +198,11 @@ std::cerr << "start 11" <<  client.inetAddress().address() << std::endl;
 
 		try {
 			stdin = new FileDescriptor(inPipe[1]);
+			stdout = new FileDescriptor(outPipe[0]);
             stdin->setNonBlock();
+            stdout->setNonBlock();
 
-			int status;
-			// if (::waitpid(pid, &status, WNOHANG) == -1) {
-			// 	errno = 0;
-			// 	return (NULL);
-			// }
-			// if (WIFEXITED(status))
-			// 	return (NULL);
-
-			// ::close(_fileFd->getFd());
-			
-  			// FileDescriptor* _fileFd = _tmp.open(O_RDONLY, 0777);
-			// char* c2;
-			// std::cout << "!!!!!!!!!?"  << _fileFd->getFd()  << " " << inPipe[0] << std::endl;
-			// _fileFd->read(c2, 300000);
-			// std::cout << "startdataa : " << c2 << std::endl;
-			// _fileFd->lseek(0, SEEK_SET);
-
-			cgi = new CGI(pid, *stdin, *_fileFd, _tmp);
+			cgi = new CGI(pid, *stdin, *stdout);
 			cgiTask = new CGITask(client, *cgi);
 	
 			return (cgiTask);
@@ -236,8 +212,6 @@ std::cerr << "start 11" <<  client.inetAddress().address() << std::endl;
 				delete stdin;
 			else
 				::close(inPipe[1]);
-			if (stdout)
-				delete stdout;
 			ReleaseResource::pointer(cgi);
 			ReleaseResource::pointer(cgiTask);
 			throw;

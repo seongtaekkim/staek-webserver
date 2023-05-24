@@ -9,19 +9,18 @@
 #include "SocketStorage.hpp"
 #include "../request/Request.hpp"
 #include "../response/Response.hpp"
-#include "../response/HTTPState.hpp"
+#include "../response/HTTPStatus.hpp"
 #include "../response/make/ResponseMaker.hpp"
 #include "../../exception/Exception.hpp"
 #include "../../iom/KqueueManage.hpp"
 #include "../response/StatusLine.hpp"
 #include "../parse/Parser.hpp"
 #include "../parse/PathParser.hpp"
-// #include "../response/method/IMethod.hpp"
-
 #include "../../exception/Exception.hpp"
 #include "../response/method/PutTask.hpp"
 #include "../cgi/CGITask.hpp"
 #include "../../util/Time.hpp"
+#include "../cgi/CGI.hpp"
 
 class Server;
 /**
@@ -46,12 +45,9 @@ private:
 	InetAddress		_inetAddress;
 	Server&			_server;
 	Socket&			_socket;
-	std::string 	_body; // request body
+	std::string 	_body;
 	SocketStorage 	_in;
 	SocketStorage 	_out;
-	//State m_state;
-	//unsigned long _lastDoTime;
-	//RequestParser _parser;
 	Request			_req;
 	Response 		_res;
 	ResponseMaker	_maker;
@@ -68,7 +64,7 @@ private:
 	Client(void);
 	Client& operator=(const Client& other);
 public:
-	Client(const Client& other); // myMap.insert(std::make_pair("moon", 2)); 에서 필요함
+	Client(const Client& other);
 	virtual ~Client(void);
 	Client(InetAddress inetAddress, Server& server, Socket& socket);
 	Socket& socket() const;
@@ -96,6 +92,10 @@ public:
 	InetAddress inetAddress(void) const;
 	void updateTime(void);
 	unsigned long lastTime(void) const;
+	unsigned long clientMaxBodySize(const ServerBlock* serverBlock, const LocationBlock* locationBlock);
+
+public:
+	static void deny(Client& client);
 };
 
 #endif

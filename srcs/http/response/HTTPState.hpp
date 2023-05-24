@@ -90,7 +90,8 @@ private:
 		state[HTTPStatus::INTERNAL_SERVER_ERROR].second = "Internal Server Error";
 		// state[HTTPStatus::NOT_IMPLEMENTED] = "Not Implemented";
 		// state[HTTPStatus::BAD_GATEWAY] = "Bad Gateway";
-		// state[HTTPStatus::SERVICE_UNAVAILABLE] = "Service Unavailable";
+		state[HTTPStatus::SERVICE_UNAVAILABLE].first = HTTPStatus::SERVICE_UNAVAILABLE;
+		state[HTTPStatus::SERVICE_UNAVAILABLE].second = "Service Unavailable";
 		// state[HTTPStatus::GATEWAY_TIMEOUT] = "Gateway Timeout";
 		// state[HTTPStatus::HTTP_VERSION_NOT_SUPPORTED] = "HTTP Version not supported";
 		// state[HTTPStatus::VARIANT_ALSO_NEGOTIATES] = "Variant Also Negotiates";

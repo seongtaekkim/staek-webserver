@@ -77,7 +77,7 @@ class Header {
 
 		Header& connection(const std::string &value);
 
-		Header& html(void);
+		Header& mimeHTML(void);
 
 		Header& append(const std::string &key, const std::string &value, bool folding = false);
 

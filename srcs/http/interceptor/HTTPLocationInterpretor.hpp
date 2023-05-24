@@ -1,96 +1,53 @@
 
-#ifndef HTTPLOCATIONINTERPRETOR_HPP_
-# define HTTPLOCATIONINTERPRETOR_HPP_
+#ifndef HTTPLOCATIONINTERPRETOR_HPP
+#define HTTPLOCATIONINTERPRETOR_HPP
 
+#include "../../config/block/LocationBlock.hpp"
 #include <list>
 #include <string>
-#include "../../config/block/LocationBlock.hpp"
 
-class HTTPLocationInterpretor
-{
+class HTTPLocationInterpretor {
 	public:
 		enum State
 		{
-			S_NOT_STARTED,
-			S_FIRST,
-			S_START,
-			S_EXACT_INTRO,
-			S_EXACT,
-			S_MIDDLE_START,
-			S_MIDDLE,
-			S_TILDE,
-			S_SPACE_AFTER_TILDE,
-			S_NO_CASE_MODIFIER,
-			S_END,
-			S_OVER,
+			NOT_STARTED,
+			CHECK,
+			START,
+			END
 		};
 	
 	private:
-		State m_state;
-		std::string m_path;
-		std::string m_start;
-		std::list<std::string> m_middleList;
-		std::string m_middle;
-		std::string m_end;;
-		std::string m_exact;
-		const LocationBlock *m_locationBlock;
+		State _state;
+		std::string _path;
+		std::string _start;
+		std::string _end;
+		std::string _exact;
+		const LocationBlock *_locationBlock;
 
-		char m_firstChar;
-		char m_lastChar;
+		char _firstChar;
+		char _lastChar;
 		
 	public:
-		HTTPLocationInterpretor();
+		HTTPLocationInterpretor(void);
 		HTTPLocationInterpretor(std::string path, const LocationBlock *locationBlock);
 		HTTPLocationInterpretor(const HTTPLocationInterpretor &other);
 		
-		virtual
 		~HTTPLocationInterpretor();
 
-		HTTPLocationInterpretor&
-		operator =(const HTTPLocationInterpretor &other);
+		HTTPLocationInterpretor& operator=(const HTTPLocationInterpretor &other);
 
-		const std::string&
-		start(void);
-
-		const std::string&
-		end(void);
-		
-		const std::string&
-		exact(void);
-
-		const char&
-		firstChar(void);
-
-		const char&
-		lastChar(void);
-		
-		std::list<std::string>&
-		middleList(void);
-
-		void
-		middleList(std::string &middleElement);
-
-		std::string&
-		middleElement(void);
-
-		void
-		erase();
-		
-		void
-		setEnd(std::string end);
-		
-		bool
-		next(char &c);
-
-		void
-		consume(char &c);
-
-		void
-		end(std::string &end);
-
-		const LocationBlock *
-		locationBlock();
+		const std::string& start(void);
+		const std::string& end(void);
+		const std::string& exact(void);
+		const char& firstChar(void);
+		const char& lastChar(void);
+		void erase();
+		void setEnd(std::string end);	
+		bool next(char &c);
+		void parse(char &c);
+		void end(std::string &end);
+		const LocationBlock* locationBlock();
 };
 
-#endif /* HTTPLocationInterpretor_HPP_ */
+#endif
 

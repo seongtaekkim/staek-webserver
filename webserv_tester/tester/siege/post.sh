@@ -1,0 +1,1 @@
+../../goinfre/.brew/bin/./siege -c2 -t30S "http://localhost:8080/register POST {\"contactName\":\"John DaCosta\"}" --content-type "application/json"

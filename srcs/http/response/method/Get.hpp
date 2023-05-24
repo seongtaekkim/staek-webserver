@@ -2,7 +2,7 @@
 #define GET_HPP
 
 #include "IMethod.hpp"
-#include "../HTTPState.hpp"
+#include "../HTTPStatus.hpp"
 
 class Get : public IMethod {
 private:

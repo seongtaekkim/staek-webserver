@@ -1,19 +1,32 @@
 #include "ServerBlock.hpp"
+#include <map>
 
+ServerBlock::ServerBlock(void) : _listen(0), _serverName(), _clientMaxBodySize(0) {}
 
-ServerBlock::ServerBlock(void) {
-	std::cout << "server block constructor " << std::endl;
+ServerBlock::ServerBlock(const ServerBlock& other) {
+	if (this != &other) {
+		this->_cgi = other._cgi;
+		this->_index = other._index;
+		this->_listen = other._listen;
+		this->_locationBlockList = other._locationBlockList;
+		this->_root = other._root;
+		this->_serverName = other._serverName;
+	}
 }
-ServerBlock::ServerBlock(const ServerBlock& other) {	std::cout << "server block copyconstructor " << std::endl;
-}
+
 ServerBlock& ServerBlock::operator=(const ServerBlock& other) { 
-		std::cout << "server block assing constructor " << std::endl;
-
-	return (*this);}
-ServerBlock::~ServerBlock(void) {
-		std::cout << "server block delete " << std::endl;
-
+	if (this != &other) {
+		this->_cgi = other._cgi;
+		this->_index = other._index;
+		this->_listen = other._listen;
+		this->_locationBlockList = other._locationBlockList;
+		this->_root = other._root;
+		this->_serverName = other._serverName;
+	}
+	return (*this);
 }
+
+ServerBlock::~ServerBlock(void) {}
 
 void ServerBlock::setListen(std::string str) {
 	this->_listen = (int)::strtol(str.c_str(), NULL, 10);
@@ -56,6 +69,14 @@ void ServerBlock::setCgi(std::string str) {
 	this->_cgi.second = str.substr(ret + 1);
 }
 
+void ServerBlock::setClientMaxBodySize(std::string str) {
+	this->_clientMaxBodySize = (unsigned long)::strtol(str.c_str(), NULL, 10);
+}
+
+unsigned long ServerBlock::getClientMaxBodySize(void) const {
+	return (this->_clientMaxBodySize);
+}
+
 std::pair<std::string, std::string> ServerBlock::getCgi(void) const {
 	return (this->_cgi);
 }
@@ -68,7 +89,6 @@ const std::list<LocationBlock*> ServerBlock::locationBlockList(void) const {
 	return (this->_locationBlockList);
 }
 
-#include <map>
 void ServerBlock::check(std::string key, std::string value) {
 
 
@@ -83,6 +103,7 @@ void ServerBlock::check(std::string key, std::string value) {
 	_map["root"] = &ServerBlock::setRoot;
 	_map["cgi"] = &ServerBlock::setCgi;
 	_map["index"] = &ServerBlock::setIndex;
+	_map["client_max_body_size"] = &ServerBlock::setClientMaxBodySize;
 
 	_pos = _map.find(key);
 	if (_pos != _map.end()) {

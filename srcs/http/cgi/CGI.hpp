@@ -21,12 +21,13 @@ class CGI {
 		pid_t			_pid;
 		FileDescriptor&	_in;
 		FileDescriptor&	_out;
-		File&			_file;
+		// File&			_file;
+		std::string		_reqBody;
 		bool			_killed;
 
 	private:
 		CGI(void);
-		CGI(pid_t pid, FileDescriptor& in, FileDescriptor& out, File& file);
+		CGI(pid_t pid, FileDescriptor& in, FileDescriptor& out);
 		CGI(const CGI& other);
 		CGI& operator=(const CGI& other);
 
@@ -45,9 +46,9 @@ class CGI {
 			return (this->_out);
 		}
 		
-		inline File& file() const {
-			return (this->_file);
-		}
+		// inline File& file() const {
+		// 	return (this->_file);
+		// }
 
 		inline pid_t pid() const {
 			return (_pid);

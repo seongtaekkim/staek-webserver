@@ -45,17 +45,16 @@ void DefaultPageMaker::make(Client& client, Request& req, Response& res, Respons
 		return (maker.executeMaker());
 	}
 
-	if (Config::instance().rootBlock()->ServerBlockList().empty())
+	if (!req.serverBlock())
 		return (maker.executeMaker());
 
-	if (Config::instance().rootBlock()->ServerBlockList().front()->getIndex().size() == 0)
+	if (req.serverBlock()->getIndex().size() == 0)
 		return (maker.executeMaker());
 
-	File file(req.targetFile().path(), Config::instance().rootBlock()->ServerBlockList().front()->getIndex());
+	File file(req.targetFile().path(), req.serverBlock()->getIndex());
 
 	if (file.exists() && file.isFile()) {
 		req.resource(file.name());
-		std::cout << "header().contentLength" << std::endl;
 		res.header().contentLength(10);
 	}
 	maker.executeMaker();

@@ -1,11 +1,6 @@
 #ifndef IMAKER_HPP
 #define IMAKER_HPP
 
-// #include "../Response.hpp"
-// #include "../../request/Request.hpp"
-// #include "../../server/Client.hpp"
-// #include "ResponseMaker.hpp"
-
 class Client;
 class Request;
 class Response;

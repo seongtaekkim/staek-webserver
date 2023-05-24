@@ -3,9 +3,9 @@
 #include "CGITask.hpp"
 #include "../response/method/Method.hpp"
 #include "../response/method/IMethod.hpp"
-#include "../response/HTTPState.hpp"
+#include "../response/HTTPStatus.hpp"
 #include "../response/make/ResponseMaker.hpp"
-#include "../response/HTTPState.hpp"
+#include "../response/HTTPStatus.hpp"
 #include "../server/Client.hpp"
 #include "../request/Request.hpp"
 #include "../response/ResponseByCGI.hpp"
@@ -21,30 +21,24 @@ class Parser;
 class ResponseByCGI;
 
 CGITask::CGITask(Client& client, CGI& cgi) :
-		_client(client),
-		_cgi(cgi),
-		_out(*FileDescriptor::create(_cgi.out())),
-		wroteBodyUpTo(),
-		_running(true) {
+		_client(client), _cgi(cgi),
+		wroteBodyUpTo(), _running(true) {
 	IMethod* method = Method::METHOD[client.parser().method()];
-	std::cout << "CGITask::CGITask(Client& client, CGI& cgi)  : " << _out.getFd() << " " << method->getHasBody() <<  std::endl;
-	KqueueManage::instance().create(this->_out, *this);
+	KqueueManage::instance().create(this->_cgi.in(), *this, _client.server().getSocket()->getFd());
 	if (method->getHasBody()) {
-		KqueueManage::instance().setEvent(this->_out.getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+		KqueueManage::instance().setEvent(_cgi.in().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 	}
 	else
 		this->_cgi.in().close();
-	KqueueManage::instance().setEvent(this->_out.getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
+		
+	KqueueManage::instance().create(this->_cgi.out(), *this, _client.server().getSocket()->getFd());
+	KqueueManage::instance().setEvent(_cgi.out().getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL);
 }
 
 CGITask::~CGITask(void) {
-		std::cout << "CGITask::~CGITask : " << _cgi.in().getFd() << std::endl;
-
 	this->_cgi.kill();
 	KqueueManage::instance().delEvent(_cgi.in().getFd());
 	KqueueManage::instance().delEvent(_cgi.out().getFd());
-
-	delete &_out;
 	delete &_cgi;
 }
 
@@ -53,10 +47,14 @@ bool CGITask::running() {
 }
 
 bool CGITask::send(FileDescriptor& fd) {
-	std::cout << "CGITask::send(FileDescriptor& fd) : " << _client.body().c_str() << "|" << std::endl;
-	
-	if (wroteBodyUpTo == _client.body().length())
+
+	if (_cgi.in().isClosed())
 		return (true);
+	if (wroteBodyUpTo == _client.body().length()) {
+		_cgi.in().close();	
+		KqueueManage::instance().delEvent(_cgi.in().getFd());
+		return (true);
+	}
 
 	ssize_t wrote = fd.write(_client.body().c_str() + wroteBodyUpTo, _client.body().length() - wroteBodyUpTo);
 
@@ -78,43 +76,47 @@ bool CGITask::send(FileDescriptor& fd) {
 bool CGITask::recv(FileDescriptor& fd) {
 	(void)fd;
 
-	char buf[SHTTP::DEFAULT_READSIZE];
-	this->_out.lseek(0, SEEK_SET);
-	ssize_t r = this->_out.read(buf, SHTTP::DEFAULT_READSIZE);
-	this->_out.store(buf);
-	std::cout << "CGITask::recv(FileDescriptor& fd) : " << buf << "|" << r << _out.storage().empty() << std::endl;
-	if (r == -1) {
+	std::string ret = _cgi.out().readString();
+	_cgi.out().store(ret);
+	if (ret.empty()) {
 		_client.response().status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
 		_client.maker().executeMaker();
 		KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 		return (true);
 	}
 
-	if (r == 0 && _out.storage().empty()) {
-		_client.response().status(HTTPStatus::STATE[HTTPStatus::GATEWAY_TIMEOUT]);
-		_client.maker().executeMaker();
-		return (true);
-	}
+	Parser parser(_client);
+    parser.hState(Parser::FIELD);
+	if (parser.state() != Parser::HEND) {
+		char c;
 		try {
-				// this->_client.response().header().chunkedTransferEncoding();
-				std::cout << "???????????????/" << std::endl;
-				this->_client.response().header().append(Header::CONTENT_LENGTH, Base::toString(r, 10));
-				this->_client.response().body(new ResponseByCGI(this->_client, *this));
-				_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
-				_client.maker().executeMaker();
+			while (_cgi.out().getC(c)) {
+				_cgi.out().next();
+				parser.headerParse(c);
+				if (parser.hState() == Parser::HEND) {
+					parser.header().get(Header::STATUS);
+					_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
 
-				KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+					break;
+				}
+			}
+
+			this->_client.response().header().contentLength(_cgi.out().storage().size());
+			this->_client.response().body(new ResponseByCGI(this->_client, *this));
+			_client.response().status(HTTPStatus::STATE[HTTPStatus::OK]);
+			_client.maker().executeMaker();
+			KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 			return (false);
-		}
-		catch (Exception &exception) {
+		} catch (Exception &exception) {
 			this->_client.response().status(HTTPStatus::STATE[HTTPStatus::INTERNAL_SERVER_ERROR]);
 			this->_client.maker().executeMaker();
 
 			KqueueManage::instance().setEvent(this->_client.socket().getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
 			return (true);
+		}
 	}
 
-	if (this->_out.isReadCompleted()) {
+	if (_cgi.out().isReadCompleted()) {
 		KqueueManage::instance().delEvent(_cgi.in().getFd());
 		return (true);
 	}
@@ -122,15 +124,15 @@ bool CGITask::recv(FileDescriptor& fd) {
 }
 
 bool CGITask::isDone() {
-	return (this->_out.isReadCompleted() && this->_out.storage().empty());
+	return (_cgi.out().isReadCompleted());
 }
 
 bool CGITask::hasReadHeaders() {
-	return (_client.parser().state() != Parser::HSTATE::HEND);
+	return (_client.parser().hState() != Parser::HEND);
 }
 
 FileDescriptor& CGITask::out() {
-	return (this->_out);
+	return (_cgi.out());
 }
 
 bool CGITask::timeoutTouch() {
